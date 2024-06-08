@@ -1,8 +1,8 @@
 NAME = cub3d
 LIBFT = $(LIBFT_PATH)libft.a
 LIBFT_PATH = ./libft/
-MINILIBX=$(LIBFT_PATH)libmlx_Linux.a
-MINILIBX_PATH=./minilibx-linux/
+MINILIBX=$(LIBFT_PATH)/libmlx_Linux.a
+MINILIBX_PATH=minilibx-linux
 INCDIR = ./includes/
 GNLDIR = ./get_next_line/
 SRCSDIR = ./
@@ -13,7 +13,8 @@ SOURCES += $(wildcard $(GNLDIR)*.c)
 OBJECTS = $(addprefix $(OBJDIR), $(notdir $(SOURCES:.c=.o)))
 
 CC = cc
-LDFLAGS += -Lminilibx-linux
+LDFLAGS += -L$(MINILIBX_PATH)
+LDFLAGS += -L$(LIBFT_PATH)
 LDFLAGS += -lmlx_Linux
 LDFLAGS += -lX11
 LDFLAGS += -lXext
@@ -25,7 +26,7 @@ bonus: $(NAME)
 
 $(NAME): $(LIBFT) $(MINILIBX) $(OBJECTS)
 	@echo "Linking $@ || NEED FIXING, MAKEFILE IS RELINKING"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) -L$(LIBFT_PATH) -lft
+	@$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDFLAGS) -lft
 	@echo "$@ has been successfully built!"
 
 $(LIBFT):

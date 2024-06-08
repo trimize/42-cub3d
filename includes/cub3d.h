@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/08 20:07:59 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/08 21:47:52 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,21 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <stdio.h>
+# include <stddef.h>
+# include <sys/time.h>
+# include <math.h>
+# include <X11/keysym.h>
+# include <X11/X.h>
 
 # include "../libft/libft.h"
 # include "../get_next_line/get_next_line.h"
+# include "../minilibx-linux/mlx.h"
+
+# define WIDTH 800
+# define HEIGHT 800
+# define FOV 60
+# define PLAYER_SPEED 4
+# define TILE_SIZE 30
 
 typedef struct s_txt
 {
@@ -37,10 +49,20 @@ typedef struct s_map
 	int		cols;
 }	t_map;
 
+typedef struct s_player
+{
+	int		x;
+	int		y;
+	double	dir;
+}	t_player;
+
 typedef struct s_cube
 {
-	t_map	map;
-	t_txt	txt[6];
+	t_map		map;
+	t_txt		txt[6];
+	t_player	player;
+	void		*con;
+	void		*win;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
@@ -57,5 +79,8 @@ int		space_checker_horizontal(char **map);
 int		space_checker_vertical(char **map);
 void	exit_free(t_cube *cub);
 void	map_filler(t_map *map);
+int		check_cub(char *file);
+void	window_init(t_cube *cub);
+void	fill_player(t_cube *cub);
 
 #endif

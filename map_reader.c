@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/08 20:39:16 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/08 21:07:13 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,14 +138,14 @@ void	save_file(t_cube *cub, char **file)
 		i++;
 	}
 	if (!file[i])
-		(printf("Invalid map."), freetab(file), exit(1)); // TODO Display better error message.
+		(printf("Error\nInvalid map.\n"), freetab(file), exit(1)); // TODO Display better error message.
 	j = 0;
 	while (j < i)
 	{
 		tmp = ft_split(file[j], ' ');
 		if (tablen(tmp) != 2)
 		{
-			(printf("Invalid texture paths.\n"), freetab(file), freetab(tmp));
+			(printf("Error\nInvalid texture paths.\n"), freetab(file), freetab(tmp));
 			while (j >= 0)
 				(free(cub->txt[j].type), free(cub->txt[j--].path));
 			exit(1); // TODO Display better error message.
@@ -192,14 +192,14 @@ void	color_filler(t_cube *cub, int *i)
 
 	tmp = ft_split(cub->txt[*i].path, ',');
 	if (!tmp || tablen(tmp) != 3)
-		printf("Invalid variables on the map."), exit(1); // TODO Display better error message and fix leaks.
+		printf("Error\nInvalid variables on the map.\n"), exit(1); // TODO Display better error message and fix leaks.
 	cub->txt[*i].r = ft_atoi(tmp[0]);
 	cub->txt[*i].g = ft_atoi(tmp[1]);
 	cub->txt[*i].b = ft_atoi(tmp[2]);
 	freetab(tmp);
 	if (cub->txt[*i].r < 0 || cub->txt[*i].r > 255 || cub->txt[*i].g < 0
 		|| cub->txt[*i].g > 255 || cub->txt[*i].b < 0 || cub->txt[*i].b > 255)
-		printf("Invalid RGB values."), exit(1); // TODO Display better error message and fix leaks.
+		printf("Error\nInvalid RGB values.\n"), exit(1); // TODO Display better error message and fix leaks.
 }
 
 void	variables_checker(t_cube *cub)
@@ -215,7 +215,7 @@ void	variables_checker(t_cube *cub)
 			&& !ft_equalstr(cub->txt[i].type, "SO")
 			&& !ft_equalstr(cub->txt[i].type, "WE")
 			&& !ft_equalstr(cub->txt[i].type, "EA"))
-			printf("Invalid variables on the map."), exit(1); // TODO Display better error message and fix leaks.
+			printf("Error\nInvalid variables on the map.\n"), exit(1); // TODO Display better error message and fix leaks.
 		i++;
 	}
 }
@@ -260,4 +260,21 @@ void	map_filler(t_map *map)
 		}
 		i++;
 	}
+}
+int	check_cub(char *file)
+{
+	int	len;
+
+	len = ft_strlen(file) - 1;
+	if (len < 4)
+		return (1);
+	if (file[len] != 'b')
+		return (1);
+	if (file[len - 1] != 'u')
+		return (1);
+	if (file[len - 2] != 'c')
+		return (1);
+	if (file[len - 3] != '.')
+		return (1);
+	return (0);
 }
