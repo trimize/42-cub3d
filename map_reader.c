@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/08 20:09:57 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/08 20:39:16 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ int	char_checker(char *line)
 			return (1);
 		i++;
 	}
-	if (line[i - 1] != '1' || line[0] != '1')
-		return (1);
 	return (0);
 }
 

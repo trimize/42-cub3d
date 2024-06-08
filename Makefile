@@ -1,6 +1,8 @@
 NAME = cub3d
 LIBFT = $(LIBFT_PATH)libft.a
 LIBFT_PATH = ./libft/
+MINILIBX=$(LIBFT_PATH)libmlx_Linux.a
+MINILIBX_PATH=./minilibx-linux/
 INCDIR = ./includes/
 GNLDIR = ./get_next_line/
 SRCSDIR = ./
@@ -11,21 +13,28 @@ SOURCES += $(wildcard $(GNLDIR)*.c)
 OBJECTS = $(addprefix $(OBJDIR), $(notdir $(SOURCES:.c=.o)))
 
 CC = cc
-LDFLAGS :=
+LDFLAGS += -Lminilibx-linux
+LDFLAGS += -lmlx_Linux
+LDFLAGS += -lX11
+LDFLAGS += -lXext
 CFLAGS = -Wall -Wextra -Werror -I$(INCDIR)$(GNL_DIR) -g3
 
 all: $(NAME)
 
 bonus: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJECTS)
-	@echo "Linking $@"
+$(NAME): $(LIBFT) $(MINILIBX) $(OBJECTS)
+	@echo "Linking $@ || NEED FIXING, MAKEFILE IS RELINKING"
 	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) -L$(LIBFT_PATH) -lft
 	@echo "$@ has been successfully built!"
 
 $(LIBFT):
 	@echo "Building $(LIBFT) library"
 	@make -C $(LIBFT_PATH) >/dev/null 2>&1
+
+$(MINILIBX):
+	@echo "Building $(MINILIBX) library"
+	@make -C $(MINILIBX_PATH) >/dev/null 2>&1
 
 $(OBJDIR)%.o: $(SRCSDIR)%.c | $(OBJDIR)
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -40,11 +49,14 @@ clean:
 	@echo "Cleaning objects"
 	@rm -rf $(OBJDIR)
 	@make -C $(LIBFT_PATH) clean >/dev/null 2>&1
+	@make -C $(MINILIBX_PATH) clean >/dev/null 2>&1
 
 fclean: clean
 	@echo "Cleaning $(NAME)"
 	@rm -f $(NAME)
 	@make -C $(LIBFT_PATH) fclean >/dev/null 2>&1
+	@echo "Cleaning MiniLibX"
+	@make -C $(MINILIBX_PATH) clean >/dev/null 2>&1
 
 re: fclean all
 
