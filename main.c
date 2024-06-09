@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/08 21:47:41 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/09 17:06:21 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int	main(void)
 		(printf("Error\nMap file must end in .cub\n"), exit(1));
 	file = read_file(path);
 	save_file(&cub, file);
+	player_checker(&cub);
 	map_filler(&cub.map);
 	variables_checker(&cub);
 	if (first_and_last_checker(cub.map.map) || space_checker_horizontal(cub.map.map) || space_checker_vertical(cub.map.map))

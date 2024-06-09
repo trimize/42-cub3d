@@ -1,42 +1,14 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/08 19:32:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/09 17:11:45 by mbrandao         ###   ########.fr       */
+/*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
+/*   Updated: 2024/06/09 18:07:34 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
 
-void	exit_free(t_cube *cub)
-{
-	int	i;
-
-	i = 0;
-	while (i < 4)
-	{
-		free(cub->txt[i].type);
-		free(cub->txt[i].path);
-		i++;
-	}
-	freetab(cub->map.map);
-	exit(1);
-}
-
-void	free_stuff(t_cube *cub)
-{
-	int	i;
-
-	i = 0;
-	while (i < 4)
-	{
-		free(cub->txt[i].type);
-		free(cub->txt[i].path);
-		i++;
-	}
-	freetab(cub->map.map);
-}

@@ -1,42 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/08 19:32:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/09 17:11:45 by mbrandao         ###   ########.fr       */
+/*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
+/*   Updated: 2024/06/09 18:07:22 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
 
-void	exit_free(t_cube *cub)
+void	init_rays(t_cube *cub)
 {
-	int	i;
-
-	i = 0;
-	while (i < 4)
+	cub->ray = (t_ray *) malloc (sizeof(t_ray) * WIDTH);
+	if (!cub->ray)
 	{
-		free(cub->txt[i].type);
-		free(cub->txt[i].path);
-		i++;
+		printf("Error\nCouldn't allocate memory for rays.\n");
+		exit_free(cub);
 	}
-	freetab(cub->map.map);
-	exit(1);
-}
-
-void	free_stuff(t_cube *cub)
-{
-	int	i;
-
-	i = 0;
-	while (i < 4)
-	{
-		free(cub->txt[i].type);
-		free(cub->txt[i].path);
-		i++;
-	}
-	freetab(cub->map.map);
 }

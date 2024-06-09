@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/08 21:07:13 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/09 17:04:48 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,32 @@ int	char_checker(char *line)
 		i++;
 	}
 	return (0);
+}
+
+void	player_checker(t_cube *cub)
+{
+	int	i;
+	int	j;
+	int	counter;
+
+	i = 0;
+	counter = 0;
+	while (cub->map.map[i])
+	{
+		j = 0;
+		while (cub->map.map[i][j])
+		{
+			if (cub->map.map[i][j] == 'N' || cub->map.map[i][j] == 'W'
+				|| cub->map.map[i][j] == 'E' || cub->map.map[i][j] == 'S')
+				counter++;
+			j++;
+		}
+		i++;
+	}
+	if (!counter)
+		(printf("Error\nPlayer not found in the map.\n"), exit_free(cub));
+	else if (counter > 1)
+		(printf("Error\nMore than one player in the map.\n"), exit_free(cub));
 }
 
 int	space_checker_horizontal(char **map)
@@ -121,13 +147,43 @@ int	first_and_last_checker(char **map)
 	return (0);
 }
 
+void	color_filler(t_cube *cub, char **tab)
+{
+	char	**tmp;
+
+	tmp = ft_split(tab[1], ',');
+	if (!tmp || tablen(tmp) != 3)
+		printf("Error\nInvalid variables on the map.\n"), exit(1); // TODO Display better error message and fix leaks.
+	if (tab[0][0] == 'C')
+	{
+		cub->c_r = ft_atoi(tmp[0]);
+		cub->c_g = ft_atoi(tmp[1]);
+		cub->c_b = ft_atoi(tmp[2]);
+	}
+	else
+	{
+		cub->f_r = ft_atoi(tmp[0]);
+		cub->f_g = ft_atoi(tmp[1]);
+		cub->f_b = ft_atoi(tmp[2]);
+	}
+	freetab(tmp);
+	if (tab[0][0] == 'C' && (cub->c_r < 0 || cub->c_r > 255 || cub->c_g < 0
+		|| cub->c_g > 255 || cub->c_b < 0 || cub->c_b > 255))
+		printf("Error\nInvalid RGB values.\n"), exit(1); // TODO Display better error message and fix leaks.
+	else if (tab[0][0] == 'F' && (cub->f_r < 0 || cub->f_r > 255 || cub->f_g < 0
+		|| cub->f_g > 255 || cub->f_b < 0 || cub->f_b > 255))
+		printf("Error\nInvalid RGB values.\n"), exit(1); // TODO Display better error message and fix leaks.
+}
+
 void	save_file(t_cube *cub, char **file)
 {
 	int		i;
 	int		j;
+	int		x;
 	char	**tmp;
 
 	i = 0;
+	x = 0;
 	while (file[i])
 	{
 		j = 0;
@@ -150,8 +206,13 @@ void	save_file(t_cube *cub, char **file)
 				(free(cub->txt[j].type), free(cub->txt[j--].path));
 			exit(1); // TODO Display better error message.
 		}
-		cub->txt[j].type = ft_strdup(tmp[0]);
-		cub->txt[j].path = ft_strdup(tmp[1]);
+		if (tmp[0][0] == 'F' || tmp[0][0] == 'C')
+			color_filler(cub, tmp);
+		else
+		{
+			cub->txt[x].type = ft_strdup(tmp[0]);
+			cub->txt[x++].path = ft_strdup(tmp[1]);
+		}
 		freetab(tmp);
 		j++;
 	}
@@ -186,32 +247,15 @@ char	**read_file(char *path)
 	return (result);
 }
 
-void	color_filler(t_cube *cub, int *i)
-{
-	char	**tmp;
-
-	tmp = ft_split(cub->txt[*i].path, ',');
-	if (!tmp || tablen(tmp) != 3)
-		printf("Error\nInvalid variables on the map.\n"), exit(1); // TODO Display better error message and fix leaks.
-	cub->txt[*i].r = ft_atoi(tmp[0]);
-	cub->txt[*i].g = ft_atoi(tmp[1]);
-	cub->txt[*i].b = ft_atoi(tmp[2]);
-	freetab(tmp);
-	if (cub->txt[*i].r < 0 || cub->txt[*i].r > 255 || cub->txt[*i].g < 0
-		|| cub->txt[*i].g > 255 || cub->txt[*i].b < 0 || cub->txt[*i].b > 255)
-		printf("Error\nInvalid RGB values.\n"), exit(1); // TODO Display better error message and fix leaks.
-}
 
 void	variables_checker(t_cube *cub)
 {
 	int		i;
 
 	i = 0;
-	while (i < 6)
+	while (i < 4)
 	{
-		if (cub->txt[i].type[0] == 'F' || cub->txt[i].type[0] == 'C')
-			color_filler(cub, &i);
-		else if (!ft_equalstr(cub->txt[i].type, "NO")
+		if (!ft_equalstr(cub->txt[i].type, "NO")
 			&& !ft_equalstr(cub->txt[i].type, "SO")
 			&& !ft_equalstr(cub->txt[i].type, "WE")
 			&& !ft_equalstr(cub->txt[i].type, "EA"))
