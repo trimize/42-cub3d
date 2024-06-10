@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/09 18:08:08 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/10 21:17:49 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,7 @@
 # define FOV 60
 # define PLAYER_SPEED 4
 # define TILE_SIZE 30
-
-typedef struct s_ray
-{
-	double	dir_x;
-	double	dir_y;
-	double	delta_dist_x;
-	double	delta_dist_y;
-	double	side_dist_x;
-	double	side_dist_y;
-	int		step_x;
-	int		step_y;
-	int		hit;        // Was there a wall hit?
-	int		side;       // Was a NS or a EW wall hit?
-	double	perp_wall_dist;
-}	t_ray;
+# define MAP_SIZE 5
 
 typedef struct s_txt
 {
@@ -73,8 +59,6 @@ typedef struct s_player
 	int		x;
 	int		y;
 	double	dir;
-	double	dir_x;
-	double	dir_y;
 }	t_player;
 
 typedef struct s_cube
@@ -82,11 +66,8 @@ typedef struct s_cube
 	t_map		map;
 	t_txt		txt[6];
 	t_player	player;
-	t_ray		*ray;
 	void		*con;
 	void		*win;
-	double		plane_x;
-	double		plane_y;
 	int			f_r;
 	int			f_g;
 	int			f_b;

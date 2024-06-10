@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 21:47:26 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/08 21:49:13 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/10 20:53:06 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ void	fill_player(t_cube *cub)
 	int			j;
 
 	i = 0;
-	j = 0;
 	map = cub->map.map;
 	while (map[i])
 	{
+		j = 0;
 		while (map[i][j])
 		{
 			if (map[i][j] == 'N')
