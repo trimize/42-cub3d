@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/10 20:53:36 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/14 18:48:39 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int	main(void)
 	while (cub.map.map[i])
 		if (char_checker(cub.map.map[i++]))
 			(printf("Error\nInvalid character on the map.\n"), exit_free(&cub));
+	cub.start = 1;
 	fill_player(&cub);
 	window_init(&cub);
 	// exit_free(&cub);

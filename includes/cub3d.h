@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/10 21:17:49 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/14 21:15:35 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,12 @@
 # define WIDTH 800
 # define HEIGHT 800
 # define FOV 60
-# define PLAYER_SPEED 4
-# define TILE_SIZE 30
-# define MAP_SIZE 5
+# define PLAYER_SPEED 0.2
+# define PLAYER_SIZE 5
+# define TILE_SIZE 20
+# define YELLOW 0xFFFF00
+# define ORANGE 0xFFA500
+# define DARK_GREEN 0x013220
 
 typedef struct s_txt
 {
@@ -47,6 +50,15 @@ typedef struct s_txt
 	int		endian;
 }	t_txt;
 
+typedef struct s_rotation_ray
+{
+	double	ray_x[7];
+	double	ray_y[7];
+	double	angle_rad;
+	double	pdx;
+	double	pdy;
+}	t_rr;
+
 typedef struct s_map
 {
 	char	**map;
@@ -56,8 +68,8 @@ typedef struct s_map
 
 typedef struct s_player
 {
-	int		x;
-	int		y;
+	double	x;
+	double	y;
 	double	dir;
 }	t_player;
 
@@ -66,6 +78,7 @@ typedef struct s_cube
 	t_map		map;
 	t_txt		txt[6];
 	t_player	player;
+	t_rr		rr;
 	void		*con;
 	void		*win;
 	int			f_r;
@@ -74,6 +87,7 @@ typedef struct s_cube
 	int			c_r;
 	int			c_g;
 	int			c_b;
+	int			start;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
@@ -97,5 +111,8 @@ void	fill_player(t_cube *cub);
 void	player_checker(t_cube *cub);
 void	load_textures(t_cube *cub);
 void	init_rays(t_cube *cub);
+void	player_rotation_init(t_cube *cub);
+void	rotate_player(t_cube *cub, double dir);
+void	player_rotation_keys(int key, t_cube *cub);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/10 21:40:58 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/14 21:49:21 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,21 @@ int	close_x(t_cube *cub)
 	return (0);
 }
 
-void	draw_dot(t_cube *cub, int x, int y, int color)
+void	draw_dot(t_cube *cub, double x, double y, int color)
 {
 	int	i;
 	int	j;
 	int	size;
 
-	size = MAP_SIZE;
+	size = PLAYER_SIZE;
 	i = x - size / 2;
 	while (i <= x + size / 2)
-    {
+	{
 		j = y - size / 2;
-        while (j <= y + size / 2)
-        {
-            mlx_pixel_put(cub->con, cub->win, i, j, color);
-            j++;
-        }
-        i++;
-    }
+		while (j <= y + size / 2)
+			mlx_pixel_put(cub->con, cub->win, i, j++, color);
+		i++;
+	}
 }
 
 void	draw_dot_map(t_cube *cub, int x, int y, int color)
@@ -52,18 +49,15 @@ void	draw_dot_map(t_cube *cub, int x, int y, int color)
 	int	j;
 	int	size;
 
-	size = 20;
+	size = TILE_SIZE;
 	i = x - size / 2;
 	while (i <= x + size / 2)
-    {
+	{
 		j = y - size / 2;
-        while (j <= y + size / 2)
-        {
-            mlx_pixel_put(cub->con, cub->win, i, j, color);
-            j++;
-        }
-        i++;
-    }
+		while (j <= y + size / 2)
+			mlx_pixel_put(cub->con, cub->win, i, j++, color);
+		i++;
+	}
 }
 
 void	draw_player(t_cube *cub)
@@ -73,7 +67,7 @@ void	draw_player(t_cube *cub)
 	color = 0xFFFFFF; // White color, you can choose any color you prefer
 
 	// printf("\n PLAYER X IS %d AND PLAYER Y IS %d\n", x, y);
-	draw_dot(cub, (cub->player.x * 5) + 200, (cub->player.y * 5) + 200, color);
+	draw_dot(cub, (cub->player.x * TILE_SIZE) + 200, (cub->player.y * TILE_SIZE) + 200, color);
 }
 
 void	draw_map(t_cube *cub)
@@ -88,7 +82,7 @@ void	draw_map(t_cube *cub)
 		while (cub->map.map[i][j])
 		{
 			if (cub->map.map[i][j] == '1')
-				draw_dot_map(cub, (j * 20) + 200, (i * 20) + 200, 0x0000FF);
+				draw_dot_map(cub, (j * TILE_SIZE) + 200, (i * TILE_SIZE) + 200, 0x0000FF);
 			j++;
 		}
 		i++;
@@ -113,19 +107,27 @@ int	handle_input(int key, t_cube *cub)
 		exit(1);
 	}
 	else if (key == 119)
-		cub->player.y--;
+	{
+		cub->player.x += cub->rr.pdx * 5;
+		cub->player.y += cub->rr.pdy * 5;
+	}
 	else if (key == 115)
-		cub->player.y++;
+	{
+		cub->player.x -= cub->rr.pdx * 5;
+		cub->player.y -= cub->rr.pdy * 5;
+	}
 	else if (key == 97)
-		cub->player.x--;
+		cub->player.x -= PLAYER_SPEED;
 	else if (key == 100)
-		cub->player.x++;
+		cub->player.x += PLAYER_SPEED;
 
 	mlx_clear_window(cub->con, cub->win);
 	draw_map(cub);
-    draw_player(cub);
-    mlx_do_sync(cub->con);
-	
+	if (cub->start == 1)
+		player_rotation_init(cub);
+	player_rotation_keys(key, cub);
+	draw_player(cub);
+	mlx_do_sync(cub->con);
 	return (0);
 }
 
@@ -138,14 +140,14 @@ int	handle_input(int key, t_cube *cub)
 // 	}
 // }
 
-int	loop_hook(t_cube *cub)
-{
-	mlx_clear_window(cub->con, cub->win);
-	draw_map(cub);
-    draw_player(cub);
-    mlx_do_sync(cub->con);
-    return (0);
-}
+//int	loop_hook(t_cube *cub)
+//{
+//	mlx_clear_window(cub->con, cub->win);
+//	draw_map(cub);
+//	draw_player(cub);
+//	mlx_do_sync(cub->con);
+//	return (0);
+//}
 
 void	window_init(t_cube *cub)
 {
@@ -167,4 +169,98 @@ void	window_init(t_cube *cub)
 		close_x, cub);
 	// mlx_loop_hook(cub->con, loop_hook, cub);
 	mlx_loop(cub->con);
+}
+
+void	player_rotation_init(t_cube *cub)
+{
+	int	i;
+
+	i = -1;
+	cub->start = 0;
+	if (cub->player.dir == 0)
+	{
+		while (++i < 7)
+		{
+			draw_dot(cub, (cub->player.x * TILE_SIZE) + 200,
+				(cub->player.y * TILE_SIZE) + 200 - (i * 3), DARK_GREEN);
+			cub->rr.ray_x[i] =  (cub->player.x * TILE_SIZE) + 200;
+			cub->rr.ray_y[i] =  (cub->player.y * TILE_SIZE) + 200 - (i * 3);
+			cub->rr.angle_rad = M_PI / 2;
+			cub->rr.pdx = cos(cub->rr.angle_rad);
+			cub->rr.pdy = sin(cub->rr.angle_rad);
+		}
+	}
+	else if (cub->player.dir == 1)
+	{
+		while (++i < 7)
+		{
+			draw_dot(cub, (cub->player.x * TILE_SIZE) + 200 + (i * 3),
+				(cub->player.y * TILE_SIZE) + 200, DARK_GREEN);
+			cub->rr.ray_x[i] =  cub->player.x + (i * 3);
+			cub->rr.ray_y[i] =  cub->player.y;
+			cub->rr.angle_rad = M_PI * 2;
+			cub->rr.pdx = cos(cub->rr.angle_rad);
+			cub->rr.pdy = sin(cub->rr.angle_rad);
+		}
+	}
+	else if (cub->player.dir == 2)
+	{
+		while (++i < 7)
+		{
+			draw_dot(cub, (cub->player.x * TILE_SIZE) + 200,
+				(cub->player.y * TILE_SIZE) + 200 + (i * 3), DARK_GREEN);
+			cub->rr.ray_x[i] =  cub->player.x;
+			cub->rr.ray_y[i] =  cub->player.y + (i * 3);
+			cub->rr.angle_rad = (3 * M_PI) / 2;
+			cub->rr.pdx = cos(cub->rr.angle_rad);
+			cub->rr.pdy = sin(cub->rr.angle_rad);
+		}
+	}
+	else if (cub->player.dir == 3)
+	{
+		while (++i < 7)
+		{
+			draw_dot(cub, (cub->player.x * TILE_SIZE) + 200 - (i * 3),
+				(cub->player.y * TILE_SIZE) + 200, DARK_GREEN);
+			cub->rr.ray_x[i] =  cub->player.x - (i * 3);
+			cub->rr.ray_y[i] =  cub->player.y;
+			cub->rr.angle_rad = M_PI;
+			cub->rr.pdx = cos(cub->rr.angle_rad);
+			cub->rr.pdy = sin(cub->rr.angle_rad);
+		}
+	}
+}
+
+void	player_rotation_keys(int key, t_cube *cub)
+{
+	if (key == 65361)
+		rotate_player(cub, -(0.2));
+	else if (key == 65363)
+	{
+		//Right
+	}
+}
+
+void	rotate_player(t_cube *cub, double dir)
+{
+	int		i;
+	int		y;
+
+	i = 0;
+	y = 1;
+	cub->rr.angle_rad += dir;
+	while (i < 7)
+	{
+		if (cub->rr.angle_rad < 0)
+			cub->rr.angle_rad += 2 * M_PI;
+		else if (cub->rr.angle_rad > 2 * M_PI)
+			cub->rr.angle_rad -= 2 * M_PI;
+		cub->rr.pdx = cos(cub->rr.angle_rad) * 7 * y * i;
+		cub->rr.pdy = sin(cub->rr.angle_rad) * 7 * y * i;
+		draw_dot(cub, cub->rr.ray_x[i] + cub->rr.pdx,
+			cub->rr.ray_y[i] + cub->rr.pdy, DARK_GREEN);
+		y += 0.2;
+		printf("\n\n%f\n\n", cub->rr.ray_y[i]);
+		i++;
+	}
 }

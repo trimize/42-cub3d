@@ -18,6 +18,7 @@ LDFLAGS += -L$(LIBFT_PATH)
 LDFLAGS += -lmlx_Linux
 LDFLAGS += -lX11
 LDFLAGS += -lXext
+LDFLAGS += -lm
 CFLAGS = -Wall -Wextra -Werror -I$(INCDIR)$(GNL_DIR) -g3
 
 all: $(NAME)
