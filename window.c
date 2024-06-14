@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/14 21:49:21 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/14 22:49:21 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,39 @@ void	draw_map(t_cube *cub)
 // Left arrow -> 65361
 // Right arrow -> 65363
 // Esc -> 65307 or XK_Escape
+int	handle_key_press(int key, t_cube *cub)
+{
+	if (key == XK_Escape)
+	{
+		printf("You pressed ESC and closed the game\n");
+		close_x(cub);
+		exit(1);
+	}
+	else if (key == 119)
+		cub->key.w = 1;
+	else if (key == 115)
+		cub->key.s = 1;
+	else if (key == 97)
+		cub->key.a = 1;
+	else if (key == 100)
+		cub->key.d = 1;
+
+	return (0);
+}
+
+int	handle_key_release(int key, t_cube *cub)
+{
+	if (key == 119)
+		cub->key.w = 0;
+	else if (key == 115)
+		cub->key.s = 0;
+	else if (key == 97)
+		cub->key.a = 0;
+	else if (key == 100)
+		cub->key.d = 0;
+
+	return (0);
+}
 int	handle_input(int key, t_cube *cub)
 {
 	printf("\n\n YOU PRESSED %d \n\n", key);
@@ -149,6 +182,132 @@ int	handle_input(int key, t_cube *cub)
 //	return (0);
 //}
 
+
+void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
+{
+	int	i;
+	int	j;
+
+	for (i = 0; i < TILE_SIZE; i++)
+	{
+		for (j = 0; j < TILE_SIZE; j++)
+		{
+			((int *)(addr))[(y + i) * line_length / 4 + x + j] = color;
+		}
+	}
+}
+
+void	draw_p_to_image(char *addr, int line_length, int x, int y, int color)
+{
+	int	i;
+	int	j;
+
+	for (i = 0; i < PLAYER_SIZE; i++)
+	{
+		for (j = 0; j < PLAYER_SIZE; j++)
+		{
+			((int *)(addr))[(y + i) * line_length / 4 + x + j] = color;
+		}
+	}
+}
+
+void	draw_player_to_image(t_cube *cub, char *addr, int line_length)
+{
+    int	x;
+    int	y;
+    int	color;
+
+    // Set the player color
+    color = 0xFF0000;  // Red
+
+    // Calculate the player's position in pixels
+    x = cub->player.x * TILE_SIZE;
+    y = cub->player.y * TILE_SIZE;
+
+    // Draw the player as a square
+    draw_p_to_image(addr, line_length, x, y, color);
+}
+
+void	draw_map_to_image(t_cube *cub, char *addr, int line_length)
+{
+	int	x;
+	int	y;
+	int	color;
+
+	for (y = 0; y < cub->map.rows; y++)
+	{
+		for (x = 0; x < cub->map.cols; x++)
+		{
+			if (cub->map.map[y][x] == '1')  // Wall
+				color = 0xFFFFFF;  // White
+			else
+				color = 0x000000;  // Black
+
+			draw_square_to_image(addr, line_length, x * TILE_SIZE, y * TILE_SIZE, color);
+		}
+	}
+}
+
+
+int	loop_hook(t_cube *cub)
+{
+	void *img;
+    char *addr;
+    int bits_per_pixel;
+    int line_length;
+    int endian;
+
+	img = mlx_new_image(cub->con, WIDTH, HEIGHT);
+	addr = mlx_get_data_addr(img, &bits_per_pixel, &line_length, &endian);
+
+	if (cub->key.w)
+	{
+		if (cub->map.map[(int) (cub->player.y - PLAYER_SPEED)][(int) cub->player.x] != '1')
+		{
+			cub->player.x += cub->rr.pdx * 5;
+			cub->player.y += cub->rr.pdy * 5;
+			cub->player.y -= PLAYER_SPEED;
+		}
+	}
+	if (cub->key.s)
+	{
+		if (cub->map.map[(int) (cub->player.y + PLAYER_SPEED)][(int) cub->player.x] != '1')
+		{
+			cub->player.x -= cub->rr.pdx * 5;
+			cub->player.y -= cub->rr.pdy * 5;
+			cub->player.y += PLAYER_SPEED;
+		}
+	}
+	if (cub->key.a)
+		if (cub->map.map[(int) cub->player.y][(int) (cub->player.x - PLAYER_SPEED)] != '1')
+			cub->player.x -= PLAYER_SPEED;
+	if (cub->key.d)
+		if (cub->map.map[(int) cub->player.y][(int) (cub->player.x + PLAYER_SPEED)] != '1')
+			cub->player.x += PLAYER_SPEED;
+
+	draw_map_to_image(cub, addr, line_length);
+	draw_player_to_image(cub, addr, line_length);
+
+	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
+    mlx_destroy_image(cub->con, img);
+
+	// mlx_clear_window(cub->con, cub->win);
+	// draw_map(cub);
+    // draw_player(cub);
+    // mlx_do_sync(cub->con);
+    return (0);
+}
+
+void	start_keys(t_cube *cub)
+{
+	cub->key.w = 0;
+	cub->key.a = 0;
+	cub->key.s = 0;
+	cub->key.d = 0;
+	cub->key.left = 0;
+	cub->key.right = 0;
+}
+
 void	window_init(t_cube *cub)
 {
 	cub->con = mlx_init();
@@ -164,10 +323,13 @@ void	window_init(t_cube *cub)
 	}
 	// init_rays(cub);
 	load_textures(cub);
-	mlx_key_hook(cub->win, handle_input, cub);
+	start_keys(cub);
+	mlx_key_hook(cub->win, handle_key_release, cub);
+    mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
+    mlx_hook(cub->win, KeyRelease, KeyReleaseMask, handle_key_release, cub);
 	mlx_hook(cub->win, DestroyNotify, StructureNotifyMask,
 		close_x, cub);
-	// mlx_loop_hook(cub->con, loop_hook, cub);
+	mlx_loop_hook(cub->con, loop_hook, cub);
 	mlx_loop(cub->con);
 }
 

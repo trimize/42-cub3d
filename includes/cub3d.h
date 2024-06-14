@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/14 21:15:35 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/14 22:34:26 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@
 # define WIDTH 800
 # define HEIGHT 800
 # define FOV 60
-# define PLAYER_SPEED 0.2
+# define PLAYER_SPEED 0.02
 # define PLAYER_SIZE 5
 # define TILE_SIZE 20
 # define YELLOW 0xFFFF00
@@ -73,11 +73,22 @@ typedef struct s_player
 	double	dir;
 }	t_player;
 
+typedef struct s_key
+{
+	int		w;
+	int		a;
+	int		s;
+	int		d;
+	int		left;
+	int		right;
+}	t_key;
+
 typedef struct s_cube
 {
 	t_map		map;
 	t_txt		txt[6];
 	t_player	player;
+	t_key		key;
 	t_rr		rr;
 	void		*con;
 	void		*win;

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/09 17:04:48 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/14 21:21:24 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,12 @@ int	first_and_last_checker(char **map)
 		j++;
 	}
 	while (map[i])
+	{
+		j = ft_strlen(map[i]) - 1;
+		if ((map[i][0] != '1' && map[i][0] != ' ') || (map[i][j] != '1' && map[i][j] != ' '))
+			return (1);
 		i++;
+	}
 	i--;
 	j = 0;
 	while (map[i][j])
