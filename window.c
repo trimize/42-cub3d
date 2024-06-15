@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/15 15:50:30 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/15 18:02:23 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,6 +297,8 @@ int	loop_hook(t_cube *cub)
 	print_rot_ray(cub);
 	draw_player_to_image(cub, cub->addr, cub->line_length);
 
+	printf("\n\n%f\n\n", cub->rr.angle_rad);
+
 	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
 	mlx_destroy_image(cub->con, img);
 	return (0);
@@ -360,18 +362,18 @@ void	player_rotation_init(t_cube *cub)
 				(cub->player.y * TILE_SIZE), DARK_GREEN);
 			cub->rr.ray_x[i] = (cub->player.x * TILE_SIZE) + (i * 3);
 			cub->rr.ray_y[i] =  (cub->player.y * TILE_SIZE);
-			cub->rr.angle_rad = M_PI * 2;
-
+			// cub->rr.angle_rad = M_PI * 2;
+			cub->rr.angle_rad = 0;
 		}
 	}
 	else if (cub->player.dir == 2)
 	{
 		while (++i < 7)
 		{
-			draw_dot(cub, (cub->player.x * TILE_SIZE) + 200,
-				(cub->player.y * TILE_SIZE) + 200 + (i * 3), DARK_GREEN);
-			cub->rr.ray_x[i] =  (cub->player.x * TILE_SIZE) + 200;
-			cub->rr.ray_y[i] =  (cub->player.y * TILE_SIZE) + 200 + (i * 3);
+			draw_dot(cub, (cub->player.x * TILE_SIZE),
+				(cub->player.y * TILE_SIZE) + (i * 3), DARK_GREEN);
+			cub->rr.ray_x[i] =  (cub->player.x * TILE_SIZE);
+			cub->rr.ray_y[i] =  (cub->player.y * TILE_SIZE) + (i * 3);
 			cub->rr.angle_rad = (3 * M_PI) / 2;
 		}
 	}
@@ -379,22 +381,12 @@ void	player_rotation_init(t_cube *cub)
 	{
 		while (++i < 7)
 		{
-			draw_dot(cub, (cub->player.x * TILE_SIZE) + 200 - (i * 3),
-				(cub->player.y * TILE_SIZE) + 200, DARK_GREEN);
-			cub->rr.ray_x[i] =  (cub->player.x * TILE_SIZE) + 200 - (i * 3);
+			draw_dot(cub, (cub->player.x * TILE_SIZE) - (i * 3),
+				(cub->player.y * TILE_SIZE), DARK_GREEN);
+			cub->rr.ray_x[i] =  (cub->player.x * TILE_SIZE) - (i * 3);
 			cub->rr.ray_y[i] =  (cub->player.y * TILE_SIZE);
 			cub->rr.angle_rad = M_PI;
 		}
-	}
-}
-
-void	player_rotation_keys(int key, t_cube *cub)
-{
-	if (key == 65361)
-		rotate_player(cub, -(0.2));
-	else if (key == 65363)
-	{
-		rotate_player(cub, (0.2));
 	}
 }
 

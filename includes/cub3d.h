@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/15 15:50:49 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/15 18:05:26 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@
 # define FOV 60
 # define PLAYER_SPEED 0.006
 # define ROTATION_SENSE 0.009
-# define PLAYER_SIZE 5
-# define TILE_SIZE 20
+# define PLAYER_SIZE 10
+# define TILE_SIZE 30
 # define YELLOW 0xFFFF00
 # define ORANGE 0xFFA500
 # define DARK_GREEN 0x013220
@@ -59,6 +59,20 @@ typedef struct s_rotation_ray
 	double	pdx;
 	double	pdy;
 }	t_rr;
+
+typedef struct s_raycast
+{
+	int		r;
+	int		mx;
+	int		my;
+	int		mp;
+	int		dof;
+	double	rx;
+	double	ry;
+	double	ra;
+	double	xo;
+	double	yo;
+}	t_raycast;
 
 typedef struct s_map
 {
@@ -128,5 +142,6 @@ void	init_rays(t_cube *cub);
 void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
+void	draw_ray(t_cube *cub);
 
 #endif
