@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/14 23:45:49 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/15 15:50:30 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,6 +251,7 @@ int	loop_hook(t_cube *cub)
 		
 		if (cub->map.map[(int) (cub->player.y - PLAYER_SPEED)][(int) cub->player.x] != '1')
 		{
+			i = 0;
 			while (i < 7)
 				cub->rr.ray_y[i++] -= PLAYER_SPEED * TILE_SIZE;
 			cub->player.y -= PLAYER_SPEED;
@@ -261,6 +262,7 @@ int	loop_hook(t_cube *cub)
 		if (cub->map.map[(int) (cub->player.y + PLAYER_SPEED)][(int) cub->player.x] != '1')
 		{
 			cub->player.y += PLAYER_SPEED;
+			i = 0;
 			while (i < 7)
 				cub->rr.ray_y[i++] += PLAYER_SPEED * TILE_SIZE;
 		}
@@ -270,6 +272,7 @@ int	loop_hook(t_cube *cub)
 		if (cub->map.map[(int) cub->player.y][(int) (cub->player.x - PLAYER_SPEED)] != '1')
 		{
 			cub->player.x -= PLAYER_SPEED;
+			i = 0;
 			while (i < 7)
 				cub->rr.ray_x[i++] -= PLAYER_SPEED * TILE_SIZE;
 		}
@@ -279,6 +282,7 @@ int	loop_hook(t_cube *cub)
 		if (cub->map.map[(int) cub->player.y][(int) (cub->player.x + PLAYER_SPEED)] != '1')
 		{
 			cub->player.x += PLAYER_SPEED;
+			i = 0;
 			while (i < 7)
 				cub->rr.ray_x[i++] += PLAYER_SPEED * TILE_SIZE;
 		}
@@ -287,9 +291,9 @@ int	loop_hook(t_cube *cub)
 	if (cub->start == 1)
 		player_rotation_init(cub);
 	if (cub->key.left)
-		rotate_player(cub, -(0.002));
+		rotate_player(cub, -(ROTATION_SENSE));
 	if (cub->key.right)
-		rotate_player(cub, (0.002));
+		rotate_player(cub, (ROTATION_SENSE));
 	print_rot_ray(cub);
 	draw_player_to_image(cub, cub->addr, cub->line_length);
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/14 23:43:53 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/15 15:50:49 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # define HEIGHT 800
 # define FOV 60
 # define PLAYER_SPEED 0.006
+# define ROTATION_SENSE 0.009
 # define PLAYER_SIZE 5
 # define TILE_SIZE 20
 # define YELLOW 0xFFFF00
