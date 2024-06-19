@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/19 17:40:09 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/19 18:48:42 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 # define HEIGHT 720
 # define FOV 60
 # define PLAYER_SPEED 0.006
-# define ROTATION_SENSE 0.009
+# define ROTATION_SENSE 0.0299
 # define PLAYER_SIZE 2
 # define TILE_SIZE 10
 # define YELLOW 0xFFFF00
@@ -123,6 +123,9 @@ typedef struct s_cube
 	int			c_g;
 	int			c_b;
 	int			start;
+	int			mouse_x;
+	int			mouse_y;
+	int			options_menu;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);

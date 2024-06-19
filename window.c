@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/19 16:40:28 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/19 19:54:17 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,25 +74,6 @@ int	handle_key_release(int key, t_cube *cub)
 	return (0);
 }
 
-// void	game_loop(t_cube *cub)
-// {
-// 	while (1)
-// 	{
-// 		draw_player(cub);
-// 		mlx_do_sync(cub->con);
-// 	}
-// }
-
-//int	loop_hook(t_cube *cub)
-//{
-//	mlx_clear_window(cub->con, cub->win);
-//	draw_map(cub);
-//	draw_player(cub);
-//	mlx_do_sync(cub->con);
-//	return (0);
-//}
-
-
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
 {
 	int	i;
@@ -153,9 +134,12 @@ void	draw_map_to_image(t_cube *cub, char *addr, int line_length)
 		{
 			if (cub->map.map[y][x] == '1')  // Wall
 				color = 0xFFFFFF;  // White
-			else
+			else if (cub->map.map[y][x] == '0')
 				color = 0x008000;  // Green
-
+			else if (cub->map.map[y][x] == ' ')
+				color = 0x000000;  // Green
+			else if (cub->map.map[y][x] == 'D') //Doors
+				color = 0x964B00; //Brown
 			draw_square_to_image(addr, line_length, x * TILE_SIZE, y * TILE_SIZE, color);
 		}
 	}
@@ -184,23 +168,38 @@ int	is_corner(t_cube *cub, int x, int y)
 		(cub->map.map[y + 1][x - 1] = '2');
 	else if ((cub->map.map[y + 1][x + 1] == '0' || cub->map.map[y + 1][x + 1] == ' ') && cub->map.map[y + 1][x] == '1' && cub->map.map[y][x + 1] == '1')
 		(cub->map.map[y + 1][x + 1] = '2', printf("yes"));
-	//if (cub->map.map[y + 1][x] == '2')
-	//	(cub->map.map[y + 1][x] = '0', printf("yes"));
-	//if (cub->map.map[y - 1][x] == '2')
-	//	(cub->map.map[y - 1][x] = '0', printf("yes2"));
-	//if (cub->map.map[y][x + 1] == '2')
-	//	(cub->map.map[y][x + 1] = '0', printf("yes3"));
-	//if (cub->map.map[y][x - 1] == '2')
-	//	(cub->map.map[y][x - 1] = '0', printf("yes4"));
 	return (1);
 }
+
+void	mouse_rotate(t_cube *cub)
+{
+	int	m_x;
+
+	m_x = cub->mouse_x;
+	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
+	if (cub->mouse_x >= WIDTH - (WIDTH / 50) || cub->mouse_x <= WIDTH / 50)
+		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
+	if (m_x != cub->mouse_x)
+	{
+		if (cub->mouse_x > m_x)
+			rotate_player(cub, -(ROTATION_SENSE));
+		else if (cub->mouse_x < m_x)
+			rotate_player(cub, ROTATION_SENSE);
+	}
+	printf("Mouse position :\nx : %d\ny : %d\n\n", cub->mouse_x, cub->mouse_y);
+}
+
+//void	draw_options(t_cube *cub)
+//{
+	
+//}
 
 int	loop_hook(t_cube *cub)
 {
 	void *img;
-    int bits_per_pixel;
-    int endian;
-    int	i;
+	int bits_per_pixel;
+	int endian;
+	int	i;
 
 	i = 0;
 
@@ -295,6 +294,7 @@ int	loop_hook(t_cube *cub)
 	draw_map_to_image(cub, cub->addr, cub->line_length);
 	if (cub->start == 1)
 		player_rotation_init(cub);
+	mouse_rotate(cub);
 	if (cub->key.left)
 		rotate_player(cub, (ROTATION_SENSE));
 	if (cub->key.right)
@@ -329,11 +329,12 @@ void	window_init(t_cube *cub)
 		printf("Error\nCouldn't open the window.\n");
 		exit_free(cub);
 	}
+	mlx_mouse_hide(cub->con, cub->win);
 	load_textures(cub);
 	start_keys(cub);
 	mlx_key_hook(cub->win, handle_key_release, cub);
-    mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
-    mlx_hook(cub->win, KeyRelease, KeyReleaseMask, handle_key_release, cub);
+	mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
+	mlx_hook(cub->win, KeyRelease, KeyReleaseMask, handle_key_release, cub);
 	mlx_hook(cub->win, DestroyNotify, StructureNotifyMask,
 		close_x, cub);
 	mlx_loop_hook(cub->con, loop_hook, cub);
