@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/16 00:22:10 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/17 15:13:03 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,10 +224,34 @@ void	draw_map_to_image(t_cube *cub, char *addr, int line_length)
 void	print_rot_ray(t_cube *cub)
 {
 	int	i;
+	double	x[50];
+	double	y[50];
 
 	i = 0;
-	while (i < 7)
+	while (i < 50)
 	{
+		x[i] = cub->rr.ray_x[i];
+		y[i] = cub->rr.ray_y[i];
+		if (cub->rr.ray_x[i] < 0)
+		{
+			cub->rr.ray_x[i] = 0;
+			cub->rr.ray_y[i] = cub->rr.ray_y[i - 1];
+		}
+		else
+		{
+			cub->rr.ray_x[i] = x[i];
+			cub->rr.ray_y[i] = y[i];
+		}	
+		if (cub->rr.ray_y[i] < 0)
+		{
+			cub->rr.ray_y[i] = 0;
+			cub->rr.ray_x[i] = cub->rr.ray_x[i - 1];
+		}
+		else
+		{
+			cub->rr.ray_x[i] = x[i];
+			cub->rr.ray_y[i] = y[i];
+		}
 		draw_p_to_image(cub->addr, cub->line_length, (cub->rr.ray_x[i]),
 			(cub->rr.ray_y[i]), DARK_GREEN);
 		i++;
@@ -288,7 +312,7 @@ int	loop_hook(t_cube *cub)
 			if ((cub->map.map[(int) (cub->player.y - (PLAYER_SPEED * sin(cub->rr.angle_rad)))][(int) (cub->player.x - (PLAYER_SPEED * cos(cub->rr.angle_rad)))] != '2') && remove_corners(cub, (int) (cub->player.x - (PLAYER_SPEED * cos(cub->rr.angle_rad))), (int) (cub->player.y - (PLAYER_SPEED * sin(cub->rr.angle_rad)))))
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 				{
 					cub->rr.ray_x[i] -= (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad);
 					cub->rr.ray_y[i++] -= (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad);
@@ -303,7 +327,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y - PLAYER_SPEED * sin(cub->rr.angle_rad))][(int) cub->player.x] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_y[i++] -= (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad);
 				cub->player.y -= PLAYER_SPEED * sin(cub->rr.angle_rad);	
 			}
@@ -313,7 +337,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - PLAYER_SPEED * cos(cub->rr.angle_rad))] != '2')
 			{	
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_x[i++] -= (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad);
 				cub->player.x -= PLAYER_SPEED * cos(cub->rr.angle_rad);
 			}
@@ -326,7 +350,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->map.map[(int) (cub->player.y + (PLAYER_SPEED * sin(cub->rr.angle_rad)))][(int) (cub->player.x + (PLAYER_SPEED * cos(cub->rr.angle_rad)))] != '2')
 			{	
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 				{
 					cub->rr.ray_x[i] += (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad);
 					cub->rr.ray_y[i++] += (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad);
@@ -340,7 +364,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) (cub->player.y + PLAYER_SPEED * sin(cub->rr.angle_rad))][(int) cub->player.x] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_y[i++] += (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad);
 				cub->player.y += PLAYER_SPEED * sin(cub->rr.angle_rad);
 			}
@@ -350,7 +374,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + PLAYER_SPEED * cos(cub->rr.angle_rad))] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_x[i++] += (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad);
 				cub->player.x += PLAYER_SPEED * cos(cub->rr.angle_rad);	
 			}
@@ -363,7 +387,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->map.map[(int) (cub->player.y - (PLAYER_SPEED * sin(cub->rr.angle_rad - M_PI / 2)))][(int) (cub->player.x - (PLAYER_SPEED * cos(cub->rr.angle_rad - M_PI / 2)))] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 				{
 					cub->rr.ray_x[i] += (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad + M_PI / 2);
 					cub->rr.ray_y[i++] += (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad + M_PI / 2);
@@ -377,7 +401,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + PLAYER_SPEED * sin(cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_y[i++] += (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad + M_PI / 2);
 				cub->player.y += PLAYER_SPEED * sin(cub->rr.angle_rad + M_PI / 2);
 			}
@@ -387,7 +411,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + PLAYER_SPEED * cos(cub->rr.angle_rad + M_PI / 2))] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_x[i++] += (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad + M_PI / 2);
 				cub->player.x += PLAYER_SPEED * cos(cub->rr.angle_rad + M_PI / 2);
 			}
@@ -400,7 +424,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->map.map[(int) (cub->player.y - (PLAYER_SPEED * sin(cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x - (PLAYER_SPEED * cos(cub->rr.angle_rad + M_PI / 2)))] != '2')
 			{	
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 				{
 					cub->rr.ray_x[i] -= (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad + M_PI / 2);
 					cub->rr.ray_y[i++] -= (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad + M_PI / 2);
@@ -414,7 +438,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + PLAYER_SPEED * sin(cub->rr.angle_rad - M_PI / 2))][(int) cub->player.x] != '2')
 			{
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_y[i++] -= (PLAYER_SPEED * TILE_SIZE) * sin(cub->rr.angle_rad + M_PI / 2);
 				cub->player.y -= PLAYER_SPEED * sin(cub->rr.angle_rad + M_PI / 2);	
 			}
@@ -424,7 +448,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - PLAYER_SPEED * cos(cub->rr.angle_rad + M_PI / 2))] != '2')
 			{	
 				i = 0;
-				while (i < 7)
+				while (i < 50)
 					cub->rr.ray_x[i++] -= (PLAYER_SPEED * TILE_SIZE) * cos(cub->rr.angle_rad + M_PI / 2);
 				cub->player.x -= PLAYER_SPEED * cos(cub->rr.angle_rad + M_PI / 2);
 			}
@@ -486,7 +510,7 @@ void	player_rotation_init(t_cube *cub)
 	cub->start = 0;
 	if (cub->player.dir == 0)
 	{
-		while (++i < 7)
+		while (++i < 50)
 		{
 			draw_p_to_image(cub->addr, cub->line_length, (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE) - (i * 3), DARK_GREEN);
 			cub->rr.ray_x[i] =  (cub->player.x * TILE_SIZE);
@@ -496,7 +520,7 @@ void	player_rotation_init(t_cube *cub)
 	}
 	else if (cub->player.dir == 1)
 	{
-		while (++i < 7)
+		while (++i < 50)
 		{
 			draw_dot(cub, (cub->player.x * TILE_SIZE) + (i * 3),
 				(cub->player.y * TILE_SIZE), DARK_GREEN);
@@ -508,7 +532,7 @@ void	player_rotation_init(t_cube *cub)
 	}
 	else if (cub->player.dir == 2)
 	{
-		while (++i < 7)
+		while (++i < 50)
 		{
 			draw_dot(cub, (cub->player.x * TILE_SIZE),
 				(cub->player.y * TILE_SIZE) + (i * 3), DARK_GREEN);
@@ -519,7 +543,7 @@ void	player_rotation_init(t_cube *cub)
 	}
 	else if (cub->player.dir == 3)
 	{
-		while (++i < 7)
+		while (++i < 50)
 		{
 			draw_dot(cub, (cub->player.x * TILE_SIZE) - (i * 3),
 				(cub->player.y * TILE_SIZE), DARK_GREEN);
@@ -537,6 +561,8 @@ void	rotate_player(t_cube *cub, double dir)
 	double	cx;
 	double	cy;
 	double	n_angle;
+	double	x[50];
+	double	y[50];
 
 	i = 0;
 	cx = (cub->player.x * TILE_SIZE);
@@ -547,12 +573,36 @@ void	rotate_player(t_cube *cub, double dir)
 		cub->rr.angle_rad += 2 * M_PI;
 	else if (cub->rr.angle_rad > 2 * M_PI)
 		cub->rr.angle_rad -= 2 * M_PI;
-	while (i < 7)
+	while (i < 50)
 	{
 		distance = sqrt(pow(cub->rr.ray_x[i] - cx, 2) + pow(cub->rr.ray_y[i] - cy, 2));
 		n_angle = atan2(cub->rr.ray_y[i] - cy, cub->rr.ray_x[i] - cx) + dir;
 		cub->rr.ray_x[i] = cx + cos(n_angle) * distance;
 		cub->rr.ray_y[i] = cy + sin(n_angle) * distance;
+		x[i] = cub->rr.ray_x[i];
+		y[i] = cub->rr.ray_y[i];
+		if (cub->rr.ray_x[i] < 0)
+		{
+			cub->rr.ray_x[i] = 0;
+			cub->rr.ray_y[i] = cub->rr.ray_y[i - 1];
+		}
+		else
+		{
+			cub->rr.ray_x[i] = x[i];
+			cub->rr.ray_y[i] = y[i];
+		}	
+		if (cub->rr.ray_y[i] < 0)
+		{
+			x[i] = cub->rr.ray_x[i];
+			y[i] = cub->rr.ray_y[i];
+			cub->rr.ray_y[i] = 0;
+			cub->rr.ray_x[i] = cub->rr.ray_x[i - 1];
+		}
+		else
+		{
+			cub->rr.ray_x[i] = x[i];
+			cub->rr.ray_y[i] = y[i];
+		}
 		draw_p_to_image(cub->addr, cub->line_length, (cub->rr.ray_x[i]),
 			(cub->rr.ray_y[i]), DARK_GREEN);
 		i++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/15 18:05:26 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/17 14:32:01 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ typedef struct s_txt
 
 typedef struct s_rotation_ray
 {
-	double	ray_x[7];
-	double	ray_y[7];
+	double	ray_x[50];
+	double	ray_y[50];
 	double	angle_rad;
 	double	pdx;
 	double	pdy;
