@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/17 14:32:01 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/19 17:40:09 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@
 # include "../get_next_line/get_next_line.h"
 # include "../minilibx-linux/mlx.h"
 
-# define WIDTH 800
-# define HEIGHT 800
+# define WIDTH 1280
+# define HEIGHT 720
 # define FOV 60
 # define PLAYER_SPEED 0.006
 # define ROTATION_SENSE 0.009
-# define PLAYER_SIZE 10
-# define TILE_SIZE 30
+# define PLAYER_SIZE 2
+# define TILE_SIZE 10
 # define YELLOW 0xFFFF00
 # define ORANGE 0xFFA500
 # define DARK_GREEN 0x013220
@@ -72,6 +72,13 @@ typedef struct s_raycast
 	double	ra;
 	double	xo;
 	double	yo;
+	double	hx;
+	double	hy;
+	double	h_dist;
+	double	vx;
+	double	vy;
+	double	v_dist;
+	double	dist;
 }	t_raycast;
 
 typedef struct s_map
@@ -142,6 +149,8 @@ void	init_rays(t_cube *cub);
 void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
-void	draw_ray(t_cube *cub);
+void	cast_ray(t_cube *cub);
+void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
+void	render_3d(t_cube *cub, double dist, int ray_i);
 
 #endif

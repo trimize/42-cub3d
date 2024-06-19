@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 19:32:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/09 17:11:45 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/18 19:28:02 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "includes/cub3d.h"
 
@@ -33,10 +34,6 @@ void	free_stuff(t_cube *cub)
 
 	i = 0;
 	while (i < 4)
-	{
-		free(cub->txt[i].type);
-		free(cub->txt[i].path);
-		i++;
-	}
+		(free(cub->txt[i].type), free(cub->txt[i].path), i++);
 	freetab(cub->map.map);
 }
