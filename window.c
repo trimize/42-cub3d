@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/26 19:19:13 by to               ###   ########.fr       */
+/*   Updated: 2024/06/26 20:20:04 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,56 @@ int close_x(t_cube *cub)
 // Right arrow -> 65363
 // Esc -> 65307 or XK_Escape
 
-void	draw_xpm(int alpha, int x, int y, t_cube *cub)
+void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub)
 {
 	int	j;
 	int	i;
 
 	i = 0;
 	j = 0;
-	printf("%d", cub->abc[alpha].width);
 	while (i < cub->abc[alpha].height)
 	{
 		while (j < cub->abc[alpha].width)
 		{
 			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j];
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+}
+
+void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
+{
+	int	j;
+	int	i;
+
+	i = 0;
+	j = 0;
+	while (i < cub->txt[alpha].height)
+	{
+		while (j < cub->txt[alpha].width)
+		{
+			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+}
+
+void	draw_xpm_number(int alpha, int x, int y, t_cube *cub)
+{
+	int	j;
+	int	i;
+
+	i = 0;
+	j = 0;
+	while (i < cub->nums[alpha].height)
+	{
+		while (j < cub->nums[alpha].width)
+		{
+			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->nums[alpha].addr))[(i) * cub->nums[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -78,7 +115,7 @@ char *to_str(int n)
 	while (i < len)
 		(tmp[i++] = n % (10) + 48, n /= 10);
 	i = -1;
-	while (++i <= len)
+	while (++i < len)
 		str[i] = tmp[(len - 1) - i];
 	return (free(tmp), str[i] = 0, str);
 }
@@ -88,38 +125,70 @@ int mouse_events(int key)
 	if (key == 1)
 	{
 		(call_cub())->key.mouse_l = 1;
-		ft_putstr_fd("clicked\n", 1);
 	}
 	return (1);
+}
+
+void	sensi_option(t_cube *cub)
+{
+	char *sensi_str;
+
+	draw_xpm_alpha(18, WIDTH / 2.5, HEIGHT / 4, cub);
+	draw_xpm_alpha(4, WIDTH / 2.38, HEIGHT / 4, cub);
+	draw_xpm_alpha(13, WIDTH / 2.27, HEIGHT / 4, cub);
+	draw_xpm_alpha(18, WIDTH / 2.18, HEIGHT / 4, cub);
+	draw_xpm_alpha(8, WIDTH / 2.09, HEIGHT / 4, cub);
+	sensi_str = to_str(cub->sensi);
+	if (cub->sensi <= 0)
+		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 4, cub);
+	else if (ft_strlen(sensi_str) == 1)
+		draw_xpm_number(sensi_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
+	else if (ft_strlen(sensi_str) == 2)
+	{
+		draw_xpm_number(sensi_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
+		draw_xpm_number(sensi_str[1] - 48, WIDTH / 1.75, HEIGHT / 4, cub);
+	}
+	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 3.8, cub);
+	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 3.8, cub);
+	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi < 10)
+	{
+		cub->p_rotation += cub->p_rotation / 4;
+		cub->sensi++;
+		cub->key.mouse_l = 0;
+	}
+	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi <= 10 && cub->sensi > 0)
+	{
+		cub->p_rotation -= cub->p_rotation / 4;
+		cub->sensi--;
+		cub->key.mouse_l = 0;
+	}
 }
 
 void fov_option(t_cube *cub)
 {
 	char *fov_str;
 
-	// cub->fov
-	draw_xpm(5, WIDTH / 2, 50, cub);
-	// mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[5], WIDTH / 2.5, HEIGHT / 8);
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[14], WIDTH / 2.38, HEIGHT / 8);
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[21], WIDTH / 2.27, HEIGHT / 8);
+	draw_xpm_alpha(5, WIDTH / 2.5, HEIGHT / 8, cub);
+	draw_xpm_alpha(14, WIDTH / 2.38, HEIGHT / 8, cub);
+	draw_xpm_alpha(21, WIDTH / 2.27, HEIGHT / 8, cub);
 	fov_str = to_str(cub->fov);
 	if (cub->fov == 0)
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[0], WIDTH / (1.8), HEIGHT / 8);
+		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 8, cub);
 	else if (ft_strlen(fov_str) == 1)
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[fov_str[0] - 48], WIDTH / (1.8), HEIGHT / 8);
+		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 8, cub);
 	else if (ft_strlen(fov_str) == 2)
 	{
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[fov_str[0] - 48], WIDTH / (1.8), HEIGHT / 8);
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[fov_str[1] - 48], WIDTH / (1.75), HEIGHT / 8);
+		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 8, cub);
+		draw_xpm_number(fov_str[1] - 48, WIDTH / 1.75, HEIGHT / 8, cub);
 	}
 	else if (ft_strlen(fov_str) == 3)
 	{
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[fov_str[0] - 48], WIDTH / (1.8), HEIGHT / 8);
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[fov_str[1] - 48], WIDTH / (1.75), HEIGHT / 8);
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[fov_str[2] - 48], WIDTH / (1.70), HEIGHT / 8);
+		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 8, cub);
+		draw_xpm_number(fov_str[1] - 48, WIDTH / 1.75, HEIGHT / 8, cub);
+		draw_xpm_number(fov_str[2] - 48, WIDTH / 1.7, HEIGHT / 8, cub);
 	}
-	mlx_put_image_to_window(cub->con, cub->win, cub->arr_r_options, WIDTH / 1.65, HEIGHT / 7.2);
-	mlx_put_image_to_window(cub->con, cub->win, cub->arr_l_options, WIDTH / 1.9, HEIGHT / 7.2);
+	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 7.2, cub);
+	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 7.2, cub);
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
 	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 7.2 && cub->mouse_y < HEIGHT / 6 && cub->key.mouse_l)
 	{
@@ -135,49 +204,16 @@ void fov_option(t_cube *cub)
 
 void draw_options(t_cube *cub)
 {
-	char *sensi_str;
 
 	mlx_mouse_show(cub->con, cub->win);
-	mlx_put_image_to_window(cub->con, cub->win, cub->options_menu, WIDTH / 2.7, HEIGHT / 10);
+	draw_xpm_texture(4, WIDTH / 2.7, HEIGHT / 10, cub);
 	fov_option(cub);
-	// SENSI
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[18], WIDTH / 2.5, HEIGHT / 4);
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[4], WIDTH / 2.38, HEIGHT / 4);
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[13], WIDTH / 2.27, HEIGHT / 4);
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[18], WIDTH / 2.18, HEIGHT / 4);
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[8], WIDTH / 2.09, HEIGHT / 4);
-	sensi_str = to_str(cub->sensi);
-	if (cub->sensi <= 0)
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[0], WIDTH / (1.8), HEIGHT / 4);
-	else if (ft_strlen(sensi_str) == 1)
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[sensi_str[0] - 48], WIDTH / (1.8), HEIGHT / 4);
-	else if (ft_strlen(sensi_str) == 2)
-	{
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[sensi_str[0] - 48], WIDTH / (1.8), HEIGHT / 4);
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[sensi_str[1] - 48], WIDTH / (1.75), HEIGHT / 4);
-	}
-	mlx_put_image_to_window(cub->con, cub->win, cub->arr_r_options, WIDTH / 1.65, HEIGHT / 3.8);
-	mlx_put_image_to_window(cub->con, cub->win, cub->arr_l_options, WIDTH / 1.9, HEIGHT / 3.8);
-	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
-	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi < 10)
-	{
-		// printf("YES !!!!!!");
-		cub->p_rotation += cub->p_rotation;
-		cub->sensi++;
-		cub->key.mouse_l = 0;
-	}
-	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi <= 10 && cub->sensi > 0)
-	{
-		// printf("YES !!!!!!");
-		cub->p_rotation -= cub->p_rotation;
-		cub->sensi--;
-		cub->key.mouse_l = 0;
-	}
+	sensi_option(cub);
 }
 
 int handle_key_press(int key, t_cube *cub)
 {
-	// printf("you pressed this %d\n\n", key);
+	printf("you pressed this %d\n\n", key);
 	if (key == XK_Escape)
 	{
 		printf("You pressed ESC and closed the game\n");
@@ -196,8 +232,10 @@ int handle_key_press(int key, t_cube *cub)
 		cub->key.left = 1;
 	else if (key == 65363)
 		cub->key.right = 1;
-	else if (key == L_CONTROL_KEY)
-		cub->option_bool = -cub->option_bool;
+	else if (key == 65513)
+	{
+		cub->option_bool = -cub->option_bool;	
+	}
 	else if (key == 1)
 		printf("hahahahah");
 	return (0);
@@ -517,22 +555,32 @@ void window_init(t_cube *cub)
 		increment_alphabet(alpha, i);
 	}
 	i = 0;
+	cub->nums = (void *)malloc(10 * sizeof(t_txt));
 	while (i < 10)
 	{
 		cub->numbers[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[i], x, y);
+		cub->nums[i].addr = mlx_get_data_addr(cub->numbers[i], &cub->nums[i].bits_per_pixel,
+			&cub->nums[i].line_length, &cub->nums[i].endian);
+		cub->nums[i].width = 22;
+		cub->nums[i].height = 34;
 		i++;
 		increment_numbers(num, i);
 	}
 	cub->arr_r_options = mlx_xpm_file_to_image(cub->con, "./textures/arrow_right.xpm", &x, &y);
-	mlx_put_image_to_window(cub->con, cub->win, cub->arr_r_options, x, y);
+	cub->txt[5].addr = mlx_get_data_addr(cub->arr_r_options, &cub->txt[5].bits_per_pixel,
+			&cub->txt[5].line_length, &cub->txt[5].endian);
+	cub->txt[5].width = 16;
+	cub->txt[5].height = 18;
 	cub->arr_l_options = mlx_xpm_file_to_image(cub->con, "./textures/arrow_left.xpm", &x, &y);
-	mlx_put_image_to_window(cub->con, cub->win, cub->arr_l_options, x, y);
+	cub->txt[6].addr = mlx_get_data_addr(cub->arr_l_options, &cub->txt[6].bits_per_pixel,
+			&cub->txt[6].line_length, &cub->txt[6].endian);
+	cub->txt[6].width = 16;
+	cub->txt[6].height = 18;
 	cub->options_menu = mlx_xpm_file_to_image(cub->con, "./textures/options_menu_resized.xpm", &x, &y);
-	cub->txt[5].addr = mlx_get_data_addr(cub->options_menu, &cub->abc[i].bits_per_pixel,
-			&cub->abc[i].line_length, &cub->abc[i].endian);
-	cub->abc[i].width = 22;
-	cub->abc[i].height = 34;
+	cub->txt[4].addr = mlx_get_data_addr(cub->options_menu, &cub->txt[4].bits_per_pixel,
+			&cub->txt[4].line_length, &cub->txt[4].endian);
+	cub->txt[4].width = 400;
+	cub->txt[4].height = 547;
 	mlx_mouse_hide(cub->con, cub->win);
 	load_textures(cub);
 	start_keys(cub);
