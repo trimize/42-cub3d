@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/26 17:23:51 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/26 19:17:52 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,8 @@ typedef struct s_key
 typedef struct s_cube
 {
 	t_map		map;
-	t_txt		txt[6];
+	t_txt		txt[5];
+	t_txt		*abc;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;

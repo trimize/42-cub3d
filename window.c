@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/26 17:35:43 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/26 19:19:13 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,26 @@ int close_x(t_cube *cub)
 // Left arrow -> 65361
 // Right arrow -> 65363
 // Esc -> 65307 or XK_Escape
+
+void	draw_xpm(int alpha, int x, int y, t_cube *cub)
+{
+	int	j;
+	int	i;
+
+	i = 0;
+	j = 0;
+	printf("%d", cub->abc[alpha].width);
+	while (i < cub->abc[alpha].height)
+	{
+		while (j < cub->abc[alpha].width)
+		{
+			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j];
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+}
 
 char *to_str(int n)
 {
@@ -65,7 +85,6 @@ char *to_str(int n)
 
 int mouse_events(int key)
 {
-	printf("the key pressed is %d\n", key);
 	if (key == 1)
 	{
 		(call_cub())->key.mouse_l = 1;
@@ -79,7 +98,8 @@ void fov_option(t_cube *cub)
 	char *fov_str;
 
 	// cub->fov
-	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[5], WIDTH / 2.5, HEIGHT / 8);
+	draw_xpm(5, WIDTH / 2, 50, cub);
+	// mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[5], WIDTH / 2.5, HEIGHT / 8);
 	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[14], WIDTH / 2.38, HEIGHT / 8);
 	mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[21], WIDTH / 2.27, HEIGHT / 8);
 	fov_str = to_str(cub->fov);
@@ -103,8 +123,12 @@ void fov_option(t_cube *cub)
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
 	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 7.2 && cub->mouse_y < HEIGHT / 6 && cub->key.mouse_l)
 	{
-		// printf("YES !!!!!!");
 		cub->fov += 10;
+		cub->key.mouse_l = 0;
+	}
+	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 7.2 && cub->mouse_y < HEIGHT / 6 && cub->key.mouse_l)
+	{
+		cub->fov -= 10;
 		cub->key.mouse_l = 0;
 	}
 }
@@ -127,14 +151,26 @@ void draw_options(t_cube *cub)
 		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[0], WIDTH / (1.8), HEIGHT / 4);
 	else if (ft_strlen(sensi_str) == 1)
 		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[sensi_str[0] - 48], WIDTH / (1.8), HEIGHT / 4);
+	else if (ft_strlen(sensi_str) == 2)
+	{
+		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[sensi_str[0] - 48], WIDTH / (1.8), HEIGHT / 4);
+		mlx_put_image_to_window(cub->con, cub->win, cub->numbers[sensi_str[1] - 48], WIDTH / (1.75), HEIGHT / 4);
+	}
 	mlx_put_image_to_window(cub->con, cub->win, cub->arr_r_options, WIDTH / 1.65, HEIGHT / 3.8);
 	mlx_put_image_to_window(cub->con, cub->win, cub->arr_l_options, WIDTH / 1.9, HEIGHT / 3.8);
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
-	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi <= 10)
+	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi < 10)
 	{
 		// printf("YES !!!!!!");
 		cub->p_rotation += cub->p_rotation;
 		cub->sensi++;
+		cub->key.mouse_l = 0;
+	}
+	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi <= 10 && cub->sensi > 0)
+	{
+		// printf("YES !!!!!!");
+		cub->p_rotation -= cub->p_rotation;
+		cub->sensi--;
 		cub->key.mouse_l = 0;
 	}
 }
@@ -469,11 +505,14 @@ void window_init(t_cube *cub)
 		exit_free(cub);
 	}
 	i = 0;
-	// cub->alphabet = (void **)malloc(26 * sizeof(void *));
+	cub->abc = (void *)malloc(26 * sizeof(t_txt));
 	while (i < 26)
 	{
 		cub->alphabet[i] = mlx_xpm_file_to_image(cub->con, alpha, &x, &y);
-		mlx_put_image_to_window(cub->con, cub->win, cub->alphabet[i], x, y);
+		cub->abc[i].addr = mlx_get_data_addr(cub->alphabet[i], &cub->abc[i].bits_per_pixel,
+			&cub->abc[i].line_length, &cub->abc[i].endian);
+		cub->abc[i].width = 22;
+		cub->abc[i].height = 34;
 		i++;
 		increment_alphabet(alpha, i);
 	}
@@ -490,8 +529,11 @@ void window_init(t_cube *cub)
 	cub->arr_l_options = mlx_xpm_file_to_image(cub->con, "./textures/arrow_left.xpm", &x, &y);
 	mlx_put_image_to_window(cub->con, cub->win, cub->arr_l_options, x, y);
 	cub->options_menu = mlx_xpm_file_to_image(cub->con, "./textures/options_menu_resized.xpm", &x, &y);
+	cub->txt[5].addr = mlx_get_data_addr(cub->options_menu, &cub->abc[i].bits_per_pixel,
+			&cub->abc[i].line_length, &cub->abc[i].endian);
+	cub->abc[i].width = 22;
+	cub->abc[i].height = 34;
 	mlx_mouse_hide(cub->con, cub->win);
-	mlx_put_image_to_window(cub->con, cub->win, cub->options_menu, x, y);
 	load_textures(cub);
 	start_keys(cub);
 	mlx_key_hook(cub->win, handle_key_release, cub);
