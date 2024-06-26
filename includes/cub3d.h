@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/21 15:40:05 by to               ###   ########.fr       */
+/*   Updated: 2024/06/26 17:23:51 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 # define ORANGE 0xFFA500
 # define DARK_GREEN 0x013220
 # define L_CONTROL_KEY 65507
+
+extern int	mouse_clicked;
 
 typedef struct s_txt
 {
@@ -102,6 +104,7 @@ typedef struct s_key
 	int		d;
 	int		left;
 	int		right;
+	int		mouse_l;
 }	t_key;
 
 typedef struct s_cube
@@ -140,6 +143,7 @@ char	**ft_split(char const *s, char const c);
 char	**read_file(char *path);
 void	save_file(t_cube *cub, char **file);
 void	freetab(char **tab);
+t_cube	*call_cub(void);
 int		tablen(char **tab);
 int		get_fd(char *file);
 int		ft_equalstr(char const *str, char const *str2);
