@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/19 17:06:53 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/21 14:20:24 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,10 +205,10 @@ void	cast_ray(t_cube *cub)
 
 	ray.ra = cub->rr.angle_rad;
 
-	printf("\n ANGLE %f\n", ray.ra * (180 / M_PI));
+	// printf("\n ANGLE %f\n", ray.ra * (180 / M_PI));
 	for (ray.r = 0; ray.r < WIDTH; ray.r++)
 	{
-		ray.ra = cub->rr.angle_rad + (ray.r - WIDTH / 2) * (FOV * 0.0174533 / WIDTH); // Adjust the angle based on the screen width
+		ray.ra = cub->rr.angle_rad + (ray.r - WIDTH / 2) * (cub->fov * 0.0174533 / WIDTH); // Adjust the angle based on the screen width
 		if (ray.ra < 0)
 			ray.ra += 2 * M_PI;
 		else if (ray.ra > 2 * M_PI)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/19 18:48:42 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/21 15:40:05 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,13 @@
 
 # define WIDTH 1280
 # define HEIGHT 720
-# define FOV 60
 # define PLAYER_SPEED 0.006
-# define ROTATION_SENSE 0.0299
 # define PLAYER_SIZE 2
 # define TILE_SIZE 10
 # define YELLOW 0xFFFF00
 # define ORANGE 0xFFA500
 # define DARK_GREEN 0x013220
+# define L_CONTROL_KEY 65507
 
 typedef struct s_txt
 {
@@ -114,8 +113,14 @@ typedef struct s_cube
 	t_rr		rr;
 	void		*con;
 	void		*win;
+	void		*options_menu;
+	void		*alphabet[26];
+	void		*numbers[10];
+	void		*arr_r_options;
+	void		*arr_l_options;
 	char		*addr;
 	int		line_length;
+	int		fov;
 	int			f_r;
 	int			f_g;
 	int			f_b;
@@ -125,7 +130,10 @@ typedef struct s_cube
 	int			start;
 	int			mouse_x;
 	int			mouse_y;
-	int			options_menu;
+	int			option_bool;
+	int			mouse_click;
+	int			sensi;
+	double			p_rotation;			
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
