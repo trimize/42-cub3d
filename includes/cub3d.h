@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/26 19:46:50 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/26 23:25:24 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@
 
 # define WIDTH 1280
 # define HEIGHT 720
-# define PLAYER_SPEED 0.006
 # define PLAYER_SIZE 2
 # define TILE_SIZE 10
 # define YELLOW 0xFFFF00
@@ -111,6 +110,7 @@ typedef struct s_cube
 {
 	t_map		map;
 	t_txt		txt[7];
+	t_txt		sword_ani[5];
 	t_txt		*nums;
 	t_txt		*abc;
 	t_player	player;
@@ -121,6 +121,7 @@ typedef struct s_cube
 	void		*options_menu;
 	void		*alphabet[26];
 	void		*numbers[26];
+	void		*s_ani[5];
 	void		*arr_r_options;
 	void		*arr_l_options;
 	char		*addr;
@@ -138,7 +139,9 @@ typedef struct s_cube
 	int			option_bool;
 	int			mouse_click;
 	int			sensi;
-	double			p_rotation;			
+	int			speed;
+	double			p_rotation;
+	double			p_speed;		
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);

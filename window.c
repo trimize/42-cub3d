@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/26 20:20:04 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/27 00:16:04 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,28 @@ void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->abc[alpha].width)
 		{
-			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j];
+			if (((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j] == 0xFFFFFF)
+				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j];
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+}
+
+void	draw_xpm_s_animation(int alpha, int x, int y, t_cube *cub)
+{
+	int	j;
+	int	i;
+
+	i = 0;
+	j = 0;
+	while (i < cub->sword_ani[alpha].height)
+	{
+		while (j < cub->sword_ani[alpha].width)
+		{
+			if (((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j] != 0x0000FF)
+					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -65,7 +86,13 @@ void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->txt[alpha].width)
 		{
-			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
+			if (alpha == 5 || alpha == 6)
+			{
+				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
+					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
+			}
+			else
+				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -84,7 +111,8 @@ void	draw_xpm_number(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->nums[alpha].width)
 		{
-			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->nums[alpha].addr))[(i) * cub->nums[alpha].line_length / 4 + j];
+			if (((int *)(cub->nums[alpha].addr))[(i) * cub->nums[alpha].line_length / 4 + j] == 0xFFFFFF)	
+				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->nums[alpha].addr))[(i) * cub->nums[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -129,36 +157,71 @@ int mouse_events(int key)
 	return (1);
 }
 
+void	speed_option(t_cube *cub)
+{
+	char *p_speed_str;
+
+	draw_xpm_alpha(18, WIDTH / 2.35, HEIGHT / 2.6, cub);
+	draw_xpm_alpha(15, WIDTH / 2.25, HEIGHT / 2.6, cub);
+	draw_xpm_alpha(4, WIDTH / 2.16, HEIGHT / 2.6, cub);
+	draw_xpm_alpha(4, WIDTH / 2.08, HEIGHT / 2.6, cub);
+	draw_xpm_alpha(3, WIDTH / 2.01, HEIGHT / 2.6, cub);
+	p_speed_str = to_str(cub->speed);
+	if (cub->fov == 0)
+		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 2.6, cub);
+	else if (ft_strlen(p_speed_str) == 1)
+		draw_xpm_number(p_speed_str[0] - 48, WIDTH / 1.8, HEIGHT / 2.6, cub);
+	else if (ft_strlen(p_speed_str) == 2)
+	{
+		draw_xpm_number(p_speed_str[0] - 48, WIDTH / 1.8, HEIGHT / 2.6, cub);
+		draw_xpm_number(p_speed_str[1] - 48, WIDTH / 1.75, HEIGHT / 2.6, cub);
+	}
+	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 2.5, cub);
+	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 2.5, cub);
+	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 2.5 && cub->mouse_y < HEIGHT / 2.4 && cub->key.mouse_l && cub->speed < 10)
+	{
+		cub->p_speed += 0.006 / 3;
+		cub->speed++;
+		cub->key.mouse_l = 0;
+	}
+	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 2.5 && cub->mouse_y < HEIGHT / 2.4 && cub->key.mouse_l && cub->speed <= 10 && cub->speed > 1)
+	{
+		cub->p_speed -= 0.006 / 3;
+		cub->speed--;
+		cub->key.mouse_l = 0;
+	}
+}
+
 void	sensi_option(t_cube *cub)
 {
 	char *sensi_str;
 
-	draw_xpm_alpha(18, WIDTH / 2.5, HEIGHT / 4, cub);
-	draw_xpm_alpha(4, WIDTH / 2.38, HEIGHT / 4, cub);
-	draw_xpm_alpha(13, WIDTH / 2.27, HEIGHT / 4, cub);
-	draw_xpm_alpha(18, WIDTH / 2.18, HEIGHT / 4, cub);
-	draw_xpm_alpha(8, WIDTH / 2.09, HEIGHT / 4, cub);
+	draw_xpm_alpha(18, WIDTH / 2.35, HEIGHT / 2, cub);
+	draw_xpm_alpha(4, WIDTH / 2.25, HEIGHT / 2, cub);
+	draw_xpm_alpha(13, WIDTH / 2.16, HEIGHT / 2, cub);
+	draw_xpm_alpha(18, WIDTH / 2.08, HEIGHT / 2, cub);
+	draw_xpm_alpha(8, WIDTH / 2.01, HEIGHT / 2, cub);
 	sensi_str = to_str(cub->sensi);
 	if (cub->sensi <= 0)
-		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 4, cub);
+		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 2, cub);
 	else if (ft_strlen(sensi_str) == 1)
-		draw_xpm_number(sensi_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
+		draw_xpm_number(sensi_str[0] - 48, WIDTH / 1.8, HEIGHT / 2, cub);
 	else if (ft_strlen(sensi_str) == 2)
 	{
-		draw_xpm_number(sensi_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
-		draw_xpm_number(sensi_str[1] - 48, WIDTH / 1.75, HEIGHT / 4, cub);
+		draw_xpm_number(sensi_str[0] - 48, WIDTH / 1.8, HEIGHT / 2, cub);
+		draw_xpm_number(sensi_str[1] - 48, WIDTH / 1.75, HEIGHT / 2, cub);
 	}
-	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 3.8, cub);
-	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 3.8, cub);
-	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi < 10)
+	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 1.94, cub);
+	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 1.94, cub);
+	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 1.94 && cub->mouse_y < HEIGHT / 1.85 && cub->key.mouse_l && cub->sensi < 10)
 	{
-		cub->p_rotation += cub->p_rotation / 4;
+		cub->p_rotation += 0.0299 / 4;
 		cub->sensi++;
 		cub->key.mouse_l = 0;
 	}
-	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l && cub->sensi <= 10 && cub->sensi > 0)
+	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 1.94 && cub->mouse_y < HEIGHT / 1.85 && cub->key.mouse_l && cub->sensi <= 10 && cub->sensi > 1)
 	{
-		cub->p_rotation -= cub->p_rotation / 4;
+		cub->p_rotation -= 0.0299 / 4;
 		cub->sensi--;
 		cub->key.mouse_l = 0;
 	}
@@ -168,34 +231,34 @@ void fov_option(t_cube *cub)
 {
 	char *fov_str;
 
-	draw_xpm_alpha(5, WIDTH / 2.5, HEIGHT / 8, cub);
-	draw_xpm_alpha(14, WIDTH / 2.38, HEIGHT / 8, cub);
-	draw_xpm_alpha(21, WIDTH / 2.27, HEIGHT / 8, cub);
+	draw_xpm_alpha(5, WIDTH / 2.3, HEIGHT / 4, cub);
+	draw_xpm_alpha(14, WIDTH / 2.2, HEIGHT / 4, cub);
+	draw_xpm_alpha(21, WIDTH / 2.1, HEIGHT / 4, cub);
 	fov_str = to_str(cub->fov);
 	if (cub->fov == 0)
-		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 8, cub);
+		draw_xpm_number(0, WIDTH / 1.8, HEIGHT / 4, cub);
 	else if (ft_strlen(fov_str) == 1)
-		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 8, cub);
+		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
 	else if (ft_strlen(fov_str) == 2)
 	{
-		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 8, cub);
-		draw_xpm_number(fov_str[1] - 48, WIDTH / 1.75, HEIGHT / 8, cub);
+		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
+		draw_xpm_number(fov_str[1] - 48, WIDTH / 1.75, HEIGHT / 4, cub);
 	}
 	else if (ft_strlen(fov_str) == 3)
 	{
-		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 8, cub);
-		draw_xpm_number(fov_str[1] - 48, WIDTH / 1.75, HEIGHT / 8, cub);
-		draw_xpm_number(fov_str[2] - 48, WIDTH / 1.7, HEIGHT / 8, cub);
+		draw_xpm_number(fov_str[0] - 48, WIDTH / 1.8, HEIGHT / 4, cub);
+		draw_xpm_number(fov_str[1] - 48, WIDTH / 1.75, HEIGHT / 4, cub);
+		draw_xpm_number(fov_str[2] - 48, WIDTH / 1.7, HEIGHT / 4, cub);
 	}
-	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 7.2, cub);
-	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 7.2, cub);
+	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 3.8, cub);
+	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 3.8, cub);
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
-	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 7.2 && cub->mouse_y < HEIGHT / 6 && cub->key.mouse_l)
+	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l)
 	{
 		cub->fov += 10;
 		cub->key.mouse_l = 0;
 	}
-	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 7.2 && cub->mouse_y < HEIGHT / 6 && cub->key.mouse_l)
+	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 3.8 && cub->mouse_y < HEIGHT / 3.4 && cub->key.mouse_l)
 	{
 		cub->fov -= 10;
 		cub->key.mouse_l = 0;
@@ -204,11 +267,18 @@ void fov_option(t_cube *cub)
 
 void draw_options(t_cube *cub)
 {
-
 	mlx_mouse_show(cub->con, cub->win);
-	draw_xpm_texture(4, WIDTH / 2.7, HEIGHT / 10, cub);
-	fov_option(cub);
+	draw_xpm_texture(4, WIDTH / 2.5, HEIGHT / 10, cub);
+	draw_xpm_alpha(14, WIDTH / 1.99, HEIGHT / 8, cub);
+	draw_xpm_alpha(15, WIDTH / 1.92, HEIGHT / 8, cub);
+	draw_xpm_alpha(19, WIDTH / 1.86, HEIGHT / 8, cub);
+	draw_xpm_alpha(8, WIDTH / 1.8, HEIGHT / 8, cub);
+	draw_xpm_alpha(14, WIDTH / 1.75, HEIGHT / 8, cub);
+	draw_xpm_alpha(13, WIDTH / 1.7, HEIGHT / 8, cub);
+	draw_xpm_alpha(18, WIDTH / 1.65, HEIGHT / 8, cub);
+	speed_option(cub);
 	sensi_option(cub);
+	fov_option(cub);
 }
 
 int handle_key_press(int key, t_cube *cub)
@@ -373,97 +443,100 @@ void mouse_rotate(t_cube *cub)
 	// printf("Mouse position :\nx : %d\ny : %d\n\n", cub->mouse_x, cub->mouse_y);
 }
 
+void increment_numbers(char *str, int index);
+
 int loop_hook(t_cube *cub)
 {
 	void *img;
 	int bits_per_pixel;
 	int endian;
+	int	i;
 
 	img = mlx_new_image(cub->con, WIDTH, HEIGHT);
 	cub->addr = mlx_get_data_addr(img, &bits_per_pixel, &cub->line_length, &endian);
 	// printf ("Player y is %d and x is %d\n", (int)cub->player.y, (int)cub->player.x);
 	if (cub->key.w)
 	{
-		if ((cub->map.map[(int)(cub->player.y + (PLAYER_SPEED * sin(-cub->rr.angle_rad)))][(int)(cub->player.x + (PLAYER_SPEED * cos(-cub->rr.angle_rad)))] != '1'))
+		if ((cub->map.map[(int)(cub->player.y + (cub->p_speed * sin(-cub->rr.angle_rad)))][(int)(cub->player.x + (cub->p_speed * cos(-cub->rr.angle_rad)))] != '1'))
 		{
-			if ((cub->map.map[(int)(cub->player.y + (PLAYER_SPEED * sin(-cub->rr.angle_rad)))][(int)(cub->player.x + (PLAYER_SPEED * cos(-cub->rr.angle_rad)))] != '2') && remove_corners(cub, (int)(cub->player.x + (PLAYER_SPEED * cos(-cub->rr.angle_rad))), (int)(cub->player.y + (PLAYER_SPEED * sin(-cub->rr.angle_rad)))))
+			if ((cub->map.map[(int)(cub->player.y + (cub->p_speed * sin(-cub->rr.angle_rad)))][(int)(cub->player.x + (cub->p_speed * cos(-cub->rr.angle_rad)))] != '2') && remove_corners(cub, (int)(cub->player.x + (cub->p_speed * cos(-cub->rr.angle_rad))), (int)(cub->player.y + (cub->p_speed * sin(-cub->rr.angle_rad)))))
 			{
-				cub->player.y += PLAYER_SPEED * (sin(-cub->rr.angle_rad));
-				cub->player.x += PLAYER_SPEED * (cos(-cub->rr.angle_rad));
+				cub->player.y += cub->p_speed * (sin(-cub->rr.angle_rad));
+				cub->player.x += cub->p_speed * (cos(-cub->rr.angle_rad));
 			}
 		}
-		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad))))
+		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad))))
 		{
-			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '2')
-				cub->player.y += PLAYER_SPEED * (sin(-cub->rr.angle_rad));
+			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '2')
+				cub->player.y += cub->p_speed * (sin(-cub->rr.angle_rad));
 		}
-		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + PLAYER_SPEED * cos(-cub->rr.angle_rad))] != '1' && is_corner(cub, (int)(cub->player.x + PLAYER_SPEED * cos(-cub->rr.angle_rad)), (int)cub->player.y))
+		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + cub->p_speed * cos(-cub->rr.angle_rad))] != '1' && is_corner(cub, (int)(cub->player.x + cub->p_speed * cos(-cub->rr.angle_rad)), (int)cub->player.y))
 		{
-			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + PLAYER_SPEED * cos(-cub->rr.angle_rad))] != '2')
-				cub->player.x += PLAYER_SPEED * (cos(-cub->rr.angle_rad));
+			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + cub->p_speed * cos(-cub->rr.angle_rad))] != '2')
+				cub->player.x += cub->p_speed * (cos(-cub->rr.angle_rad));
 		}
 	}
 	if (cub->key.s)
 	{
-		if (cub->map.map[(int)(cub->player.y - (PLAYER_SPEED * sin(-cub->rr.angle_rad)))][(int)(cub->player.x - (PLAYER_SPEED * cos(-cub->rr.angle_rad)))] != '1' && remove_corners(cub, (int)(cub->player.x - (PLAYER_SPEED * cos(-cub->rr.angle_rad))), (int)(cub->player.y - (PLAYER_SPEED * sin(-cub->rr.angle_rad)))))
+		if (cub->map.map[(int)(cub->player.y - (cub->p_speed * sin(-cub->rr.angle_rad)))][(int)(cub->player.x - (cub->p_speed * cos(-cub->rr.angle_rad)))] != '1' && remove_corners(cub, (int)(cub->player.x - (cub->p_speed * cos(-cub->rr.angle_rad))), (int)(cub->player.y - (cub->p_speed * sin(-cub->rr.angle_rad)))))
 		{
-			if (cub->map.map[(int)(cub->player.y - (PLAYER_SPEED * sin(-cub->rr.angle_rad)))][(int)(cub->player.x - (PLAYER_SPEED * cos(-cub->rr.angle_rad)))] != '2')
+			if (cub->map.map[(int)(cub->player.y - (cub->p_speed * sin(-cub->rr.angle_rad)))][(int)(cub->player.x - (cub->p_speed * cos(-cub->rr.angle_rad)))] != '2')
 			{
-				cub->player.y -= PLAYER_SPEED * sin(-cub->rr.angle_rad);
-				cub->player.x -= PLAYER_SPEED * cos(-cub->rr.angle_rad);
+				cub->player.y -= cub->p_speed * sin(-cub->rr.angle_rad);
+				cub->player.x -= cub->p_speed * cos(-cub->rr.angle_rad);
 			}
 		}
-		else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)(cub->player.y - PLAYER_SPEED * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y - PLAYER_SPEED * sin(-cub->rr.angle_rad))))
+		else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)(cub->player.y - cub->p_speed * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y - cub->p_speed * sin(-cub->rr.angle_rad))))
 		{
-			if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '2')
-				cub->player.y -= PLAYER_SPEED * sin(-cub->rr.angle_rad);
+			if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad))][(int)cub->player.x] != '2')
+				cub->player.y -= cub->p_speed * sin(-cub->rr.angle_rad);
 		}
-		else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - PLAYER_SPEED * cos(-cub->rr.angle_rad))] != '1' && is_corner(cub, (int)(cub->player.x - PLAYER_SPEED * cos(-cub->rr.angle_rad)), (int)cub->player.y))
+		else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - cub->p_speed * cos(-cub->rr.angle_rad))] != '1' && is_corner(cub, (int)(cub->player.x - cub->p_speed * cos(-cub->rr.angle_rad)), (int)cub->player.y))
 		{
-			if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - PLAYER_SPEED * cos(-cub->rr.angle_rad))] != '2')
-				cub->player.x -= PLAYER_SPEED * cos(-cub->rr.angle_rad);
+			if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - cub->p_speed * cos(-cub->rr.angle_rad))] != '2')
+				cub->player.x -= cub->p_speed * cos(-cub->rr.angle_rad);
 		}
 	}
 	if (cub->key.a)
 	{
-		if (cub->map.map[(int)(cub->player.y - (PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x - (PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2)))] != '1' && remove_corners(cub, (int)(cub->player.x - (PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2))), (int)(cub->player.y - (PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2)))))
+		if (cub->map.map[(int)(cub->player.y - (cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x - (cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2)))] != '1' && remove_corners(cub, (int)(cub->player.x - (cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2))), (int)(cub->player.y - (cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2)))))
 		{
-			if (cub->map.map[(int)(cub->player.y - (PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x - (PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2)))] != '2')
+			if (cub->map.map[(int)(cub->player.y - (cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x - (cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2)))] != '2')
 			{
-				cub->player.y -= PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2);
-				cub->player.x -= PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2);
+				cub->player.y -= cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2);
+				cub->player.x -= cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2);
 			}
 		}
-		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y - PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y - PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2))))
+		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y - cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y - cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2))))
 		{
-			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y - PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '2')
-				cub->player.y -= PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2);
+			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y - cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '2')
+				cub->player.y -= cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2);
 		}
-		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2))] != '1' && !is_corner(cub, (int)(cub->player.x - PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2)), (int)cub->player.y))
+		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2))] != '1' && !is_corner(cub, (int)(cub->player.x - cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2)), (int)cub->player.y))
 		{
-			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2))] != '2')
-				cub->player.x -= PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2);
+			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x - cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2))] != '2')
+				cub->player.x -= cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2);
 		}
 	}
 	if (cub->key.d)
 	{
-		if (cub->map.map[(int)(cub->player.y + (PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x + (PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2)))] != '1' && remove_corners(cub, (int)(cub->player.x + (PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2))), (int)(cub->player.y + (PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2)))))
+		if (cub->map.map[(int)(cub->player.y + (cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x + (cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2)))] != '1' && remove_corners(cub, (int)(cub->player.x + (cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2))), (int)(cub->player.y + (cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2)))))
 		{
-			if (cub->map.map[(int)(cub->player.y + (PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x + (PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2)))] != '2')
+			if (cub->map.map[(int)(cub->player.y + (cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2)))][(int)(cub->player.x + (cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2)))] != '2')
 			{
-				cub->player.y += PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2);
-				cub->player.x += PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2);
+				cub->player.y += cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2);
+				cub->player.x += cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2);
 			}
 		}
-		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2))))
+		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '1' && is_corner(cub, (int)cub->player.x, (int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2))))
 		{
-			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '2')
-				cub->player.y += PLAYER_SPEED * sin(-cub->rr.angle_rad + M_PI / 2);
+			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)(cub->player.y + cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2))][(int)cub->player.x] != '2')
+				cub->player.y += cub->p_speed * sin(-cub->rr.angle_rad + M_PI / 2);
 		}
-		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2))] != '1' && is_corner(cub, (int)(cub->player.x + PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2)), (int)cub->player.y))
+		else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2))] != '1' && is_corner(cub, (int)(cub->player.x + cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2)), (int)cub->player.y))
 		{
-			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2))] != '2')
-				cub->player.x += PLAYER_SPEED * cos(-cub->rr.angle_rad + M_PI / 2);
+			if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int)cub->player.y][(int)(cub->player.x + cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2))] != '2')
+				cub->player.x += cub->p_speed * cos(-cub->rr.angle_rad + M_PI / 2);
 		}
 	}
 	draw_map_to_image(cub, cub->addr, cub->line_length);
@@ -477,6 +550,19 @@ int loop_hook(t_cube *cub)
 		rotate_player(cub, -(cub->p_rotation));
 	draw_player_to_image(cub, cub->addr, cub->line_length);
 	cast_ray(cub);
+	draw_xpm_s_animation(0, WIDTH / 2.8, HEIGHT / 3, cub);
+	if (cub->key.mouse_l && cub->option_bool == -1)
+	{
+		char *num;
+		num = ft_strdup("./textures/sword_animation/sword1.xpm");
+		i = 0;
+		while (i < 5)
+		{
+			mlx_put_image_to_window(cub->con, cub->win, num, WIDTH / 2.8, HEIGHT / 3);
+			increment_numbers(num, ++i);
+		}
+		cub->key.mouse_l = 0;
+	}
 	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
 	if (cub->option_bool == 1)
 		draw_options(cub);
@@ -499,6 +585,8 @@ void start_keys(t_cube *cub)
 	cub->p_rotation = 0.0299;
 	cub->fov = 60;
 	cub->mouse_click = 0;
+	cub->p_speed = 0.006;
+	cub->speed = 3;
 }
 
 void increment_alphabet(char *str, int index)
@@ -563,6 +651,19 @@ void window_init(t_cube *cub)
 			&cub->nums[i].line_length, &cub->nums[i].endian);
 		cub->nums[i].width = 22;
 		cub->nums[i].height = 34;
+		i++;
+		increment_numbers(num, i);
+	}
+	i = 0;
+	free(num);
+	num = ft_strdup("./textures/sword_animation/sword1.xpm");
+	while (i < 5)
+	{
+		cub->s_ani[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
+		cub->sword_ani[i].addr = mlx_get_data_addr(cub->s_ani[i], &cub->sword_ani[i].bits_per_pixel,
+			&cub->sword_ani[i].line_length, &cub->sword_ani[i].endian);
+		cub->sword_ani[i].width = 637;
+		cub->sword_ani[i].height = 595;
 		i++;
 		increment_numbers(num, i);
 	}
