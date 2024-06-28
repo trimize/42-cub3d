@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/26 23:25:24 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/28 17:40:11 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,6 @@
 # define DARK_GREEN 0x013220
 # define L_CONTROL_KEY 65507
 
-extern int	mouse_clicked;
-
 typedef struct s_txt
 {
 	char	*type;
@@ -49,6 +47,7 @@ typedef struct s_txt
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
+	int		tmp_delay;
 }	t_txt;
 
 typedef struct s_rotation_ray
@@ -93,6 +92,8 @@ typedef struct s_player
 	double	x;
 	double	y;
 	double	dir;
+	int	hp;
+	int	weapon;
 }	t_player;
 
 typedef struct s_key
@@ -109,9 +110,10 @@ typedef struct s_key
 typedef struct s_cube
 {
 	t_map		map;
-	t_txt		txt[7];
-	t_txt		sword_ani[5];
+	t_txt		*txt;
+	t_txt		*sword_ani;
 	t_txt		*nums;
+	t_txt		*hp_frame;
 	t_txt		*abc;
 	t_player	player;
 	t_key		key;
@@ -122,8 +124,12 @@ typedef struct s_cube
 	void		*alphabet[26];
 	void		*numbers[26];
 	void		*s_ani[5];
+	void		*p_hp[7];
 	void		*arr_r_options;
 	void		*arr_l_options;
+	void		*w_slot;
+	void		*w_slot_white;
+	void		*sword_slot;
 	char		*addr;
 	int		line_length;
 	int		fov;
@@ -137,9 +143,13 @@ typedef struct s_cube
 	int			mouse_x;
 	int			mouse_y;
 	int			option_bool;
-	int			mouse_click;
 	int			sensi;
 	int			speed;
+	int			current_frame_num_sword;
+	int			sword_delay;
+	int			hp_delay;
+	int			current_frame_num_hp;
+	int			weapons_in_slot[4];
 	double			p_rotation;
 	double			p_speed;		
 }	t_cube;
@@ -172,5 +182,8 @@ void	player_rotation_keys(int key, t_cube *cub);
 void	cast_ray(t_cube *cub);
 void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
 void	render_3d(t_cube *cub, double dist, int ray_i);
+void	draw_xpm_s_animation(int alpha, int x, int y, t_cube *cub);
+int	update_animation(t_cube *cub);
+void	animate_health_bar(t_cube *cub, int limite);
 
 #endif

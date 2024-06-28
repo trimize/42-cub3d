@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/27 00:16:04 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/28 17:53:54 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	draw_xpm_s_animation(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->sword_ani[alpha].width)
 		{
-			if (((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j] != 0x0000FF)
+			if (x + j < WIDTH && y + i < HEIGHT && ((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j] != 0x0000FF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j];
 			j++;
 		}
@@ -91,8 +91,32 @@ void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
 			}
+			else if (alpha == 7 || alpha == 8 || alpha == 9)
+			{
+				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] != 0x0000FF)
+					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
+			}
 			else
 				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
+			j++;
+		}
+		j = 0;
+		i++;
+	}
+}
+
+void	draw_xpm_hp(int alpha, int x, int y, t_cube *cub)
+{
+	int	j;
+	int	i;
+
+	i = 0;
+	j = 0;
+	while (i < cub->hp_frame[alpha].height)
+	{
+		while (j < cub->hp_frame[alpha].width)
+		{
+			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->hp_frame[alpha].addr))[(i) * cub->hp_frame[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -180,13 +204,15 @@ void	speed_option(t_cube *cub)
 	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 2.5, cub);
 	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 2.5 && cub->mouse_y < HEIGHT / 2.4 && cub->key.mouse_l && cub->speed < 10)
 	{
-		cub->p_speed += 0.006 / 3;
+		cub->p_speed += 0.009;
 		cub->speed++;
 		cub->key.mouse_l = 0;
 	}
 	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 2.5 && cub->mouse_y < HEIGHT / 2.4 && cub->key.mouse_l && cub->speed <= 10 && cub->speed > 1)
 	{
-		cub->p_speed -= 0.006 / 3;
+		cub->p_speed -= 0.009;
+		if (cub->p_speed <= 0)
+			cub->p_speed = 0.006;
 		cub->speed--;
 		cub->key.mouse_l = 0;
 	}
@@ -303,11 +329,17 @@ int handle_key_press(int key, t_cube *cub)
 	else if (key == 65363)
 		cub->key.right = 1;
 	else if (key == 65513)
-	{
-		cub->option_bool = -cub->option_bool;	
-	}
-	else if (key == 1)
-		printf("hahahahah");
+		cub->option_bool = -cub->option_bool;
+	else if (key == 65289)
+		cub->player.hp -= 25;
+	else if (key == 49)
+		cub->player.weapon = 1;
+	else if (key == 50)
+		cub->player.weapon = 2;
+	else if (key == 51)
+		cub->player.weapon = 3;
+	else if (key == 52)
+		cub->player.weapon = 4;
 	return (0);
 }
 
@@ -431,7 +463,9 @@ void mouse_rotate(t_cube *cub)
 
 	m_x = cub->mouse_x;
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
-	if (cub->mouse_x >= WIDTH - (WIDTH / 50) || cub->mouse_x <= WIDTH / 50)
+	if (cub->mouse_x >= WIDTH - (WIDTH / 5) || cub->mouse_x <= WIDTH / 5)
+		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
+	if (cub->mouse_y >= HEIGHT - (HEIGHT / 5) || cub->mouse_x <= HEIGHT / 5)
 		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
 	if (m_x != cub->mouse_x)
 	{
@@ -445,12 +479,73 @@ void mouse_rotate(t_cube *cub)
 
 void increment_numbers(char *str, int index);
 
+void	weapon_slot_handler(t_cube *cub)
+{
+	if (cub->player.weapon == 1)
+		draw_xpm_texture(8, WIDTH / 60, HEIGHT / 1.2, cub);
+	else
+		draw_xpm_texture(7, WIDTH / 60, HEIGHT / 1.2, cub);
+	if (cub->player.weapon == 2)
+		draw_xpm_texture(8, WIDTH / 19, HEIGHT / 1.2, cub);
+	else
+		draw_xpm_texture(7, WIDTH / 19, HEIGHT / 1.2, cub);
+	if (cub->player.weapon == 3)
+		draw_xpm_texture(8, WIDTH / 11.3, HEIGHT / 1.2, cub);
+	else
+		draw_xpm_texture(7, WIDTH / 11.3, HEIGHT / 1.2, cub);
+	if (cub->player.weapon == 4)
+		draw_xpm_texture(8, WIDTH / 8.05, HEIGHT / 1.2, cub);
+	else
+		draw_xpm_texture(7, WIDTH / 8.05, HEIGHT / 1.2, cub);
+	if (cub->weapons_in_slot[0] == 1)
+		draw_xpm_texture(9, WIDTH / 35, HEIGHT / 1.19, cub);
+}
+
+void	sword_handler(t_cube *cub)
+{
+	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 1)
+	{
+		update_animation(cub);
+		draw_xpm_s_animation(cub->current_frame_num_sword, WIDTH / 2.5, HEIGHT / 4, cub);
+		if (cub->current_frame_num_sword == 4)
+		{
+			cub->key.mouse_l = 0;
+			cub->current_frame_num_sword = 0;
+		}
+	}
+	else if (cub->weapons_in_slot[cub->player.weapon - 1] == 1)
+		draw_xpm_s_animation(0, WIDTH / 2.5, HEIGHT / 4, cub);
+}
+
+void	hp_handler(t_cube *cub)
+{
+	if (cub->player.hp == 100)
+		draw_xpm_hp(0, WIDTH / 60, HEIGHT / 1.1, cub);
+	else if (cub->player.hp == 75 && cub->current_frame_num_hp <= 2)
+	{
+		if (cub->current_frame_num_hp < 2)
+			animate_health_bar(cub, 2);
+		draw_xpm_hp(cub->current_frame_num_hp, WIDTH / 60, HEIGHT / 1.1, cub);
+	}
+	else if (cub->player.hp == 50 && cub->current_frame_num_hp <= 4)
+	{
+		if (cub->current_frame_num_hp < 4)
+			animate_health_bar(cub, 4);
+		draw_xpm_hp(cub->current_frame_num_hp, WIDTH / 60, HEIGHT / 1.1, cub);
+	}
+	else if (cub->player.hp == 25 && cub->current_frame_num_hp <= 6)
+	{
+		if (cub->current_frame_num_hp < 6)
+			animate_health_bar(cub, 6);
+		draw_xpm_hp(cub->current_frame_num_hp, WIDTH / 60, HEIGHT / 1.1, cub);
+	}
+}
 int loop_hook(t_cube *cub)
 {
 	void *img;
 	int bits_per_pixel;
 	int endian;
-	int	i;
+	//int	i;
 
 	img = mlx_new_image(cub->con, WIDTH, HEIGHT);
 	cub->addr = mlx_get_data_addr(img, &bits_per_pixel, &cub->line_length, &endian);
@@ -550,19 +645,9 @@ int loop_hook(t_cube *cub)
 		rotate_player(cub, -(cub->p_rotation));
 	draw_player_to_image(cub, cub->addr, cub->line_length);
 	cast_ray(cub);
-	draw_xpm_s_animation(0, WIDTH / 2.8, HEIGHT / 3, cub);
-	if (cub->key.mouse_l && cub->option_bool == -1)
-	{
-		char *num;
-		num = ft_strdup("./textures/sword_animation/sword1.xpm");
-		i = 0;
-		while (i < 5)
-		{
-			mlx_put_image_to_window(cub->con, cub->win, num, WIDTH / 2.8, HEIGHT / 3);
-			increment_numbers(num, ++i);
-		}
-		cub->key.mouse_l = 0;
-	}
+	sword_handler(cub);
+	hp_handler(cub);
+	weapon_slot_handler(cub);
 	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
 	if (cub->option_bool == 1)
 		draw_options(cub);
@@ -570,6 +655,16 @@ int loop_hook(t_cube *cub)
 		mlx_mouse_hide(cub->con, cub->win);
 	mlx_destroy_image(cub->con, img);
 	return (0);
+}
+
+void	init_w_slots(t_cube *cub)
+{
+	int	i;
+
+	i = 0;
+	while (i < 4)
+		cub->weapons_in_slot[i++] = 0;
+	cub->weapons_in_slot[0] = 1;
 }
 
 void start_keys(t_cube *cub)
@@ -584,9 +679,15 @@ void start_keys(t_cube *cub)
 	cub->sensi = 5;
 	cub->p_rotation = 0.0299;
 	cub->fov = 60;
-	cub->mouse_click = 0;
 	cub->p_speed = 0.006;
 	cub->speed = 3;
+	cub->current_frame_num_sword = 0;
+	cub->sword_delay = 3;
+	cub->player.hp = 100;
+	cub->hp_delay = 6;
+	cub->current_frame_num_hp = 1;
+	cub->player.weapon = 1;
+	init_w_slots(cub);
 }
 
 void increment_alphabet(char *str, int index)
@@ -631,7 +732,7 @@ void window_init(t_cube *cub)
 		exit_free(cub);
 	}
 	i = 0;
-	cub->abc = (void *)malloc(26 * sizeof(t_txt));
+	cub->abc = (t_txt *)malloc(26 * sizeof(t_txt));
 	while (i < 26)
 	{
 		cub->alphabet[i] = mlx_xpm_file_to_image(cub->con, alpha, &x, &y);
@@ -643,7 +744,7 @@ void window_init(t_cube *cub)
 		increment_alphabet(alpha, i);
 	}
 	i = 0;
-	cub->nums = (void *)malloc(10 * sizeof(t_txt));
+	cub->nums = (t_txt *)malloc(10 * sizeof(t_txt));
 	while (i < 10)
 	{
 		cub->numbers[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
@@ -656,17 +757,35 @@ void window_init(t_cube *cub)
 	}
 	i = 0;
 	free(num);
+	cub->sword_ani = (t_txt *)malloc(5 * sizeof(t_txt));
 	num = ft_strdup("./textures/sword_animation/sword1.xpm");
 	while (i < 5)
 	{
+		increment_numbers(num, i + 1);
 		cub->s_ani[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
 		cub->sword_ani[i].addr = mlx_get_data_addr(cub->s_ani[i], &cub->sword_ani[i].bits_per_pixel,
 			&cub->sword_ani[i].line_length, &cub->sword_ani[i].endian);
 		cub->sword_ani[i].width = 637;
 		cub->sword_ani[i].height = 595;
+		cub->sword_ani[i].tmp_delay = 0;
 		i++;
-		increment_numbers(num, i);
 	}
+	i = 0;
+	free(num);
+	num = ft_strdup("./textures/hp/hp1.xpm");
+	cub->hp_frame = (t_txt *)malloc(7 * sizeof(t_txt));
+	while (i < 7)
+	{
+		increment_numbers(num, i + 1);
+		cub->p_hp[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
+		cub->hp_frame[i].addr = mlx_get_data_addr(cub->p_hp[i], &cub->hp_frame[i].bits_per_pixel,
+			&cub->hp_frame[i].line_length, &cub->hp_frame[i].endian);
+		cub->hp_frame[i].width = 160;
+		cub->hp_frame[i].height = 48;
+		cub->hp_frame[i].tmp_delay = 0;
+		i++;
+	}
+	free(num);
 	cub->arr_r_options = mlx_xpm_file_to_image(cub->con, "./textures/arrow_right.xpm", &x, &y);
 	cub->txt[5].addr = mlx_get_data_addr(cub->arr_r_options, &cub->txt[5].bits_per_pixel,
 			&cub->txt[5].line_length, &cub->txt[5].endian);
@@ -682,6 +801,21 @@ void window_init(t_cube *cub)
 			&cub->txt[4].line_length, &cub->txt[4].endian);
 	cub->txt[4].width = 400;
 	cub->txt[4].height = 547;
+	cub->w_slot = mlx_xpm_file_to_image(cub->con, "./textures/weapon_slot.xpm", &x, &y);
+	cub->txt[7].addr = mlx_get_data_addr(cub->w_slot, &cub->txt[7].bits_per_pixel,
+			&cub->txt[7].line_length, &cub->txt[7].endian);
+	cub->txt[7].width = 44;
+	cub->txt[7].height = 44;
+	cub->w_slot_white = mlx_xpm_file_to_image(cub->con, "./textures/weapon_slot_white.xpm", &x, &y);
+	cub->txt[8].addr = mlx_get_data_addr(cub->w_slot_white, &cub->txt[8].bits_per_pixel,
+			&cub->txt[8].line_length, &cub->txt[8].endian);
+	cub->txt[8].width = 44;
+	cub->txt[8].height = 44;
+	cub->sword_slot = mlx_xpm_file_to_image(cub->con, "./textures/sword_weapon_slot.xpm", &x, &y);
+	cub->txt[9].addr = mlx_get_data_addr(cub->sword_slot, &cub->txt[9].bits_per_pixel,
+			&cub->txt[9].line_length, &cub->txt[9].endian);
+	cub->txt[9].width = 12;
+	cub->txt[9].height = 34;
 	mlx_mouse_hide(cub->con, cub->win);
 	load_textures(cub);
 	start_keys(cub);
