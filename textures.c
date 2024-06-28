@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 15:33:42 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/09 18:07:51 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/28 18:47:27 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,26 @@ void	load_textures(t_cube *cub)
 	int	i;
 
 	i = 0;
-	while (i < 4)
+	while (i < 11)
 		load_texture(cub, &cub->txt[i++]);
+}
+
+void increment_alphabet(char *str, int index)
+{
+	int i;
+
+	i = 0;
+	while (str[i] && (str[i] < 65 || str[i] > 90))
+		i++;
+	str[i] = 65 + index;
+}
+
+void increment_numbers(char *str, int index)
+{
+	int i;
+
+	i = 0;
+	while (str[i] && (str[i] < 48 || str[i] > 57))
+		i++;
+	str[i] = 48 + index;
 }

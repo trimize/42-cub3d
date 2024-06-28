@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/21 14:20:24 by to               ###   ########.fr       */
+/*   Updated: 2024/06/28 18:26:10 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void check_horizontal(t_cube *cub, t_raycast *ray)
         // if (ray->mx < 0 || ray->my < 0)
         //     return;
         // printf("Values, mx: %d, my: %d\n", ray->mx, ray->my);
-        if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == '1') // Wall was hit
+        if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && (cub->map.map[ray->my][ray->mx] == '1' || cub->map.map[ray->my][ray->mx] == 'D')) // Wall was hit
         {
         //     printf("Wall hit at mx: %d, my: %d\n", ray->mx, ray->my);
             ray->hx = ray->rx;
@@ -137,7 +137,7 @@ void	check_vertical(t_cube *cub, t_raycast *ray)
 		// if (ray->mx < 0 || ray->my < 0)
 		// 	return ;
 		// printf("Values , mx: %d, my: %d\n", ray->mx, ray->my);
-		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == '1') //Wall was hit
+		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && (cub->map.map[ray->my][ray->mx] == '1' || cub->map.map[ray->my][ray->mx] == 'D')) //Wall was hit
 		{
 			// printf("Wall hit at mx: %d, my: %d value of the wall : %c\n", ray->mx, ray->my, cub->map.map[ray->my][ray->mx]);
 			ray->vx = ray->rx;
@@ -203,6 +203,9 @@ void	cast_ray(t_cube *cub)
 	t_raycast ray;
 	int color;
 
+	int	mx;
+	int	my;
+
 	ray.ra = cub->rr.angle_rad;
 
 	// printf("\n ANGLE %f\n", ray.ra * (180 / M_PI));
@@ -227,24 +230,46 @@ void	cast_ray(t_cube *cub)
 		{
 			ray.rx = ray.vx;
 			ray.ry = ray.vy;
+			mx = (int)(ray.rx / TILE_SIZE);
+			my = (int)(ray.ry / TILE_SIZE);
 			ray.dist = ray.v_dist;
+			if (cub->map.map[my][mx] == '1')
+			{
+				if (ray.ra > M_PI / 2 && ray.ra < ((3 * M_PI) / 2))
+					ray.flag = 'W';
+				else
+					ray.flag = 'E';
+			}
+			else if (cub->map.map[my][mx] == 'D')
+				ray.flag = 'D';
 		}
 		else
 		{
 			ray.rx = ray.hx;
 			ray.ry = ray.hy;
+			mx = (int)(ray.rx / TILE_SIZE);
+			my = (int)(ray.ry / TILE_SIZE);
 			ray.dist = ray.h_dist;
+			if (cub->map.map[my][mx] == '1')
+			{
+				if (ray.ra < M_PI)
+					ray.flag = 'N';
+				else
+					ray.flag = 'S';
+			}
+			else if (cub->map.map[my][mx] == 'D')
+				ray.flag = 'D';
 		}
 		color = 0xFFC0CB;
 		// printf("distance is %f\n", ray.v_dist);
 		// draw_p_to_image(cub->addr, cub->line_length, ray.rx, ray.ry, color);
 
 		//call the function to render the 3d
-		render_3d(cub, ray.dist, ray.r);
+		// double xx = cub->player.x * TILE_SIZE;
+		// double yy = cub->player.y * TILE_SIZE;
+		render_3d(cub, &ray);
+		// draw_ray(cub->addr, cub->line_length, xx, yy, ray.rx, ray.ry, color);
 		
-		double xx = cub->player.x * TILE_SIZE;
-		double yy = cub->player.y * TILE_SIZE;
-		draw_ray(cub->addr, cub->line_length, xx, yy, ray.rx, ray.ry, color);
 
 	}
 }

@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 17:37:52 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/28 18:26:01 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
-
-int mouse_clicked = 0;
 
 t_cube	*call_cub(void)
 {
@@ -28,14 +26,10 @@ int	main(void)
 	char	**file;
 
 	cub = call_cub();
-	if (!cub) {
-		printf("Memory allocation failed\n");
-		return 0;
-	}
 	if (check_cub(path))
 		(printf("Error\nMap file must end in .cub\n"), exit(1));
 	file = read_file(path);
-	cub->txt = (t_txt *)malloc(10 * sizeof(t_txt));
+	cub->txt = (t_txt *)malloc(11 * sizeof(t_txt));
 	save_file(cub, file);
 	player_checker(cub);
 	map_filler(&cub->map);

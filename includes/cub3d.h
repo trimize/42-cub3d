@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 17:40:11 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/28 18:31:29 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,14 @@
 # define WIDTH 1280
 # define HEIGHT 720
 # define PLAYER_SIZE 2
-# define TILE_SIZE 10
+# define TILE_SIZE 64
+# define WALL_SIZE 75000
+
+# define L_CONTROL_KEY 65507 //Replace
+
 # define YELLOW 0xFFFF00
 # define ORANGE 0xFFA500
 # define DARK_GREEN 0x013220
-# define L_CONTROL_KEY 65507
 
 typedef struct s_txt
 {
@@ -78,6 +81,7 @@ typedef struct s_raycast
 	double	vy;
 	double	v_dist;
 	double	dist;
+	char	flag;
 }	t_raycast;
 
 typedef struct s_map
@@ -115,6 +119,7 @@ typedef struct s_cube
 	t_txt		*nums;
 	t_txt		*hp_frame;
 	t_txt		*abc;
+	t_txt		casket;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
@@ -131,8 +136,10 @@ typedef struct s_cube
 	void		*w_slot_white;
 	void		*sword_slot;
 	char		*addr;
-	int		line_length;
-	int		fov;
+	int			fov;
+	int			line_length;
+	int			f_rgb;
+	int			c_rgb;
 	int			f_r;
 	int			f_g;
 	int			f_b;
@@ -151,14 +158,13 @@ typedef struct s_cube
 	int			current_frame_num_hp;
 	int			weapons_in_slot[4];
 	double			p_rotation;
-	double			p_speed;		
+	double			p_speed;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
 char	**read_file(char *path);
 void	save_file(t_cube *cub, char **file);
 void	freetab(char **tab);
-t_cube	*call_cub(void);
 int		tablen(char **tab);
 int		get_fd(char *file);
 int		ft_equalstr(char const *str, char const *str2);
@@ -181,9 +187,33 @@ void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
 void	cast_ray(t_cube *cub);
 void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
-void	render_3d(t_cube *cub, double dist, int ray_i);
+void	render_3d(t_cube *cub, t_raycast *ray);
+int		rgb_to_hex(int r, int g, int b);
+void	draw_player_to_image(t_cube *cub, char *addr, int line_length);
+void	draw_map_to_image(t_cube *cub, char *addr, int line_length);
+int		search_txt(t_cube *cub, char c);
+
+
 void	draw_xpm_s_animation(int alpha, int x, int y, t_cube *cub);
-int	update_animation(t_cube *cub);
+void	draw_xpm_hp(int alpha, int x, int y, t_cube *cub);
+void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub);
+void	draw_xpm_number(int alpha, int x, int y, t_cube *cub);
+void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub);
+
+int		update_animation(t_cube *cub);
 void	animate_health_bar(t_cube *cub, int limite);
+char	*to_str(int n);
+void	increment_numbers(char *str, int index);
+void	increment_alphabet(char *str, int index);
+void	hp_handler(t_cube *cub);
+void	init_w_slots(t_cube *cub);
+void	weapon_slot_handler(t_cube *cub);
+void	sword_handler(t_cube *cub);
+
+void	speed_option(t_cube *cub);
+void	sensi_option(t_cube *cub);
+void	fov_option(t_cube *cub);
+void	draw_options(t_cube *cub);
+t_cube	*call_cub(void);
 
 #endif

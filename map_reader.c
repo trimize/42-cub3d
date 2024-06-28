@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_reader.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/19 18:39:17 by trimize          ###   ########.fr       */
+/*   Updated: 2024/06/28 18:39:15 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	char_checker(char *line)
 	char	*chars;
 
 	i = 0;
-	chars = "10NSEWD ";
+	chars = "10NSEW D";
 	while (line[i])
 	{
 		j = 0;
@@ -221,6 +221,9 @@ void	save_file(t_cube *cub, char **file)
 		freetab(tmp);
 		j++;
 	}
+
+	cub->c_rgb = rgb_to_hex(cub->c_r, cub->c_g, cub->c_b);
+	cub->f_rgb = rgb_to_hex(cub->f_r, cub->f_g, cub->f_b);
 	j = 0;
 	cub->map.map = (char **) malloc((tablen(file + i) + 1) * sizeof(char *));
 	while (file[i])
