@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:26:10 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/27 15:20:59 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,7 +201,6 @@ void draw_ray(char *addr, int line_length, int x0, int y0, int x1, int y1, int c
 void	cast_ray(t_cube *cub)
 {
 	t_raycast ray;
-	int color;
 
 	int	mx;
 	int	my;
@@ -260,7 +259,6 @@ void	cast_ray(t_cube *cub)
 			else if (cub->map.map[my][mx] == 'D')
 				ray.flag = 'D';
 		}
-		color = 0xFFC0CB;
 		// printf("distance is %f\n", ray.v_dist);
 		// draw_p_to_image(cub->addr, cub->line_length, ray.rx, ray.ry, color);
 

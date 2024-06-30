@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 17:00:46 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/27 15:21:14 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,11 +128,6 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 
 void	render_3d(t_cube *cub, t_raycast *ray)
 {
-	double	dist;
-	int		ray_i;
-
-	dist = ray->dist;
-	ray_i = ray->r;
 	// draw_horizontal_line(cub);
 	draw_vertical_line(cub, ray);
 }

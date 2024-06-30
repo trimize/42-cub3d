@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:31:29 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/30 12:20:28 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ typedef struct s_player
 	double	dir;
 	int	hp;
 	int	weapon;
+	int	arrows;
 }	t_player;
 
 typedef struct s_key
@@ -116,6 +117,9 @@ typedef struct s_cube
 	t_map		map;
 	t_txt		*txt;
 	t_txt		*sword_ani;
+	t_txt		*crossbow;
+	t_txt		*dragon;
+	t_txt		*explosion;
 	t_txt		*nums;
 	t_txt		*hp_frame;
 	t_txt		*abc;
@@ -154,8 +158,14 @@ typedef struct s_cube
 	int			speed;
 	int			current_frame_num_sword;
 	int			sword_delay;
+	int			cbow_delay;
 	int			hp_delay;
+	int			dra_delay;
+	int			explo_delay;
 	int			current_frame_num_hp;
+	int			current_frame_num_cbow;
+	int			current_frame_num_dra;
+	int			current_frame_num_explo;
 	int			weapons_in_slot[4];
 	double			p_rotation;
 	double			p_speed;
@@ -194,7 +204,7 @@ void	draw_map_to_image(t_cube *cub, char *addr, int line_length);
 int		search_txt(t_cube *cub, char c);
 
 
-void	draw_xpm_s_animation(int alpha, int x, int y, t_cube *cub);
+void	draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt);
 void	draw_xpm_hp(int alpha, int x, int y, t_cube *cub);
 void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub);
 void	draw_xpm_number(int alpha, int x, int y, t_cube *cub);
@@ -204,11 +214,19 @@ int		update_animation(t_cube *cub);
 void	animate_health_bar(t_cube *cub, int limite);
 char	*to_str(int n);
 void	increment_numbers(char *str, int index);
+void	increment_numbers_2(char *str, int index);
 void	increment_alphabet(char *str, int index);
 void	hp_handler(t_cube *cub);
 void	init_w_slots(t_cube *cub);
 void	weapon_slot_handler(t_cube *cub);
 void	sword_handler(t_cube *cub);
+void	update_animation_crossbow(t_cube *cub);
+void	crossbow_handler(t_cube *cub);
+void	shield_handler(t_cube *cub);
+void	dragon_handler(t_cube *cub);
+void	update_animation_dragon(t_cube *cub);
+void	explosion_handler(t_cube *cub);
+void	update_animation_explosion(t_cube *cub);
 
 void	speed_option(t_cube *cub);
 void	sensi_option(t_cube *cub);

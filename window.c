@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:47:10 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/30 12:21:51 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -340,7 +340,11 @@ int	loop_hook(t_cube *cub)
 	cast_ray(cub);
 	sword_handler(cub);
 	hp_handler(cub);
+	crossbow_handler(cub);
+	shield_handler(cub);
 	weapon_slot_handler(cub);
+	dragon_handler(cub);
+	explosion_handler(cub);
 	// draw_player_to_image(cub, cub->addr, cub->line_length);
 	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
 	if (cub->option_bool == 1)
@@ -366,12 +370,19 @@ void	start_keys(t_cube *cub)
 	cub->p_speed = 0.006;
 	cub->speed = 3;
 	cub->current_frame_num_sword = 0;
-	cub->sword_delay = 3;
+	cub->current_frame_num_cbow = 0;
+	cub->current_frame_num_dra = 0;
+	cub->current_frame_num_explo = 0;
+	cub->sword_delay = 5;
+	cub->dra_delay = 15;
+	cub->cbow_delay = 15;
 	cub->player.hp = 100;
 	cub->hp_delay = 6;
+	cub->explo_delay = 4;
 	cub->current_frame_num_hp = 1;
 	cub->player.weapon = 1;
 	init_w_slots(cub);
+	cub->player.arrows = 5;
 }
 
 void window_init(t_cube *cub)
@@ -450,6 +461,53 @@ void window_init(t_cube *cub)
 		i++;
 	}
 	free(num);
+	i = 0;
+	cub->crossbow = (t_txt *)malloc(6 * sizeof(t_txt));
+	num = ft_strdup("./textures/crossbow_animation/crossbow1.xpm");
+	while (i < 6)
+	{
+		increment_numbers(num, i + 1);
+		cub->crossbow[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->crossbow[i].width, &cub->crossbow[i].height);
+		cub->crossbow[i].addr = mlx_get_data_addr(cub->crossbow[i].img, &cub->crossbow[i].bits_per_pixel,
+			&cub->crossbow[i].line_length, &cub->crossbow[i].endian);
+		cub->crossbow[i].tmp_delay = 0;
+		i++;
+	}
+	free(num);
+	i = 0;
+	cub->dragon = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/dragon_animation/dragon1.xpm");
+	while (i < 5)
+	{
+		increment_numbers(num, i + 1);
+		cub->dragon[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->dragon[i].width, &cub->dragon[i].height);
+		cub->dragon[i].addr = mlx_get_data_addr(cub->dragon[i].img, &cub->dragon[i].bits_per_pixel,
+			&cub->dragon[i].line_length, &cub->dragon[i].endian);
+		cub->dragon[i].tmp_delay = 0;
+		i++;
+	}
+	free(num);
+	i = 0;
+	cub->explosion = (t_txt *)malloc(13 * sizeof(t_txt));
+	num = ft_strdup("./textures/explosion_animation/explosion1.xpm");
+	while (i < 13)
+	{
+		if (i == 9)
+		{
+			free(num);
+			num = ft_strdup("./textures/explosion_animation/explosion10.xpm");
+		}
+		else if (i >= 10)
+			increment_numbers_2(num, i / 10 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->explosion[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->explosion[i].width, &cub->explosion[i].height);
+		cub->explosion[i].addr = mlx_get_data_addr(cub->explosion[i].img, &cub->explosion[i].bits_per_pixel,
+			&cub->explosion[i].line_length, &cub->explosion[i].endian);
+		cub->explosion[i].tmp_delay = 0;
+		i++;
+	}
+	free(num);
 	cub->txt[4].type = NULL;
 	cub->txt[4].path = ft_strdup("./textures/options_menu_resized.xpm");
 	cub->txt[5].type = NULL;
@@ -464,6 +522,14 @@ void window_init(t_cube *cub)
 	cub->txt[9].path = ft_strdup("./textures/sword_weapon_slot.xpm");
 	cub->txt[10].type = ft_strdup("D");
 	cub->txt[10].path = ft_strdup("textures/Door.xpm");
+	cub->txt[11].type = NULL;
+	cub->txt[11].path = ft_strdup("textures/crossbow_weapon_slot.xpm");
+	cub->txt[12].type = NULL;
+	cub->txt[12].path = ft_strdup("textures/shield.xpm");
+	cub->txt[13].type = NULL;
+	cub->txt[13].path = ft_strdup("textures/shield_weapon_slot.xpm");
+	cub->txt[14].type = NULL;
+	cub->txt[14].path = ft_strdup("textures/fire_weapon_slot.xpm");
 	mlx_mouse_hide(cub->con, cub->win);
 	load_textures(cub);
 	start_keys(cub);
@@ -477,35 +543,8 @@ void window_init(t_cube *cub)
 	mlx_loop(cub->con);
 }
 
-// void	window_init(t_cube *cub)
-// {
-// 	cub->con = mlx_init();
-// 	if (cub->con == NULL)
-// 		(printf("Error\nCouldn't start minilibx.\n"), exit_free(cub));
-// 	cub->win = mlx_new_window(cub->con, WIDTH, HEIGHT, "cub3d");
-// 	if (cub->win == NULL)
-// 	{
-// 		mlx_destroy_display(cub->con);
-// 		free(cub->con);
-// 		printf("Error\nCouldn't open the window.\n");
-// 		exit_free(cub);
-// 	}
-// 	load_textures(cub);
-// 	start_keys(cub);
-// 	mlx_key_hook(cub->win, handle_key_release, cub);
-//     mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
-//     mlx_hook(cub->win, KeyRelease, KeyReleaseMask, handle_key_release, cub);
-// 	mlx_hook(cub->win, DestroyNotify, StructureNotifyMask,
-// 		close_x, cub);
-// 	mlx_loop_hook(cub->con, loop_hook, cub);
-// 	mlx_loop(cub->con);
-// }
-
 void	player_rotation_init(t_cube *cub)
 {
-	int	i;
-
-	i = -1;
 	cub->start = 0;
 	if (cub->player.dir == 0)
 		cub->rr.angle_rad = M_PI / 2;
@@ -520,55 +559,10 @@ void	player_rotation_init(t_cube *cub)
 
 void	rotate_player(t_cube *cub, double dir)
 {
-	int		i;
-	// double	distance;
-	// double	cx;
-	// double	cy;
-	// double	n_angle;
-	// double	x[7];
-	// double	y[7];
 
-	i = 0;
-	// cx = (cub->player.x * TILE_SIZE);
-	// cy = (cub->player.y * TILE_SIZE);
 	cub->rr.angle_rad += dir;
-	//printf("\n\nDegrees : %f\n\n", cub->rr.angle_rad * (180 / M_PI));
 	if (cub->rr.angle_rad < 0)
 		cub->rr.angle_rad += 2 * M_PI;
 	else if (cub->rr.angle_rad > 2 * M_PI)
 		cub->rr.angle_rad -= 2 * M_PI;
-	// while (i < 7)
-	// {
-	// 	distance = sqrt(pow(cub->rr.ray_x[i] - cx, 2) + pow(cub->rr.ray_y[i] - cy, 2));
-	// 	n_angle = atan2(cub->rr.ray_y[i] - cy, cub->rr.ray_x[i] - cx) + dir;
-	// 	cub->rr.ray_x[i] = cx + cos(n_angle) * distance;
-	// 	cub->rr.ray_y[i] = cy + sin(n_angle) * distance;
-	// 	x[i] = cub->rr.ray_x[i];
-	// 	y[i] = cub->rr.ray_y[i];
-	// 	if (cub->rr.ray_x[i] < 0)
-	// 	{
-	// 		cub->rr.ray_x[i] = 0;
-	// 		cub->rr.ray_y[i] = cub->rr.ray_y[i - 1];
-	// 	}
-	// 	else
-	// 	{
-	// 		cub->rr.ray_x[i] = x[i];
-	// 		cub->rr.ray_y[i] = y[i];
-	// 	}	
-	// 	if (cub->rr.ray_y[i] < 0)
-	// 	{
-	// 		x[i] = cub->rr.ray_x[i];
-	// 		y[i] = cub->rr.ray_y[i];
-	// 		cub->rr.ray_y[i] = 0;
-	// 		cub->rr.ray_x[i] = cub->rr.ray_x[i - 1];
-	// 	}
-	// 	else
-	// 	{
-	// 		cub->rr.ray_x[i] = x[i];
-	// 		cub->rr.ray_y[i] = y[i];
-	// 	}
-	// 	draw_p_to_image(cub->addr, cub->line_length, (cub->rr.ray_x[i]),
-	// 		(cub->rr.ray_y[i]), DARK_GREEN);
-	// 	i++;
-	// }
 }

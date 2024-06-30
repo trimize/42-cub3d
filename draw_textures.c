@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_textures.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:09:33 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:10:02 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/30 02:20:30 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,19 @@ void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub)
 	}
 }
 
-void	draw_xpm_s_animation(int alpha, int x, int y, t_cube *cub)
+void	draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt)
 {
 	int	j;
 	int	i;
 
 	i = 0;
 	j = 0;
-	while (i < cub->sword_ani[alpha].height)
+	while (i < txt[alpha].height)
 	{
-		while (j < cub->sword_ani[alpha].width)
+		while (j < txt[alpha].width)
 		{
-			if (x + j < WIDTH && y + i < HEIGHT && ((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j] != 0x0000FF)
-					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->sword_ani[alpha].addr))[(i) * cub->sword_ani[alpha].line_length / 4 + j];
+			if (x + j < WIDTH && y + i < HEIGHT && ((int *)(txt[alpha].addr))[(i) * txt[alpha].line_length / 4 + j] != 0x0000FF)
+					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(txt[alpha].addr))[(i) * txt[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -68,9 +68,9 @@ void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
 			}
-			else if (alpha == 7 || alpha == 8 || alpha == 9)
+			else if (alpha == 7 || alpha == 8 || alpha == 9 || alpha == 11 || alpha == 12 || alpha == 13 || alpha == 14)
 			{
-				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] != 0x0000FF)
+				if (x + j < WIDTH && y + i < HEIGHT && ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] != 0x0000FF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
 			}
 			else

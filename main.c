@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:26:01 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/30 02:19:40 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	main(void)
 	if (check_cub(path))
 		(printf("Error\nMap file must end in .cub\n"), exit(1));
 	file = read_file(path);
-	cub->txt = (t_txt *)malloc(11 * sizeof(t_txt));
+	cub->txt = (t_txt *)malloc(15 * sizeof(t_txt));
 	save_file(cub, file);
 	player_checker(cub);
 	map_filler(&cub->map);

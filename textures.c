@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   textures.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 15:33:42 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:47:27 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/06/30 12:17:52 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	load_textures(t_cube *cub)
 	int	i;
 
 	i = 0;
-	while (i < 11)
+	while (i < 15)
 		load_texture(cub, &cub->txt[i++]);
 }
 
@@ -46,4 +46,14 @@ void increment_numbers(char *str, int index)
 	while (str[i] && (str[i] < 48 || str[i] > 57))
 		i++;
 	str[i] = 48 + index;
+}
+
+void increment_numbers_2(char *str, int index)
+{
+	int i;
+
+	i = 0;
+	while (str[i] && str[i] != '1')
+		i++;
+	str[i + 1] = 48 + index;
 }

@@ -54,4 +54,4 @@ def convert_to_xpm(image_path, output_path):
     print(f"XPM file '{output_path}' created successfully with dimensions: {width}x{height}")
 
 # Example usage
-convert_to_xpm('sword5.png', 'output.xpm')
+convert_to_xpm('crossbow1.png', 'output.xpm')
