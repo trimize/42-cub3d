@@ -6,7 +6,7 @@
 /*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:09:33 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/30 02:20:30 by to               ###   ########.fr       */
+/*   Updated: 2024/06/30 13:08:14 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
 			}
-			else if (alpha == 7 || alpha == 8 || alpha == 9 || alpha == 11 || alpha == 12 || alpha == 13 || alpha == 14)
+			else if (alpha == 7 || alpha == 8 || alpha == 9 || alpha == 11 || alpha == 12 || alpha == 13 || alpha == 14 || alpha == 15 || alpha == 16)
 			{
 				if (x + j < WIDTH && y + i < HEIGHT && ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] != 0x0000FF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];

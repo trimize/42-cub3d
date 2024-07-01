@@ -6,7 +6,7 @@
 /*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/30 12:21:51 by to               ###   ########.fr       */
+/*   Updated: 2024/06/30 17:16:00 by to               ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,9 +219,9 @@ void mouse_rotate(t_cube *cub)
 
 	m_x = cub->mouse_x;
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
-	if (cub->mouse_x >= WIDTH - (WIDTH / 5) || cub->mouse_x <= WIDTH / 5)
+	if (cub->mouse_x >= WIDTH - (WIDTH / 10) || cub->mouse_x <= WIDTH / 10)
 		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
-	if (cub->mouse_y >= HEIGHT - (HEIGHT / 5) || cub->mouse_x <= HEIGHT / 5)
+	if (cub->mouse_y >= HEIGHT - (HEIGHT / 10) || cub->mouse_x <= HEIGHT / 10)
 		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
 	if (m_x != cub->mouse_x)
 	{
@@ -345,6 +345,8 @@ int	loop_hook(t_cube *cub)
 	weapon_slot_handler(cub);
 	dragon_handler(cub);
 	explosion_handler(cub);
+	draw_xpm_texture(15, WIDTH / 1.08, HEIGHT / 6, cub);
+	draw_xpm_texture(16, WIDTH / 1.08, HEIGHT / 10, cub);
 	// draw_player_to_image(cub, cub->addr, cub->line_length);
 	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
 	if (cub->option_bool == 1)
@@ -530,6 +532,10 @@ void window_init(t_cube *cub)
 	cub->txt[13].path = ft_strdup("textures/shield_weapon_slot.xpm");
 	cub->txt[14].type = NULL;
 	cub->txt[14].path = ft_strdup("textures/fire_weapon_slot.xpm");
+	cub->txt[15].type = NULL;
+	cub->txt[15].path = ft_strdup("textures/speed_item_hud.xpm");
+	cub->txt[16].type = NULL;
+	cub->txt[16].path = ft_strdup("textures/attack_item_hud.xpm");
 	mlx_mouse_hide(cub->con, cub->win);
 	load_textures(cub);
 	start_keys(cub);
