@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:17:31 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 19:30:15 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 01:08:18 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	init_w_slots(t_cube *cub)
 	while (i < 4)
 		cub->weapons_in_slot[i++] = 0;
 	//just to test
-	cub->weapons_in_slot[0] = 1;
+	// cub->weapons_in_slot[0] = 1;
 }
 
 void	weapon_slot_handler(t_cube *cub)

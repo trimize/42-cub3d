@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 18:44:38 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 00:36:21 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -306,9 +306,10 @@ void draw_enemy(t_cube *cub, t_enemy *enemy)
 	}
 }
 
-void draw_sprite(t_cube *cub, int index) {
-    double spriteX = (cub->casket_x) - (cub->player.x);
-    double spriteY = (cub->casket_y) - (cub->player.y);
+void	draw_weapon(t_cube *cub, int index)
+{
+    double spriteX = (cub->weapons[index].x) - (cub->player.x);
+    double spriteY = (cub->weapons[index].y) - (cub->player.y);
 
 	double fovRadians = cub->fov * (M_PI / 180.0);
 	double planeLength = tan(fovRadians / 2.0);
@@ -337,7 +338,7 @@ void draw_sprite(t_cube *cub, int index) {
     int drawEndY = spriteHeight / 2 + HEIGHT / 2 + scaledZPosition;
     if (drawEndY >= HEIGHT) drawEndY = HEIGHT - 1;
 
-	double aspectRatio = (double)cub->txt[index].width / (double)cub->txt[15].height;
+	double aspectRatio = (double)cub->weapons[index].txt->width / (double)cub->weapons[index].txt->height;
     // calculate width of the sprite
     // int spriteWidth = abs((int) (HEIGHT / (transformY)));
     int spriteWidth = abs((int) (spriteHeight * aspectRatio));
@@ -351,10 +352,10 @@ void draw_sprite(t_cube *cub, int index) {
 	// if (stripe >= drawStartX && stripe < drawEndX)
 	// {
 		for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-			if (cub->rays[WIDTH - stripe].dist < cub->casket_dist)
+			if (cub->rays[WIDTH - stripe].dist < cub->weapons[index].dist)
 				continue ;
 			// printf("\ndrawStart %d, drawEnd %d and ray %d\n", drawStartX, drawEndX, stripe);
-			int texX = (int) (256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * cub->txt[index].width / spriteWidth) / 256;
+			int texX = (int) (256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * cub->weapons[index].txt->width / spriteWidth) / 256;
 			// the conditions in the if are:
 			// 1) it's in front of camera plane so you don't see things behind you
 			// 2) it's on the screen (left)
@@ -363,10 +364,10 @@ void draw_sprite(t_cube *cub, int index) {
 			if (transformY > 0 && stripe > 0 && stripe < WIDTH) {
 				for (int y = drawStartY; y < drawEndY; y++) { // for every pixel of the current stripe
 					int d = (y - scaledZPosition) * 256 - HEIGHT * 128 + spriteHeight * 128; // 256 and 128 factors to avoid floats
-					int texY = ((d * cub->txt[index].height) / spriteHeight) / 256;
+					int texY = ((d * cub->weapons[index].txt->height) / spriteHeight) / 256;
 
 					// int color = cub->txt[15].addr[texY * (cub->txt[15].line_length / 4) + texX];
-					int color = *(int*) (cub->txt[index].addr + ((texX + (texY * cub->txt[index].width)) * (cub->txt[index].bits_per_pixel / 8)));
+					int color = *(int*) (cub->weapons[index].txt->addr + ((texX + (texY * cub->weapons[index].txt->width)) * (cub->weapons[index].txt->bits_per_pixel / 8)));
 
 					if ((color) != 0x0000FF) { // Assuming 0x000000 is the transparent color
 						// if (index > 120 && stripe < 126)

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:39:15 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 01:31:09 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	char_checker(char *line)
 	char	*chars;
 
 	i = 0;
-	chars = "10NSEW D";
+	chars = "10NSEW D|OCG";
 	while (line[i])
 	{
 		j = 0;
@@ -35,6 +35,12 @@ int	char_checker(char *line)
 		i++;
 	}
 	return (0);
+}
+
+void	check_characters(t_cube *cub, int y, int x)
+{
+	if (cub->map.map[y][x] == '|' || cub->map.map[y][x] == 'O' || cub->map.map[y][x] == 'C' || cub->map.map[y][x] == 'G')
+		cub->weapon_counter++;
 }
 
 void	player_checker(t_cube *cub)
@@ -53,6 +59,7 @@ void	player_checker(t_cube *cub)
 			if (cub->map.map[i][j] == 'N' || cub->map.map[i][j] == 'W'
 				|| cub->map.map[i][j] == 'E' || cub->map.map[i][j] == 'S')
 				counter++;
+			check_characters(cub, i, j);
 			j++;
 		}
 		i++;
@@ -221,7 +228,6 @@ void	save_file(t_cube *cub, char **file)
 		freetab(tmp);
 		j++;
 	}
-
 	cub->c_rgb = rgb_to_hex(cub->c_r, cub->c_g, cub->c_b);
 	cub->f_rgb = rgb_to_hex(cub->f_r, cub->f_g, cub->f_b);
 	j = 0;
@@ -253,6 +259,61 @@ char	**read_file(char *path)
 	free(line);
 	close(fd);
 	return (result);
+}
+
+void	items_parsing(t_cube *cub)
+{
+	int	y;
+	int	x;
+	int	i;
+
+	y = 0;
+	i = 0;
+	while (cub->map.map[y])
+	{
+		x = 0;
+		while (cub->map.map[y][x])
+		{
+			if (cub->map.map[y][x] == '|')
+			{
+				cub->weapons[i].txt = &cub->txt[9];
+				cub->weapons[i].x = x;
+				cub->weapons[i].y = y;
+				cub->weapons[i].type = '|';
+				cub->weapons[i].display = 1;
+				i++;
+			}
+			else if (cub->map.map[y][x] == 'O')
+			{
+				cub->weapons[i].txt = &cub->txt[13];
+				cub->weapons[i].x = x;
+				cub->weapons[i].y = y;
+				cub->weapons[i].type = 'O';
+				cub->weapons[i].display = 1;
+				i++;
+			}
+			else if (cub->map.map[y][x] == 'C')
+			{
+				cub->weapons[i].txt = &cub->txt[11];
+				cub->weapons[i].x = x;
+				cub->weapons[i].y = y;
+				cub->weapons[i].type = 'C';
+				cub->weapons[i].display = 1;
+				i++;
+			}
+			else if (cub->map.map[y][x] == 'G')
+			{
+				cub->weapons[i].txt = &cub->txt[14];
+				cub->weapons[i].x = x;
+				cub->weapons[i].y = y;
+				cub->weapons[i].type = 'G';
+				cub->weapons[i].display = 1;
+				i++;
+			}
+			x++;
+		}
+		y++;
+	}
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 19:57:47 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 01:05:20 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,17 @@ typedef struct s_enemy
 	int	hp;
 }	t_enemy;
 
+typedef struct s_item
+{
+	t_txt	*txt;
+	double	x;
+	double	y;
+	double	dist;
+	char	type;
+	int		display;
+	long int	last_text;
+}	t_item;
+
 
 typedef struct s_key
 {
@@ -151,6 +162,7 @@ typedef struct s_cube
 	t_rr		rr;
 	t_raycast	*rays;
 	t_enemy		enemies[4];
+	t_item		*weapons;
 	void		*con;
 	void		*win;
 	char		*addr;
@@ -172,6 +184,8 @@ typedef struct s_cube
 	int			mouse_x;
 	int			mouse_y;
 	int			option_bool;
+	int			weapon_counter;
+	int			items_counter;
 	int			sensi;
 	int			speed;
 	int			current_frame_num_sword;
@@ -227,6 +241,7 @@ void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
 void	cast_ray(t_cube *cub, int index);
+void	items_parsing(t_cube *cub);
 void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
 void	render_3d(t_cube *cub, t_raycast *ray);
 int		rgb_to_hex(int r, int g, int b);
@@ -262,6 +277,7 @@ void	title_handler(t_cube *cub);
 void	bg_handler(t_cube *cub);
 void	start_handler(t_cube *cub);
 void	died_handler(t_cube *cub);
+void	update_dist(t_cube *cub);
 
 void	speed_option(t_cube *cub);
 void	sensi_option(t_cube *cub);
@@ -274,5 +290,8 @@ void	draw_square_to_image(char *addr, int line_length, int x, int y, int color);
 void	draw_sprite(t_cube *cub, int index);
 void	render_game(t_cube *cub);
 void	draw_enemy(t_cube *cub, t_enemy *enemy);
+void	draw_weapon(t_cube *cub, int index);
+void	display_messages(t_cube *cub);
+void	check_pick_up(t_cube *cub);
 
 #endif

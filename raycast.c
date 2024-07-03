@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 18:09:12 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 00:45:56 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,6 +296,19 @@ void	cast_ray(t_cube *cub, int index)
 
 }
 
+void	draw_items(t_cube *cub)
+{
+	int	i;
+
+	i = 0;
+	while (i < cub->weapon_counter)
+	{
+		if (cub->weapons[i].display == 1)
+			draw_weapon(cub, i);
+		i++;
+	}
+}
+
 
 void	render_game(t_cube *cub)
 {
@@ -309,4 +322,5 @@ void	render_game(t_cube *cub)
 	}
 	// draw_sprite(cub, 15);
 	draw_enemy(cub, &cub->enemies[0]);
+	draw_items(cub);
 }
