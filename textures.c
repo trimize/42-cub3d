@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   textures.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 15:33:42 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/30 13:05:30 by to               ###   ########.fr       */
+/*   Updated: 2024/07/02 12:10:28 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,13 @@ void	load_texture(t_cube *cub, t_txt *txt)
 			&txt->line_length, &txt->endian);
 }
 
-void	load_textures(t_cube *cub)
+void	load_textures(t_cube *cub, t_txt *txt, int num)
 {
 	int	i;
 
 	i = 0;
-	while (i < 17)
-		load_texture(cub, &cub->txt[i++]);
+	while (i < num)
+		load_texture(cub, &txt[i++]);
 }
 
 void increment_alphabet(char *str, int index)
@@ -53,7 +53,7 @@ void increment_numbers_2(char *str, int index)
 	int i;
 
 	i = 0;
-	while (str[i] && str[i] != '1')
+	while (str[i] && !ft_isdigit(str[i]))
 		i++;
 	str[i + 1] = 48 + index;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:23:05 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:50:21 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/01 16:22:01 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ int	search_txt(t_cube *cub, char c)
 	i = 0;
 	if (c == 'D')
 		return (10);
+	if (c == 'A')
+		return (18);
 	while (i < 4)
 	{
 		if (cub->txt[i].type && cub->txt[i].type[0] == c)

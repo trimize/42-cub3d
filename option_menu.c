@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   option_menu.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:13:00 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/28 18:13:30 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/01 13:05:57 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,15 @@ void	speed_option(t_cube *cub)
 	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 2.5, cub);
 	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < WIDTH / 1.62 && cub->mouse_y > HEIGHT / 2.5 && cub->mouse_y < HEIGHT / 2.4 && cub->key.mouse_l && cub->speed < 10)
 	{
-		cub->p_speed += 0.009;
+		cub->player.speed += 0.009;
 		cub->speed++;
 		cub->key.mouse_l = 0;
 	}
 	else if (cub->mouse_x > WIDTH / 1.91 && cub->mouse_x < WIDTH / 1.85 && cub->mouse_y > HEIGHT / 2.5 && cub->mouse_y < HEIGHT / 2.4 && cub->key.mouse_l && cub->speed <= 10 && cub->speed > 1)
 	{
-		cub->p_speed -= 0.009;
-		if (cub->p_speed <= 0)
-			cub->p_speed = 0.006;
+		cub->player.speed -= 0.009;
+		if (cub->player.speed <= 0)
+			cub->player.speed = 0.006;
 		cub->speed--;
 		cub->key.mouse_l = 0;
 	}

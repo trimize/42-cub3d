@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/27 15:20:59 by to               ###   ########.fr       */
+/*   Updated: 2024/07/02 14:47:56 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,13 +260,13 @@ void	cast_ray(t_cube *cub)
 				ray.flag = 'D';
 		}
 		// printf("distance is %f\n", ray.v_dist);
-		// draw_p_to_image(cub->addr, cub->line_length, ray.rx, ray.ry, color);
+		//draw_p_to_image(cub->addr, cub->line_length, ray.rx, ray.ry, 0xFFFFFF);
 
 		//call the function to render the 3d
-		// double xx = cub->player.x * TILE_SIZE;
-		// double yy = cub->player.y * TILE_SIZE;
+		//double xx = cub->player.x * TILE_SIZE;
+		//double yy = cub->player.y * TILE_SIZE;
 		render_3d(cub, &ray);
-		// draw_ray(cub->addr, cub->line_length, xx, yy, ray.rx, ray.ry, color);
+		//draw_ray(cub->addr, cub->line_length, xx, yy, ray.rx, ray.ry, 0xFFFFFF);
 		
 
 	}

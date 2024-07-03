@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_textures.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:09:33 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/30 13:08:14 by to               ###   ########.fr       */
+/*   Updated: 2024/07/02 14:36:38 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,24 +32,27 @@ void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub)
 	}
 }
 
-void	draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt)
+void draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt)
 {
-	int	j;
-	int	i;
+    int i, j;
+    int color;
+    char *src;
+    int bytes_per_pixel = txt[alpha].bits_per_pixel / 8;
 
-	i = 0;
-	j = 0;
-	while (i < txt[alpha].height)
-	{
-		while (j < txt[alpha].width)
-		{
-			if (x + j < WIDTH && y + i < HEIGHT && ((int *)(txt[alpha].addr))[(i) * txt[alpha].line_length / 4 + j] != 0x0000FF)
-					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(txt[alpha].addr))[(i) * txt[alpha].line_length / 4 + j];
-			j++;
-		}
-		j = 0;
-		i++;
-	}
+    for (i = 0; i < txt[alpha].height; i++)
+    {
+        for (j = 0; j < txt[alpha].width; j++)
+        {
+            src = txt[alpha].addr + (i * txt[alpha].line_length + j * bytes_per_pixel);
+            color = *(int *)src;
+
+            // Draw the pixel if it is not the transparent color (assuming 0x0000FF is the transparent color)
+            if (x + j < WIDTH && y + i < HEIGHT && color != 0x0000FF)
+            {
+                ((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = color;
+            }
+        }
+    }
 }
 
 void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
@@ -68,7 +71,7 @@ void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
 			}
-			else if (alpha == 7 || alpha == 8 || alpha == 9 || alpha == 11 || alpha == 12 || alpha == 13 || alpha == 14 || alpha == 15 || alpha == 16)
+			else if (alpha == 7 || alpha == 8 || alpha == 9 || alpha == 11 || alpha == 12 || alpha == 13 || alpha == 14 || alpha == 15 || alpha == 16 || alpha == 17 || alpha == 18)
 			{
 				if (x + j < WIDTH && y + i < HEIGHT && ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] != 0x0000FF)
 					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
@@ -120,3 +123,4 @@ void	draw_xpm_number(int alpha, int x, int y, t_cube *cub)
 		i++;
 	}
 }
+

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/30 13:34:43 by to               ###   ########.fr       */
+/*   Updated: 2024/07/03 18:06:27 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,10 @@ typedef struct s_player
 	int	hp;
 	int	weapon;
 	int	arrows;
+	int	atk;
+	int	atk_item_amount;
+	int	speed_item_amount;
+	double	speed;
 }	t_player;
 
 typedef struct s_key
@@ -124,6 +128,12 @@ typedef struct s_cube
 	t_txt		*hp_frame;
 	t_txt		*abc;
 	t_txt		casket;
+	t_txt		*title_screen;
+	t_txt		*main_menu_bg;
+	t_txt		*main_menu_assets;
+	t_txt		*main_menu_start;
+	t_txt		*game_over;
+	t_txt		*keyboard;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
@@ -140,6 +150,9 @@ typedef struct s_cube
 	void		*w_slot_white;
 	void		*sword_slot;
 	char		*addr;
+	int			enter_pressed;
+	int			title_bool;
+	int			bg_bool;
 	int			fov;
 	int			line_length;
 	int			f_rgb;
@@ -162,13 +175,22 @@ typedef struct s_cube
 	int			hp_delay;
 	int			dra_delay;
 	int			explo_delay;
+	int			title_delay;
+	int			start_delay;
+	int			bg_delay;
+	int			died_delay;
 	int			current_frame_num_hp;
 	int			current_frame_num_cbow;
 	int			current_frame_num_dra;
 	int			current_frame_num_explo;
+	int			current_frame_num_title;
+	int			current_frame_num_bg;
+	int			current_frame_num_start;
+	int			current_frame_num_died;
 	int			weapons_in_slot[4];
+	int			tuto;
+	double			fade_factor;
 	double			p_rotation;
-	double			p_speed;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
@@ -190,7 +212,7 @@ int		check_cub(char *file);
 void	window_init(t_cube *cub);
 void	fill_player(t_cube *cub);
 void	player_checker(t_cube *cub);
-void	load_textures(t_cube *cub);
+void	load_textures(t_cube *cub, t_txt *txt, int num);
 void	init_rays(t_cube *cub);
 void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
@@ -227,11 +249,16 @@ void	dragon_handler(t_cube *cub);
 void	update_animation_dragon(t_cube *cub);
 void	explosion_handler(t_cube *cub);
 void	update_animation_explosion(t_cube *cub);
+void	title_handler(t_cube *cub);
+void	bg_handler(t_cube *cub);
+void	start_handler(t_cube *cub);
+void	died_handler(t_cube *cub);
 
 void	speed_option(t_cube *cub);
 void	sensi_option(t_cube *cub);
 void	fov_option(t_cube *cub);
 void	draw_options(t_cube *cub);
+void	fade_to_black(t_cube *cub, double fade_factor, int bits_per_pixel);
 t_cube	*call_cub(void);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/27 15:21:14 by to               ###   ########.fr       */
+/*   Updated: 2024/07/01 17:49:02 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 	txt_addr = (int *)cub->txt[txt_index].addr;
 	factor = (double)cub->txt[txt_index].height / length;
 
-	if (ray->flag == 'N' || ray->flag == 'S' || ray->flag == 'D') {
+	if (ray->flag == 'N' || ray->flag == 'S' || ray->flag == 'D' || ray->flag == 'A')
+	{
 		x_o = (int)fmod(ray->rx, TILE_SIZE) * cub->txt[txt_index].width / TILE_SIZE;
 		if (ray->flag == 'S') {
 			x_o = cub->txt[txt_index].width - x_o - 1; // Flip for south
@@ -71,16 +72,13 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 			x_o = cub->txt[txt_index].width - x_o - 1; // Flip for west
 		}
 	}
-
 	t_pix = (HEIGHT / 2) - (length / 2);
 	b_pix = (HEIGHT / 2) + (length / 2);
 	if (b_pix > HEIGHT)
 		b_pix = HEIGHT;
 	if (t_pix < 0) // Ensure t_pix does not go beyond the top of the screen
 		t_pix = 0;
-
 	y_o = (t_pix - (HEIGHT / 2) + (length / 2)) * factor;
-
 	while (t_pix < b_pix)
 	{
 		// Calculate the y coordinate of the texture
@@ -88,7 +86,6 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 
 		// Get the color from the texture
 		color = txt_addr[tex_y * cub->txt[txt_index].width + (int)x_o];
-
 		((int *)(cub->addr))[t_pix * (cub->line_length / 4) + WIDTH - ray_i] = color;
 		y_o += factor;
 		t_pix++;
