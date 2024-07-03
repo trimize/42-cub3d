@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   animate_sprite.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:29:06 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/03 19:04:55 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 20:02:05 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,15 @@ void	update_animation_explosion(t_cube *cub)
 
 void	animate_health_bar(t_cube *cub, int limite)
 {
-	if (cub->hp_frame[cub->current_frame_num_hp].tmp_delay++ == cub->hp_delay)
+	if (cub->txt[cub->current_frame_num_hp].tmp_delay++ == cub->hp_delay)
 	{
-		cub->hp_frame[cub->current_frame_num_hp].tmp_delay = 0;
+		cub->txt[cub->current_frame_num_hp].tmp_delay = 0;
 		if (cub->current_frame_num_hp == limite)
 			;
 		else
 			cub->current_frame_num_hp++;
 	}
 }
-
 void	update_animation_title(t_cube *cub)
 {
 

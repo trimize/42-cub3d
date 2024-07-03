@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 19:14:56 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 20:09:28 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ int	handle_key_press(int key, t_cube *cub)
 	{
 		if (!cub->bg_bool && !cub->title_bool && cub->tuto)
 			cub->tuto = 0;
-		cub->player.hp -= 25;
 	}
 	else if (key == 49 && cub->player.hp > 0)
 		cub->player.weapon = 1;
@@ -120,9 +119,9 @@ void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
 	int	i;
 	int	j;
 
-	for (i = 0; i < TILE_SIZE; i++)
+	for (i = 0; i < 20; i++)
 	{
-		for (j = 0; j < TILE_SIZE; j++)
+		for (j = 0; j < 20; j++)
 		{
 			((int *)(addr))[(y + i) * line_length / 4 + x + j] = color;
 		}
@@ -225,9 +224,9 @@ void mouse_rotate(t_cube *cub)
 
 	m_x = cub->mouse_x;
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
-	if (cub->mouse_x >= WIDTH - (WIDTH / 10) || cub->mouse_x <= WIDTH / 10)
+	if (cub->mouse_x >= WIDTH - (WIDTH / 10) || cub->mouse_x <= WIDTH / 5)
 		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
-	if (cub->mouse_y >= HEIGHT - (HEIGHT / 10) || cub->mouse_x <= HEIGHT / 10)
+	if (cub->mouse_y >= HEIGHT - (HEIGHT / 10) || cub->mouse_x <= HEIGHT / 5)
 		mlx_mouse_move(cub->con, cub->win, WIDTH / 2, HEIGHT / 2);
 	if (m_x != cub->mouse_x)
 	{
@@ -237,6 +236,21 @@ void mouse_rotate(t_cube *cub)
 			rotate_player(cub, cub->p_rotation);
 	}
 	// printf("Mouse position :\nx : %d\ny : %d\n\n", cub->mouse_x, cub->mouse_y);
+}
+
+int	is_same_axis(double px, double x)
+{
+	if (px > x)
+	{
+		if (px - x >= 0.1)
+			return (0);
+	}
+	else
+	{
+		if (x - px >= 0.1)
+			return (0);
+	}
+	return (1);
 }
 
 void	tutorial(t_cube *cub, int bits_per_pixel)
@@ -264,13 +278,14 @@ void	tutorial(t_cube *cub, int bits_per_pixel)
 int	loop_hook(t_cube *cub)
 {
 	void *img;
-	int bits_per_pixel;
-	int endian;
+    int bits_per_pixel;
+    int endian;
 	char	*arrow_amount;
 	char	*atk_amount;
 	char	*speed_amount;
 
 	img = mlx_new_image(cub->con, WIDTH, HEIGHT);
+	cub->img = img;
 	cub->addr = mlx_get_data_addr(img, &bits_per_pixel, &cub->line_length, &endian);
 	//printf ("Player y is %d and x is %d\n", (int)cub->player.y, (int)cub->player.x);
 	if (cub->title_bool == 0 && cub->bg_bool == 0)
@@ -373,7 +388,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->key.right && cub->option_bool == -1)
 				rotate_player(cub, -(cub->p_rotation));
 		}
-		cast_ray(cub);
+		render_game(cub);
 		sword_handler(cub);
 		hp_handler(cub);
 		crossbow_handler(cub);
@@ -384,6 +399,51 @@ int	loop_hook(t_cube *cub)
 		draw_xpm_texture(15, WIDTH / 1.08, HEIGHT / 6, cub);
 		draw_xpm_texture(16, WIDTH / 1.08, HEIGHT / 10, cub);
 		draw_xpm_texture(17, WIDTH / 1.069, HEIGHT / 22, cub);
+	// draw_map_to_image(cub, cub->addr, cub->line_length);
+		if (cub->start == 1)
+			player_rotation_init(cub);
+		if (cub->option_bool == -1)
+			mouse_rotate(cub);
+		if (cub->key.left && cub->option_bool == -1)
+			rotate_player(cub, (cub->p_rotation));
+		if (cub->key.right && cub->option_bool == -1)
+			rotate_player(cub, -(cub->p_rotation));
+			
+		cub->casket_dist = dist((cub->casket_x * TILE_SIZE), (cub->casket_y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
+		cub->enemies[0].dist = dist((cub->enemies[0].x * TILE_SIZE), (cub->enemies[0].y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
+		if (cub->enemies[0].dist > 500)
+			cub->enemies->txt = cub->txt[19];
+		else if (cub->enemies[0].dist > 95)
+		{
+			if (cub->player.x > cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x + ENEMY_SPEED)] == '0' && !is_same_axis(cub->player.x, cub->enemies[0].x))
+			{
+				cub->enemies->txt = cub->txt[20];
+				cub->enemies[0].x += ENEMY_SPEED;
+			}
+			else if (cub->player.x < cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x - ENEMY_SPEED)] == '0'&& !is_same_axis(cub->player.x, cub->enemies[0].x))
+			{
+				cub->enemies->txt = cub->txt[21];
+				cub->enemies[0].x -= ENEMY_SPEED;
+			}
+			if (cub->player.y > cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y + ENEMY_SPEED)][(int) cub->enemies[0].x] == '0' && !is_same_axis(cub->player.y, cub->enemies[0].y))
+			{
+				cub->enemies->txt = cub->txt[21];
+				cub->enemies[0].y += ENEMY_SPEED;
+			}
+			else if (cub->player.y < cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y - ENEMY_SPEED)][(int) cub->enemies[0].x] == '0' && !is_same_axis(cub->player.y, cub->enemies[0].y))
+			{
+				cub->enemies->txt = cub->txt[20];
+				cub->enemies[0].y -= ENEMY_SPEED;
+			}
+		}
+		else
+		{
+			if (cub->enemies[0].last_attack == -1 || get_current_time() - cub->enemies[0].last_attack > 1400)
+			{
+				cub->player.hp -= 25;
+				cub->enemies[0].last_attack = get_current_time();
+			}
+		}
 	}
 	if (cub->title_bool == 1)
 		title_handler(cub);
@@ -396,12 +456,8 @@ int	loop_hook(t_cube *cub)
 		if (cub->enter_pressed)
 			cub->bg_bool = 0;
 	}
-	if (!cub->bg_bool && !cub->title_bool)
-	{
-		//draw_player_to_image(cub, cub->addr, cub->line_length);
-		//draw_map_to_image(cub, cub->addr, cub->line_length);
-	}
-	mlx_put_image_to_window(cub->con, cub->win, img, 0, 0);
+	// draw_player_to_image(cub, cub->addr, cub->line_length);
+	mlx_put_image_to_window(cub->con, cub->win, cub->img, 0, 0);
 	if (cub->title_bool == 0 && cub->bg_bool == 0)
 	{
 		if (cub->option_bool == 1 && cub->player.hp > 0 && !cub->tuto)
@@ -491,7 +547,7 @@ void window_init(t_cube *cub)
 	cub->con = mlx_init();
 	if (cub->con == NULL)
 		(printf("Error\nCouldn't start minilibx.\n"), exit_free(cub));
-	cub->win = mlx_new_window(cub->con, WIDTH, HEIGHT, "CATACOMBS");
+	cub->win = mlx_new_window(cub->con, WIDTH, HEIGHT, "cub3d");
 	if (cub->win == NULL)
 	{
 		mlx_destroy_display(cub->con);
@@ -503,8 +559,8 @@ void window_init(t_cube *cub)
 	cub->abc = (t_txt *)malloc(26 * sizeof(t_txt));
 	while (i < 26)
 	{
-		cub->alphabet[i] = mlx_xpm_file_to_image(cub->con, alpha, &x, &y);
-		cub->abc[i].addr = mlx_get_data_addr(cub->alphabet[i], &cub->abc[i].bits_per_pixel,
+		cub->abc[i].img = mlx_xpm_file_to_image(cub->con, alpha, &x, &y);
+		cub->abc[i].addr = mlx_get_data_addr(cub->abc[i].img, &cub->abc[i].bits_per_pixel,
 			&cub->abc[i].line_length, &cub->abc[i].endian);
 		cub->abc[i].width = 22;
 		cub->abc[i].height = 34;
@@ -515,8 +571,8 @@ void window_init(t_cube *cub)
 	cub->nums = (t_txt *)malloc(10 * sizeof(t_txt));
 	while (i < 10)
 	{
-		cub->numbers[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		cub->nums[i].addr = mlx_get_data_addr(cub->numbers[i], &cub->nums[i].bits_per_pixel,
+		cub->nums[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
+		cub->nums[i].addr = mlx_get_data_addr(cub->nums[i].img, &cub->nums[i].bits_per_pixel,
 			&cub->nums[i].line_length, &cub->nums[i].endian);
 		cub->nums[i].width = 22;
 		cub->nums[i].height = 34;
@@ -530,8 +586,8 @@ void window_init(t_cube *cub)
 	while (i < 5)
 	{
 		increment_numbers(num, i + 1);
-		cub->s_ani[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		cub->sword_ani[i].addr = mlx_get_data_addr(cub->s_ani[i], &cub->sword_ani[i].bits_per_pixel,
+		cub->sword_ani[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
+		cub->sword_ani[i].addr = mlx_get_data_addr(cub->sword_ani[i].img, &cub->sword_ani[i].bits_per_pixel,
 			&cub->sword_ani[i].line_length, &cub->sword_ani[i].endian);
 		cub->sword_ani[i].width = 637;
 		cub->sword_ani[i].height = 595;
@@ -545,8 +601,8 @@ void window_init(t_cube *cub)
 	while (i < 8)
 	{
 		increment_numbers(num, i + 1);
-		cub->p_hp[i] = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		cub->hp_frame[i].addr = mlx_get_data_addr(cub->p_hp[i], &cub->hp_frame[i].bits_per_pixel,
+		cub->hp_frame[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
+		cub->hp_frame[i].addr = mlx_get_data_addr(cub->hp_frame[i].img, &cub->hp_frame[i].bits_per_pixel,
 			&cub->hp_frame[i].line_length, &cub->hp_frame[i].endian);
 		cub->hp_frame[i].width = 160;
 		cub->hp_frame[i].height = 48;
@@ -591,7 +647,7 @@ void window_init(t_cube *cub)
 			num = ft_strdup("./textures/explosion_animation/explosion10.xpm");
 		}
 		else if (i >= 10)
-			increment_numbers_2(num, i - 10 + 1);
+			increment_numbers_2(num, i / 10 + 1);
 		else
 			increment_numbers(num, i + 1);
 		cub->explosion[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->explosion[i].width, &cub->explosion[i].height);
@@ -725,14 +781,26 @@ void window_init(t_cube *cub)
 	cub->txt[13].path = ft_strdup("textures/shield_weapon_slot.xpm");
 	cub->txt[14].type = NULL;
 	cub->txt[14].path = ft_strdup("textures/fire_weapon_slot.xpm");
-	cub->txt[15].type = NULL;
 	cub->txt[15].path = ft_strdup("textures/speed_item_hud.xpm");
 	cub->txt[16].type = NULL;
 	cub->txt[16].path = ft_strdup("textures/attack_item_hud.xpm");
 	cub->txt[17].type = NULL;
 	cub->txt[17].path = ft_strdup("textures/arrow_item_hud.xpm");
+	cub->txt[18].type = NULL;
+	cub->txt[18].path = ft_strdup("textures/Casket.xpm");
+	cub->txt[19].type = NULL;
+	cub->txt[19].path = ft_strdup("textures/rat_peace.xpm");
+	cub->txt[20].type = NULL;
+	cub->txt[20].path = ft_strdup("textures/rat.xpm");
+	cub->txt[21].type = NULL;
+	cub->txt[21].path = ft_strdup("textures/rat_left.xpm");
+	cub->enemies->txt = cub->txt[19];
+	cub->enemies[0].x = 2;
+	cub->enemies[0].y = 2;
+	cub->enemies[0].last_attack = -1;
+	
 	mlx_mouse_hide(cub->con, cub->win);
-	load_textures(cub, cub->txt, 18);
+	load_textures(cub, cub->txt, 22);
 	start_keys(cub);
 	mlx_key_hook(cub->win, handle_key_release, cub);
 	mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);

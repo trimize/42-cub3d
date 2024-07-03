@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:23:05 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/01 16:22:01 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:10:20 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,6 @@ int	search_txt(t_cube *cub, char c)
 	i = 0;
 	if (c == 'D')
 		return (10);
-	if (c == 'A')
-		return (18);
 	while (i < 4)
 	{
 		if (cub->txt[i].type && cub->txt[i].type[0] == c)
@@ -112,4 +110,15 @@ char *to_str(int n)
 	while (++i < len)
 		str[i] = tmp[(len - 1) - i];
 	return (free(tmp), str[i] = 0, str);
+}
+
+long int	get_current_time(void)
+{
+	long int			time;
+	struct timeval		current_time;
+
+	time = 0;
+	gettimeofday(&current_time, NULL);
+	time = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
+	return (time);
 }

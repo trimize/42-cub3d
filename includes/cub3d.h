@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 18:06:27 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:57:47 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,9 @@
 # define WIDTH 1280
 # define HEIGHT 720
 # define PLAYER_SIZE 2
+# define ENEMY_SPEED 0.01
 # define TILE_SIZE 64
-# define WALL_SIZE 75000
+# define WALL_SIZE 80000
 
 # define L_CONTROL_KEY 65507 //Replace
 
@@ -105,6 +106,17 @@ typedef struct s_player
 	double	speed;
 }	t_player;
 
+typedef struct s_enemy
+{
+	t_txt	txt;
+	double	x;
+	double	y;
+	double	dist;
+	long int		last_attack;
+	int	hp;
+}	t_enemy;
+
+
 typedef struct s_key
 {
 	int		w;
@@ -137,19 +149,12 @@ typedef struct s_cube
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
+	t_raycast	*rays;
+	t_enemy		enemies[4];
 	void		*con;
 	void		*win;
-	void		*options_menu;
-	void		*alphabet[26];
-	void		*numbers[26];
-	void		*s_ani[5];
-	void		*p_hp[7];
-	void		*arr_r_options;
-	void		*arr_l_options;
-	void		*w_slot;
-	void		*w_slot_white;
-	void		*sword_slot;
 	char		*addr;
+	void		*img;
 	int			enter_pressed;
 	int			title_bool;
 	int			bg_bool;
@@ -191,6 +196,9 @@ typedef struct s_cube
 	int			tuto;
 	double			fade_factor;
 	double			p_rotation;
+	double		casket_x;
+	double		casket_y;
+	double		casket_dist;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
@@ -211,20 +219,21 @@ void	map_filler(t_map *map);
 int		check_cub(char *file);
 void	window_init(t_cube *cub);
 void	fill_player(t_cube *cub);
+long int	get_current_time(void);
 void	player_checker(t_cube *cub);
 void	load_textures(t_cube *cub, t_txt *txt, int num);
 void	init_rays(t_cube *cub);
 void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
-void	cast_ray(t_cube *cub);
+void	cast_ray(t_cube *cub, int index);
 void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
 void	render_3d(t_cube *cub, t_raycast *ray);
 int		rgb_to_hex(int r, int g, int b);
 void	draw_player_to_image(t_cube *cub, char *addr, int line_length);
 void	draw_map_to_image(t_cube *cub, char *addr, int line_length);
 int		search_txt(t_cube *cub, char c);
-
+double	dist(double ax, double ay, double bx, double by);
 
 void	draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt);
 void	draw_xpm_hp(int alpha, int x, int y, t_cube *cub);
@@ -260,5 +269,10 @@ void	fov_option(t_cube *cub);
 void	draw_options(t_cube *cub);
 void	fade_to_black(t_cube *cub, double fade_factor, int bits_per_pixel);
 t_cube	*call_cub(void);
+
+void	draw_square_to_image(char *addr, int line_length, int x, int y, int color); //DELETE
+void	draw_sprite(t_cube *cub, int index);
+void	render_game(t_cube *cub);
+void	draw_enemy(t_cube *cub, t_enemy *enemy);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   weapons.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:17:31 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/02 14:04:18 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:30:15 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,6 @@ void	init_w_slots(t_cube *cub)
 		cub->weapons_in_slot[i++] = 0;
 	//just to test
 	cub->weapons_in_slot[0] = 1;
-	cub->weapons_in_slot[1] = 2;
-	cub->weapons_in_slot[2] = 3;
-	cub->weapons_in_slot[3] = 4;
 }
 
 void	weapon_slot_handler(t_cube *cub)
@@ -80,7 +77,7 @@ void	weapon_slot_handler(t_cube *cub)
 
 void	sword_handler(t_cube *cub)
 {
-	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 1 && cub->player.hp > 0)
+	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 1)
 	{
 		update_animation(cub);
 		draw_xpm_animation(cub->current_frame_num_sword, WIDTH / 2.5, HEIGHT / 4, cub, cub->sword_ani);
@@ -96,7 +93,7 @@ void	sword_handler(t_cube *cub)
 
 void	crossbow_handler(t_cube *cub)
 {
-	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 2 && cub->player.arrows > 0 && cub->player.hp > 0)
+	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 2 && cub->player.arrows > 0)
 	{
 		update_animation_crossbow(cub);
 		draw_xpm_animation(cub->current_frame_num_cbow, WIDTH / 2.8, HEIGHT / 1.255, cub, cub->crossbow);
@@ -130,7 +127,7 @@ void	dragon_handler(t_cube *cub)
 
 void	explosion_handler(t_cube *cub)
 {
-	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 4 && cub->player.hp > 0)
+	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 4)
 	{
 		update_animation_explosion(cub);
 		draw_xpm_animation(cub->current_frame_num_explo, WIDTH / 2.7, HEIGHT / 3.5, cub, cub->explosion);

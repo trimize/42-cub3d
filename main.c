@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/01 17:46:30 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:41:50 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,13 @@ int	main(void)
 	char	**file;
 
 	cub = call_cub();
+	cub->casket_x = 2;
+	cub->casket_y = 2;
 	if (check_cub(path))
 		(printf("Error\nMap file must end in .cub\n"), exit(1));
 	file = read_file(path);
-	cub->txt = (t_txt *)malloc(18 * sizeof(t_txt));
+	cub->txt = (t_txt *)malloc(22 * sizeof(t_txt));
+	cub->rays = (t_raycast *) malloc (WIDTH * sizeof(t_raycast));
 	save_file(cub, file);
 	player_checker(cub);
 	map_filler(&cub->map);

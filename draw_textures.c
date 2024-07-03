@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_textures.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:09:33 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/02 14:36:38 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:27:57 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->txt[alpha].width)
 		{
+			
 			if (alpha == 5 || alpha == 6)
 			{
 				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
@@ -123,4 +124,3 @@ void	draw_xpm_number(int alpha, int x, int y, t_cube *cub)
 		i++;
 	}
 }
-
