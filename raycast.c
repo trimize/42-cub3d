@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 00:45:56 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 15:12:36 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,6 +321,6 @@ void	render_game(t_cube *cub)
 		i++;
 	}
 	// draw_sprite(cub, 15);
-	draw_enemy(cub, &cub->enemies[0]);
+	draw_enemy(cub, &cub->enemies[0], 0.2, 20);
 	draw_items(cub);
 }

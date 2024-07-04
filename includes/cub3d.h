@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 01:05:20 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 19:33:42 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,9 @@ typedef struct s_txt
 	int		line_length;
 	int		endian;
 	int		tmp_delay;
+	int		delay;
+	int		current_frame;
+	int		frame_max;
 }	t_txt;
 
 typedef struct s_rotation_ray
@@ -114,6 +117,7 @@ typedef struct s_enemy
 	double	dist;
 	long int		last_attack;
 	int	hp;
+	int	attacking_bool;
 }	t_enemy;
 
 typedef struct s_item
@@ -157,6 +161,7 @@ typedef struct s_cube
 	t_txt		*main_menu_start;
 	t_txt		*game_over;
 	t_txt		*keyboard;
+	t_txt		**nightborne;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
@@ -188,24 +193,6 @@ typedef struct s_cube
 	int			items_counter;
 	int			sensi;
 	int			speed;
-	int			current_frame_num_sword;
-	int			sword_delay;
-	int			cbow_delay;
-	int			hp_delay;
-	int			dra_delay;
-	int			explo_delay;
-	int			title_delay;
-	int			start_delay;
-	int			bg_delay;
-	int			died_delay;
-	int			current_frame_num_hp;
-	int			current_frame_num_cbow;
-	int			current_frame_num_dra;
-	int			current_frame_num_explo;
-	int			current_frame_num_title;
-	int			current_frame_num_bg;
-	int			current_frame_num_start;
-	int			current_frame_num_died;
 	int			weapons_in_slot[4];
 	int			tuto;
 	double			fade_factor;
@@ -289,9 +276,11 @@ t_cube	*call_cub(void);
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color); //DELETE
 void	draw_sprite(t_cube *cub, int index);
 void	render_game(t_cube *cub);
-void	draw_enemy(t_cube *cub, t_enemy *enemy);
+void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index);
 void	draw_weapon(t_cube *cub, int index);
 void	display_messages(t_cube *cub);
 void	check_pick_up(t_cube *cub);
+t_txt	enemy_animation_handler(t_cube *cub, t_txt *txt, int max_frame);
+t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int max_frame, int dist);
 
 #endif

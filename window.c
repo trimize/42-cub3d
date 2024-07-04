@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 01:37:22 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 19:36:17 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -416,36 +416,27 @@ int	loop_hook(t_cube *cub)
 		// cub->casket_dist = dist((cub->casket_x * TILE_SIZE), (cub->casket_y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
 		cub->enemies[0].dist = dist((cub->enemies[0].x * TILE_SIZE), (cub->enemies[0].y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
 		if (cub->enemies[0].dist > 500)
-			cub->enemies->txt = cub->txt[19];
-		else if (cub->enemies[0].dist > 95)
+			cub->enemies->txt = enemy_animation_handler(cub, cub->nightborne[0], 8);
+		else if (cub->enemies[0].dist > 150 && cub->enemies[0].attacking_bool == 0)
 		{
-			if (cub->player.x > cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x + ENEMY_SPEED)] == '0' && !is_same_axis(cub->player.x, cub->enemies[0].x))
-			{
-				cub->enemies->txt = cub->txt[20];
+			cub->enemies->txt = enemy_animation_handler(cub, cub->nightborne[1], 5);
+			if (cub->player.x > cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x + ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x + ENEMY_SPEED)] != 'D')
 				cub->enemies[0].x += ENEMY_SPEED;
-			}
-			else if (cub->player.x < cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x - ENEMY_SPEED)] == '0'&& !is_same_axis(cub->player.x, cub->enemies[0].x))
-			{
-				cub->enemies->txt = cub->txt[21];
+			else if (cub->player.x < cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x - ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x - ENEMY_SPEED)] != 'D')
 				cub->enemies[0].x -= ENEMY_SPEED;
-			}
-			if (cub->player.y > cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y + ENEMY_SPEED)][(int) cub->enemies[0].x] == '0' && !is_same_axis(cub->player.y, cub->enemies[0].y))
-			{
-				cub->enemies->txt = cub->txt[21];
+			if (cub->player.y > cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y + ENEMY_SPEED)][(int) cub->enemies[0].x] != '1' && cub->map.map[(int) (cub->enemies[0].y + ENEMY_SPEED)][(int) cub->enemies[0].x] != 'D')
 				cub->enemies[0].y += ENEMY_SPEED;
-			}
-			else if (cub->player.y < cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y - ENEMY_SPEED)][(int) cub->enemies[0].x] == '0' && !is_same_axis(cub->player.y, cub->enemies[0].y))
-			{
-				cub->enemies->txt = cub->txt[20];
+			else if (cub->player.y < cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y - ENEMY_SPEED)][(int) cub->enemies[0].x] != '1' && cub->map.map[(int) (cub->enemies[0].y - ENEMY_SPEED)][(int) cub->enemies[0].x] != 'D')
 				cub->enemies[0].y -= ENEMY_SPEED;
-			}
 		}
 		else
 		{
-			if (cub->enemies[0].last_attack == -1 || get_current_time() - cub->enemies[0].last_attack > 1400)
+			cub->enemies->txt = enemy_animation_atk(cub, cub->nightborne[2], 11, cub->enemies[0].dist);
+			if (cub->enemies[0].last_attack == 1 && cub->enemies[0].dist < 150)
 			{
 				cub->player.hp -= 25;
-				cub->enemies[0].last_attack = get_current_time();
+				cub->enemies[0].last_attack = -1;
+				//cub->enemies[0].last_attack = get_current_time();
 			}
 		}
 	}
@@ -506,25 +497,7 @@ void	start_keys(t_cube *cub)
 	cub->p_rotation = 0.0299;
 	cub->fov = 60;
 	cub->speed = 3;
-	cub->current_frame_num_sword = 0;
-	cub->current_frame_num_cbow = 0;
-	cub->current_frame_num_dra = 0;
-	cub->current_frame_num_explo = 0;
-	cub->current_frame_num_title = 0;
-	cub->current_frame_num_bg = 0;
-	cub->current_frame_num_start = 0;
-	cub->current_frame_num_died = 0;
-	cub->sword_delay = 10;
-	cub->dra_delay = 15;
-	cub->cbow_delay = 18;
 	cub->player.hp = 100;
-	cub->hp_delay = 6;
-	cub->explo_delay = 7;
-	cub->title_delay = 70;
-	cub->died_delay = 20;
-	cub->bg_delay = 20;
-	cub->start_delay = 10;
-	cub->current_frame_num_hp = 1;
 	cub->player.weapon = 1;
 	init_w_slots(cub);
 	cub->player.arrows = 5;
@@ -537,6 +510,8 @@ void	start_keys(t_cube *cub)
 	cub->enter_pressed = 0;
 	cub->fade_factor = 1.0;
 	cub->tuto = 1;
+	cub->enemies[0].attacking_bool = 0;
+	cub->enemies[0].last_attack = -1;
 }
 
 void window_init(t_cube *cub)
@@ -599,6 +574,8 @@ void window_init(t_cube *cub)
 		cub->sword_ani[i].tmp_delay = 0;
 		i++;
 	}
+	cub->sword_ani->delay = 10;
+	cub->sword_ani->current_frame = 0;
 	i = 0;
 	free(num);
 	num = ft_strdup("./textures/hp/hp1.xpm");
@@ -614,6 +591,8 @@ void window_init(t_cube *cub)
 		cub->hp_frame[i].tmp_delay = 0;
 		i++;
 	}
+	cub->hp_frame->delay = 6;
+	cub->hp_frame->current_frame = 1;
 	free(num);
 	i = 0;
 	cub->crossbow = (t_txt *)malloc(6 * sizeof(t_txt));
@@ -627,6 +606,8 @@ void window_init(t_cube *cub)
 		cub->crossbow[i].tmp_delay = 0;
 		i++;
 	}
+	cub->crossbow->delay = 18;
+	cub->crossbow->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->dragon = (t_txt *)malloc(5 * sizeof(t_txt));
@@ -640,6 +621,8 @@ void window_init(t_cube *cub)
 		cub->dragon[i].tmp_delay = 0;
 		i++;
 	}
+	cub->dragon->delay = 15;
+	cub->dragon->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->explosion = (t_txt *)malloc(13 * sizeof(t_txt));
@@ -661,6 +644,8 @@ void window_init(t_cube *cub)
 		cub->explosion[i].tmp_delay = 0;
 		i++;
 	}
+	cub->explosion->delay = 7;
+	cub->explosion->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->title_screen = (t_txt *)malloc(29 * sizeof(t_txt));
@@ -683,6 +668,8 @@ void window_init(t_cube *cub)
 		cub->title_screen[i].tmp_delay = 0;
 		i++;
 	}
+	cub->title_screen->delay = 70;
+	cub->title_screen->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->main_menu_bg = (t_txt *)malloc(24 * sizeof(t_txt));
@@ -705,6 +692,8 @@ void window_init(t_cube *cub)
 		cub->main_menu_bg[i].tmp_delay = 0;
 		i++;
 	}
+	cub->main_menu_bg->delay = 20;
+	cub->main_menu_bg->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->main_menu_start = (t_txt *)malloc(19 * sizeof(t_txt));
@@ -723,6 +712,8 @@ void window_init(t_cube *cub)
 		cub->main_menu_start[i].tmp_delay = 0;
 		i++;
 	}
+	cub->main_menu_start->delay = 10;
+	cub->main_menu_start->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->game_over = (t_txt *)malloc(11 * sizeof(t_txt));
@@ -741,6 +732,8 @@ void window_init(t_cube *cub)
 		cub->game_over[i].tmp_delay = 0;
 		i++;
 	}
+	cub->game_over->delay = 20;
+	cub->game_over->current_frame = 0;
 	free(num);
 	i = 0;
 	cub->keyboard = (t_txt *)malloc(12 * sizeof(t_txt));
@@ -759,6 +752,62 @@ void window_init(t_cube *cub)
 		cub->keyboard[i].tmp_delay = 0;
 		i++;
 	}
+	free(num);
+	cub->nightborne = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->nightborne[i] = (t_txt *)malloc(9 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/Nightborne/idle/idle1.xpm");
+	while (y < 9)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->nightborne[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->nightborne[i][y].width, &cub->nightborne[i][y].height);
+		cub->nightborne[i][y].addr = mlx_get_data_addr(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
+			&cub->nightborne[i][y].line_length, &cub->nightborne[i][y].endian);
+		cub->nightborne[i][y].tmp_delay = 0;
+		y++;
+	}
+	free(num);
+	cub->nightborne[i]->delay = 8;
+	cub->nightborne[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->nightborne[i] = (t_txt *)malloc(6 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/Nightborne/run/run1.xpm");
+	while (y < 6)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->nightborne[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->nightborne[i][y].width, &cub->nightborne[i][y].height);
+		cub->nightborne[i][y].addr = mlx_get_data_addr(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
+			&cub->nightborne[i][y].line_length, &cub->nightborne[i][y].endian);
+		cub->nightborne[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->nightborne[i]->delay = 8;
+	cub->nightborne[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->nightborne[i] = (t_txt *)malloc(12 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/Nightborne/attack/attack1.xpm");
+	while (y < 12)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/Nightborne/attack/attack10.xpm"));
+		else if (y >= 10 && y < 19)
+			increment_numbers_2(num, y - 10 + 1);
+		else
+			increment_numbers(num, y + 1);
+		cub->nightborne[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->nightborne[i][y].width, &cub->nightborne[i][y].height);
+		cub->nightborne[i][y].addr = mlx_get_data_addr(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
+			&cub->nightborne[i][y].line_length, &cub->nightborne[i][y].endian);
+		cub->nightborne[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->nightborne[i]->delay = 8;
+	cub->nightborne[i]->current_frame = 0;
 	free(num);
 	cub->main_menu_assets = (t_txt *)malloc(1 * sizeof(t_txt));
 	cub->main_menu_assets[0].type = NULL;
@@ -800,10 +849,9 @@ void window_init(t_cube *cub)
 	cub->txt[20].path = ft_strdup("textures/rat.xpm");
 	cub->txt[21].type = NULL;
 	cub->txt[21].path = ft_strdup("textures/rat_left.xpm");
-	cub->enemies->txt = cub->txt[19];
+	cub->enemies->txt = cub->nightborne[0][0];
 	cub->enemies[0].x = 2;
 	cub->enemies[0].y = 2;
-	cub->enemies[0].last_attack = -1;
 
 	items_parsing(cub);
 	

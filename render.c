@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 00:36:21 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/04 15:11:54 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,7 @@ void	draw_xpm_texture_sprite(int alpha, int x, int y, t_cube *cub, t_raycast *ra
 //     // }
 // }
 
-void draw_enemy(t_cube *cub, t_enemy *enemy)
+void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index)
 {
     double spriteX = (enemy->x) - (cub->player.x);
     double spriteY = (enemy->y) - (cub->player.y);
@@ -244,13 +244,12 @@ void draw_enemy(t_cube *cub, t_enemy *enemy)
 
     double invDet = 1.0 / (planeX * dirY - dirX * planeY); // required for correct matrix multiplication
 
-    double transformX = invDet * (dirY * spriteX - dirX * spriteY) * 2;
-    double transformY = invDet * (-planeY * spriteX + planeX * spriteY) * 2; // this is actually the depth inside the screen, that what Z is in 3D
+    double transformX = invDet * (dirY * spriteX - dirX * spriteY) * scale;
+    double transformY = invDet * (-planeY * spriteX + planeX * spriteY) * scale; // this is actually the depth inside the screen, that what Z is in 3D
 
     int spriteScreenX = (int) ((WIDTH / 2) * (1 + transformX / transformY));
 
-	int zPosition = 800;
-	int scaledZPosition = (int)(zPosition / transformY);
+	int scaledZPosition = (int)(z_index / transformY);
 
     // calculate height of the sprite on screen
     int spriteHeight = abs((int) (HEIGHT / (transformY))); // using 'transformY' instead of the real distance prevents fisheye
