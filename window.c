@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 19:36:17 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/11 21:58:30 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	close_x(t_cube *cub)
 
 int mouse_events(int key)
 {
-	if (key == 1)
+	if (key == 1 && (call_cub())->player.hp > 0)
 	{
 		(call_cub())->key.mouse_l = 1;
 	}
@@ -74,7 +74,7 @@ int	handle_key_press(int key, t_cube *cub)
 	else if (key == 101)
 		cub->map.map[7][8] = 'd';
 	else if (key == 65293)
-		cub->enter_pressed = 1;
+		cub->bg_bool = 0;
 	return (0);
 }
 
@@ -94,25 +94,6 @@ int	handle_key_release(int key, t_cube *cub)
 		cub->key.right = 0;
 	return (0);
 }
-
-// void	game_loop(t_cube *cub)
-// {
-// 	while (1)
-// 	{
-// 		draw_player(cub);
-// 		mlx_do_sync(cub->con);
-// 	}
-// }
-
-//int	loop_hook(t_cube *cub)
-//{
-//	mlx_clear_window(cub->con, cub->win);
-//	draw_map(cub);
-//	draw_player(cub);
-//	mlx_do_sync(cub->con);
-//	return (0);
-//}
-
 
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
 {
@@ -275,6 +256,103 @@ void	tutorial(t_cube *cub, int bits_per_pixel)
 	mlx_string_put(cub->con, cub->win, WIDTH / 2.2, HEIGHT / 1.175, 0xFFFFFF, " -   Close the tutorial !");
 }
 
+//void swap(t_enemy *a, t_enemy *b)
+//{
+//	t_enemy temp = *a;
+//	*a = *b;
+//	*b = temp;
+//}
+
+//// Partition function to find the pivot position and rearrange the elements
+//int partition(int low, int high, t_enemy *arr) {
+//    t_enemy pivot = arr[high];  // Choosing the last element as pivot
+//    int i = low;      // Index of smaller element
+
+//    for (int j = low; j <= high - 1; j++)
+//    {
+//        if (arr[j].dist < pivot.dist)
+//	{
+//            swap(&arr[i], &arr[j]);
+//            i++;
+//        }
+//    }
+//    swap(&arr[i], &arr[high]);
+//    return (i);
+//}
+
+//// QuickSort function
+//void quickSort(t_enemy *arr, int low, int high) {
+//    if (low < high) {
+//        int pi = partition(low, high, arr);
+
+//        // Recursively sort elements before and after partition
+//        quickSort(arr, low, pi - 1);
+//        quickSort(arr, pi + 1, high);
+//    }
+//}
+
+void	enemy_handler(t_cube *cub, int index, t_txt **txt)
+{
+	if (cub->enemies[index].hp > 0)
+	{
+		cub->enemies[index].dist = dist((cub->enemies[index].x * TILE_SIZE), (cub->enemies[index].y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
+		if (cub->enemies[index].dist > 500 && cub->option_bool == -1)
+		{
+			cub->enemies[index].txt = enemy_animation_handler(txt[0], cub->enemies[index].idle_max_frame);
+			//printf("draw start : %d\ndraw end : %d", cub->enemies[index].draw_start, cub->enemies[index].draw_end);
+			if (cub->player.hit == 1 && cub->enemies[index].draw_start >= WIDTH / 4 && cub->enemies[index].draw_end <= WIDTH / 1.4 && (cub->weapons_in_slot[cub->player.weapon - 1] == 2 || cub->weapons_in_slot[cub->player.weapon - 1] == 4) && cub->rays[WIDTH / 2].dist > cub->enemies[index].dist)
+			{
+				cub->player.hit = 0;
+				//printf("player hit !\n");
+				cub->enemies[index].hp -= 25;
+				cub->enemies[index].hurt = 1;
+			}
+		}
+		else if (cub->enemies[index].dist > cub->enemies[index].attack_range && cub->enemies[index].attacking_bool == 0 && cub->option_bool == -1)
+		{
+			//printf("draw start : %d\n", cub->enemies[index].draw_start);
+			cub->enemies[index].txt = enemy_animation_handler(txt[1], cub->enemies[index].run_max_frame);
+			if (cub->player.hit == 1 && cub->enemies[index].draw_start >= WIDTH / 8 && cub->enemies[index].draw_end <= WIDTH / 1.1 && (cub->weapons_in_slot[cub->player.weapon - 1] == 2 || cub->weapons_in_slot[cub->player.weapon - 1] == 4) && cub->rays[WIDTH / 2].dist > cub->enemies[index].dist)
+			{
+				cub->player.hit = 0;
+				printf("player hit !\n");
+				cub->enemies[index].hp -= 25;
+				cub->enemies[index].hurt = 1;
+			}
+			if (cub->player.x > cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x + ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x + ENEMY_SPEED)] != 'D')
+				cub->enemies[index].x += ENEMY_SPEED;
+			else if (cub->player.x < cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x - ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x - ENEMY_SPEED)] != 'D')
+				cub->enemies[index].x -= ENEMY_SPEED;
+			if (cub->player.y > cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y + ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && cub->map.map[(int) (cub->enemies[index].y + ENEMY_SPEED)][(int) cub->enemies[index].x] != 'D')
+				cub->enemies[index].y += ENEMY_SPEED;
+			else if (cub->player.y < cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y - ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && cub->map.map[(int) (cub->enemies[index].y - ENEMY_SPEED)][(int) cub->enemies[index].x] != 'D')
+				cub->enemies[index].y -= ENEMY_SPEED;
+		}
+		else
+		{
+			if (cub->player.hit == 1 && cub->enemies[index].dist < cub->enemies[index].attack_range && cub->rays[WIDTH / 2].dist > cub->enemies[index].dist)
+			{
+				cub->player.hit = 0;
+				//printf("player hit !\n");
+				cub->enemies[index].hp -= 25;
+				cub->enemies[index].hurt = 1;
+			}
+			if (cub->option_bool == -1 && !cub->enemies[index].hurt)
+				cub->enemies[index].txt = enemy_animation_atk(cub, txt[2], index, cub->enemies[index].dist);
+			if (cub->enemies[index].last_attack == 1 && cub->enemies[index].dist < cub->enemies[index].attack_range && cub->option_bool == -1)
+			{
+				cub->player.hp -= 25;
+				cub->enemies[index].last_attack = -1;
+				//cub->enemies[index].last_attack = get_current_time();
+			}
+		}
+		if (cub->option_bool == -1 && cub->enemies[index].hurt)
+			cub->enemies[index].txt = enemy_animation_hurt(cub, txt[3], index, cub->enemies[index].hurt_max_frame);
+	}
+	else if (cub->enemies[index].dead == 0)
+		cub->enemies[index].txt = enemy_animation_death(cub, txt[4], index, cub->enemies[index].death_max_frame);
+}
+
 int	loop_hook(t_cube *cub)
 {
 	void *img;
@@ -399,7 +477,7 @@ int	loop_hook(t_cube *cub)
 		shield_handler(cub);
 		weapon_slot_handler(cub);
 		dragon_handler(cub);
-		explosion_handler(cub);
+		explosion_sprite(cub);
 		draw_xpm_texture(15, WIDTH / 1.08, HEIGHT / 6, cub);
 		draw_xpm_texture(16, WIDTH / 1.08, HEIGHT / 10, cub);
 		draw_xpm_texture(17, WIDTH / 1.069, HEIGHT / 22, cub);
@@ -414,42 +492,24 @@ int	loop_hook(t_cube *cub)
 			rotate_player(cub, -(cub->p_rotation));
 			
 		// cub->casket_dist = dist((cub->casket_x * TILE_SIZE), (cub->casket_y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
-		cub->enemies[0].dist = dist((cub->enemies[0].x * TILE_SIZE), (cub->enemies[0].y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
-		if (cub->enemies[0].dist > 500)
-			cub->enemies->txt = enemy_animation_handler(cub, cub->nightborne[0], 8);
-		else if (cub->enemies[0].dist > 150 && cub->enemies[0].attacking_bool == 0)
-		{
-			cub->enemies->txt = enemy_animation_handler(cub, cub->nightborne[1], 5);
-			if (cub->player.x > cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x + ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x + ENEMY_SPEED)] != 'D')
-				cub->enemies[0].x += ENEMY_SPEED;
-			else if (cub->player.x < cub->enemies[0].x && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x - ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[0].y][(int) (cub->enemies[0].x - ENEMY_SPEED)] != 'D')
-				cub->enemies[0].x -= ENEMY_SPEED;
-			if (cub->player.y > cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y + ENEMY_SPEED)][(int) cub->enemies[0].x] != '1' && cub->map.map[(int) (cub->enemies[0].y + ENEMY_SPEED)][(int) cub->enemies[0].x] != 'D')
-				cub->enemies[0].y += ENEMY_SPEED;
-			else if (cub->player.y < cub->enemies[0].y && cub->map.map[(int) (cub->enemies[0].y - ENEMY_SPEED)][(int) cub->enemies[0].x] != '1' && cub->map.map[(int) (cub->enemies[0].y - ENEMY_SPEED)][(int) cub->enemies[0].x] != 'D')
-				cub->enemies[0].y -= ENEMY_SPEED;
-		}
-		else
-		{
-			cub->enemies->txt = enemy_animation_atk(cub, cub->nightborne[2], 11, cub->enemies[0].dist);
-			if (cub->enemies[0].last_attack == 1 && cub->enemies[0].dist < 150)
-			{
-				cub->player.hp -= 25;
-				cub->enemies[0].last_attack = -1;
-				//cub->enemies[0].last_attack = get_current_time();
-			}
-		}
+		enemy_handler(cub, 0, cub->nightborne);
+		//enemy_handler(cub, 1, cub->skeleton);
+		//enemy_handler(cub, 2, cub->warrior);
+		//enemy_handler(cub, 3, cub->skullwolf);
+		//enemy_handler(cub, 4, cub->s_warrior);
+		//enemy_handler(cub, 5, cub->plague_doctor);
+		//enemy_handler(cub, 6, cub->cute_wolf);
+		//quickSort(cub->enemies, 0, cub->enemies_nb - 1);
 	}
 	if (cub->title_bool == 1)
 		title_handler(cub);
 	if (cub->bg_bool)
 	{
 		bg_handler(cub);
-		cub->player.hp = 100;
 		draw_xpm_animation(0, WIDTH /10, HEIGHT / 25, cub, cub->main_menu_assets);
 		start_handler(cub);
-		if (cub->enter_pressed)
-			cub->bg_bool = 0;
+		start_keys(cub);
+		init_enemies(cub);
 	}
 	// draw_player_to_image(cub, cub->addr, cub->line_length);
 	mlx_put_image_to_window(cub->con, cub->win, cub->img, 0, 0);
@@ -469,6 +529,7 @@ int	loop_hook(t_cube *cub)
 		speed_amount = ft_strdup(" x ");
 		speed_amount = ft_strjoin_gnl(speed_amount, ft_itoa(cub->player.speed_item_amount));
 		mlx_string_put(cub->con, cub->win, WIDTH / 1.049, HEIGHT / 5, 0xFFFFFF, speed_amount);
+		draw_xpm_animation(19, WIDTH / 2, HEIGHT / 2, cub, cub->txt);
 	}
 	if (cub->player.hp <= 0 && !cub->bg_bool)
 	{
@@ -477,11 +538,100 @@ int	loop_hook(t_cube *cub)
 			cub->fade_factor = 0.42;
 		fade_to_black(cub, cub->fade_factor, bits_per_pixel);
 		died_handler(cub);
+		cub->retry = 1;
 	}
 	if (cub->tuto && !cub->title_bool && !cub->bg_bool)
 		tutorial(cub, bits_per_pixel);
 	mlx_destroy_image(cub->con, img);
 	return (0);
+}
+
+void	init_enemies(t_cube *cub)
+{
+	int	i;
+
+	i = 0;
+	while (i < 7)
+	{
+		cub->enemies[i].attacking_bool = 0;
+		cub->enemies[i].last_attack = -1;
+		cub->enemies[i].dead = 0;
+		if (i == 0 || i == 2 || i == 5)
+			cub->enemies[i].hp = 500;
+		else
+			cub->enemies[i].hp = 100;
+		i++;
+	}
+	cub->enemies[0].x = 2;
+	cub->enemies[0].y = 2;
+	cub->enemies[0].scale = 0.2;
+	cub->enemies[0].z_index = 20;
+	cub->enemies[0].atk_max_frame = 11;
+	cub->enemies[0].death_max_frame = 21;
+	cub->enemies[0].hurt_max_frame = 4;
+	cub->enemies[0].idle_max_frame = 8;
+	cub->enemies[0].run_max_frame = 5;
+	cub->enemies[0].attack_range = 150;
+	cub->enemies[1].x = 8;
+	cub->enemies[1].y = 6;
+	cub->enemies[1].scale = 0.8;
+	cub->enemies[1].z_index = 100;
+	cub->enemies[1].atk_max_frame = 17;
+	cub->enemies[1].death_max_frame = 12;
+	cub->enemies[1].hurt_max_frame = 7;
+	cub->enemies[1].idle_max_frame = 10;
+	cub->enemies[1].run_max_frame = 12;
+	cub->enemies[1].attack_range = 80;
+	cub->enemies[2].x = 13;
+	cub->enemies[2].y = 12;
+	cub->enemies[2].scale = 0.4;
+	cub->enemies[2].z_index = 70;
+	cub->enemies[2].atk_max_frame = 6;
+	cub->enemies[2].death_max_frame = 6;
+	cub->enemies[2].hurt_max_frame = 2;
+	cub->enemies[2].idle_max_frame = 9;
+	cub->enemies[2].run_max_frame = 7;
+	cub->enemies[2].attack_range = 80;
+	cub->enemies[3].x = 5;
+	cub->enemies[3].y = 12;
+	cub->enemies[3].scale = 0.6;
+	cub->enemies[3].z_index = 80;
+	cub->enemies[3].atk_max_frame = 4;
+	cub->enemies[3].death_max_frame = 6;
+	cub->enemies[3].hurt_max_frame = 3;
+	cub->enemies[3].idle_max_frame = 5;
+	cub->enemies[3].run_max_frame = 4;
+	cub->enemies[3].attack_range = 80;
+	cub->enemies[4].x = 8;
+	cub->enemies[4].y = 11;
+	cub->enemies[4].scale = 0.6;
+	cub->enemies[4].z_index = 80;
+	cub->enemies[4].atk_max_frame = 3;
+	cub->enemies[4].death_max_frame = 8;
+	cub->enemies[4].hurt_max_frame = 2;
+	cub->enemies[4].idle_max_frame = 5;
+	cub->enemies[4].run_max_frame = 7;
+	cub->enemies[4].attack_range = 100;
+	cub->enemies[5].x = 7;
+	cub->enemies[5].y = 11;
+	cub->enemies[5].scale = 0.6;
+	cub->enemies[5].z_index = 80;
+	cub->enemies[5].atk_max_frame = 4;
+	cub->enemies[5].death_max_frame = 5;
+	cub->enemies[5].hurt_max_frame = 2;
+	cub->enemies[5].idle_max_frame = 3;
+	cub->enemies[5].run_max_frame = 3;
+	cub->enemies[5].attack_range = 70;
+	cub->enemies[6].x = 7;
+	cub->enemies[6].y = 11;
+	cub->enemies[6].scale = 0.6;
+	cub->enemies[6].z_index = 80;
+	cub->enemies[6].atk_max_frame = 4;
+	cub->enemies[6].death_max_frame = 4;
+	cub->enemies[6].hurt_max_frame = 2;
+	cub->enemies[6].idle_max_frame = 3;
+	cub->enemies[6].run_max_frame = 3;
+	cub->enemies[6].attack_range = 70;
 }
 
 void	start_keys(t_cube *cub)
@@ -505,254 +655,649 @@ void	start_keys(t_cube *cub)
 	cub->player.atk = 10;
 	cub->player.atk_item_amount = 0;
 	cub->player.speed_item_amount = 0;
-	cub->title_bool = 0;
-	cub->bg_bool = 0;
-	cub->enter_pressed = 0;
+	if (!cub->retry)
+	{
+		cub->title_bool = 0;
+		cub->bg_bool = 0;	
+	}
 	cub->fade_factor = 1.0;
-	cub->tuto = 1;
-	cub->enemies[0].attacking_bool = 0;
-	cub->enemies[0].last_attack = -1;
+	cub->tuto = 0;
+	cub->player.hit = 0;
+	cub->player.last_atk = 0;
+	cub->explosion->x = 0;
+	cub->explosion->y = 0;
+	cub->explosion->launched = 0;
+	cub->enemies_nb = 2;
+	init_enemies(cub);
 }
 
-void window_init(t_cube *cub)
+void	init_cute_wolf(t_cube *cub)
 {
-	char *alpha;
-	char *num;
-	int i;
-	int x;
-	int y;
+	int		i;
+	int		y;
+	char	*num;
 
-	alpha = ft_strdup("./textures/alphabet/A.xpm");
-	num = ft_strdup("./textures/numbers/0.xpm");
-	cub->con = mlx_init();
-	if (cub->con == NULL)
-		(printf("Error\nCouldn't start minilibx.\n"), exit_free(cub));
-	cub->win = mlx_new_window(cub->con, WIDTH, HEIGHT, "cub3d");
-	if (cub->win == NULL)
+	cub->cute_wolf = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->cute_wolf[i] = (t_txt *)malloc(4 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/cute_wolf/idle/idle1.xpm");
+	while (y < 4)
 	{
-		mlx_destroy_display(cub->con);
-		free(cub->con);
-		printf("Error\nCouldn't open the window.\n");
-		exit_free(cub);
+		increment_numbers(num, y + 1);
+		cub->cute_wolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->cute_wolf[i][y].width, &cub->cute_wolf[i][y].height);
+		cub->cute_wolf[i][y].addr = mlx_get_data_addr(cub->cute_wolf[i][y].img, &cub->cute_wolf[i][y].bits_per_pixel,
+			&cub->cute_wolf[i][y].line_length, &cub->cute_wolf[i][y].endian);
+		cub->cute_wolf[i][y].tmp_delay = 0;
+		y++;
 	}
+	free(num);
+	cub->cute_wolf[i]->delay = 20;
+	cub->cute_wolf[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->cute_wolf[i] = (t_txt *)malloc(4 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/cute_wolf/run/run1.xpm");
+	while (y < 4)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->cute_wolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->cute_wolf[i][y].width, &cub->cute_wolf[i][y].height);
+		cub->cute_wolf[i][y].addr = mlx_get_data_addr(cub->cute_wolf[i][y].img, &cub->cute_wolf[i][y].bits_per_pixel,
+			&cub->cute_wolf[i][y].line_length, &cub->cute_wolf[i][y].endian);
+		cub->cute_wolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->cute_wolf[i]->delay = 10;
+	cub->cute_wolf[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->cute_wolf[i] = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/cute_wolf/attack/attack1.xpm");
+	while (y < 5)
+	{
+		increment_numbers(num, y + 1);
+		cub->cute_wolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->cute_wolf[i][y].width, &cub->cute_wolf[i][y].height);
+		cub->cute_wolf[i][y].addr = mlx_get_data_addr(cub->cute_wolf[i][y].img, &cub->cute_wolf[i][y].bits_per_pixel,
+			&cub->cute_wolf[i][y].line_length, &cub->cute_wolf[i][y].endian);
+		cub->cute_wolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->cute_wolf[i]->delay = 20;
+	cub->cute_wolf[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->cute_wolf[i] = (t_txt *)malloc(3 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/cute_wolf/hurt/hurt1.xpm");
+	while (y < 3)
+	{
+		increment_numbers(num, y + 1);
+		cub->cute_wolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->cute_wolf[i][y].width, &cub->cute_wolf[i][y].height);
+		cub->cute_wolf[i][y].addr = mlx_get_data_addr(cub->cute_wolf[i][y].img, &cub->cute_wolf[i][y].bits_per_pixel,
+			&cub->cute_wolf[i][y].line_length, &cub->cute_wolf[i][y].endian);
+		cub->cute_wolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->cute_wolf[i]->delay = 12;
+	cub->cute_wolf[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->cute_wolf[i] = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/cute_wolf/death/death1.xpm");
+	while (y < 5)
+	{
+		increment_numbers(num, y + 1);
+		cub->cute_wolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->cute_wolf[i][y].width, &cub->cute_wolf[i][y].height);
+		cub->cute_wolf[i][y].addr = mlx_get_data_addr(cub->cute_wolf[i][y].img, &cub->cute_wolf[i][y].bits_per_pixel,
+			&cub->cute_wolf[i][y].line_length, &cub->cute_wolf[i][y].endian);
+		cub->cute_wolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->cute_wolf[i]->delay = 8;
+	cub->cute_wolf[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_plague_doctor(t_cube *cub)
+{
+	int		i;
+	int		y;
+	char	*num;
+
+	cub->plague_doctor = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->plague_doctor[i] = (t_txt *)malloc(4 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/plague_doctor/idle/idle1.xpm");
+	while (y < 4)
+	{
+		increment_numbers(num, y + 1);
+		cub->plague_doctor[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->plague_doctor[i][y].width, &cub->plague_doctor[i][y].height);
+		cub->plague_doctor[i][y].addr = mlx_get_data_addr(cub->plague_doctor[i][y].img, &cub->plague_doctor[i][y].bits_per_pixel,
+			&cub->plague_doctor[i][y].line_length, &cub->plague_doctor[i][y].endian);
+		cub->plague_doctor[i][y].tmp_delay = 0;
+		y++;
+	}
+	free(num);
+	cub->plague_doctor[i]->delay = 20;
+	cub->plague_doctor[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->plague_doctor[i] = (t_txt *)malloc(4 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/plague_doctor/run/run1.xpm");
+	while (y < 4)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->plague_doctor[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->plague_doctor[i][y].width, &cub->plague_doctor[i][y].height);
+		cub->plague_doctor[i][y].addr = mlx_get_data_addr(cub->plague_doctor[i][y].img, &cub->plague_doctor[i][y].bits_per_pixel,
+			&cub->plague_doctor[i][y].line_length, &cub->plague_doctor[i][y].endian);
+		cub->plague_doctor[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->plague_doctor[i]->delay = 10;
+	cub->plague_doctor[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->plague_doctor[i] = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/plague_doctor/attack/attack1.xpm");
+	while (y < 5)
+	{
+		increment_numbers(num, y + 1);
+		cub->plague_doctor[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->plague_doctor[i][y].width, &cub->plague_doctor[i][y].height);
+		cub->plague_doctor[i][y].addr = mlx_get_data_addr(cub->plague_doctor[i][y].img, &cub->plague_doctor[i][y].bits_per_pixel,
+			&cub->plague_doctor[i][y].line_length, &cub->plague_doctor[i][y].endian);
+		cub->plague_doctor[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->plague_doctor[i]->delay = 20;
+	cub->plague_doctor[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->plague_doctor[i] = (t_txt *)malloc(3 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/plague_doctor/hurt/hurt1.xpm");
+	while (y < 3)
+	{
+		increment_numbers(num, y + 1);
+		cub->plague_doctor[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->plague_doctor[i][y].width, &cub->plague_doctor[i][y].height);
+		cub->plague_doctor[i][y].addr = mlx_get_data_addr(cub->plague_doctor[i][y].img, &cub->plague_doctor[i][y].bits_per_pixel,
+			&cub->plague_doctor[i][y].line_length, &cub->plague_doctor[i][y].endian);
+		cub->plague_doctor[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->plague_doctor[i]->delay = 12;
+	cub->plague_doctor[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->plague_doctor[i] = (t_txt *)malloc(6 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/plague_doctor/death/death1.xpm");
+	while (y < 6)
+	{
+		increment_numbers(num, y + 1);
+		cub->plague_doctor[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->plague_doctor[i][y].width, &cub->plague_doctor[i][y].height);
+		cub->plague_doctor[i][y].addr = mlx_get_data_addr(cub->plague_doctor[i][y].img, &cub->plague_doctor[i][y].bits_per_pixel,
+			&cub->plague_doctor[i][y].line_length, &cub->plague_doctor[i][y].endian);
+		cub->plague_doctor[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->plague_doctor[i]->delay = 8;
+	cub->plague_doctor[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_s_warrior(t_cube *cub)
+{
+	int		i;
+	int		y;
+	char	*num;
+
+	cub->s_warrior = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->s_warrior[i] = (t_txt *)malloc(6 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/s_warrior/idle/idle1.xpm");
+	while (y < 6)
+	{
+		increment_numbers(num, y + 1);
+		cub->s_warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->s_warrior[i][y].width, &cub->s_warrior[i][y].height);
+		cub->s_warrior[i][y].addr = mlx_get_data_addr(cub->s_warrior[i][y].img, &cub->s_warrior[i][y].bits_per_pixel,
+			&cub->s_warrior[i][y].line_length, &cub->s_warrior[i][y].endian);
+		cub->s_warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	free(num);
+	cub->s_warrior[i]->delay = 20;
+	cub->s_warrior[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->s_warrior[i] = (t_txt *)malloc(8 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/s_warrior/run/run1.xpm");
+	while (y < 8)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->s_warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->s_warrior[i][y].width, &cub->s_warrior[i][y].height);
+		cub->s_warrior[i][y].addr = mlx_get_data_addr(cub->s_warrior[i][y].img, &cub->s_warrior[i][y].bits_per_pixel,
+			&cub->s_warrior[i][y].line_length, &cub->s_warrior[i][y].endian);
+		cub->s_warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->s_warrior[i]->delay = 10;
+	cub->s_warrior[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->s_warrior[i] = (t_txt *)malloc(4 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/s_warrior/attack/attack1.xpm");
+	while (y < 4)
+	{
+		increment_numbers(num, y + 1);
+		cub->s_warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->s_warrior[i][y].width, &cub->s_warrior[i][y].height);
+		cub->s_warrior[i][y].addr = mlx_get_data_addr(cub->s_warrior[i][y].img, &cub->s_warrior[i][y].bits_per_pixel,
+			&cub->s_warrior[i][y].line_length, &cub->s_warrior[i][y].endian);
+		cub->s_warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->s_warrior[i]->delay = 20;
+	cub->s_warrior[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->s_warrior[i] = (t_txt *)malloc(3 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/s_warrior/hurt/hurt1.xpm");
+	while (y < 3)
+	{
+		increment_numbers(num, y + 1);
+		cub->s_warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->s_warrior[i][y].width, &cub->s_warrior[i][y].height);
+		cub->s_warrior[i][y].addr = mlx_get_data_addr(cub->s_warrior[i][y].img, &cub->s_warrior[i][y].bits_per_pixel,
+			&cub->s_warrior[i][y].line_length, &cub->s_warrior[i][y].endian);
+		cub->s_warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->s_warrior[i]->delay = 12;
+	cub->s_warrior[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->s_warrior[i] = (t_txt *)malloc(9 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/s_warrior/death/death1.xpm");
+	while (y < 9)
+	{
+		increment_numbers(num, y + 1);
+		cub->s_warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->s_warrior[i][y].width, &cub->s_warrior[i][y].height);
+		cub->s_warrior[i][y].addr = mlx_get_data_addr(cub->s_warrior[i][y].img, &cub->s_warrior[i][y].bits_per_pixel,
+			&cub->s_warrior[i][y].line_length, &cub->s_warrior[i][y].endian);
+		cub->s_warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->s_warrior[i]->delay = 8;
+	cub->s_warrior[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_skullwolf(t_cube *cub)
+{
+	int		i;
+	int		y;
+	char	*num;
+
+	cub->skullwolf = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->skullwolf[i] = (t_txt *)malloc(6 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skullwolf/idle/idle1.xpm");
+	while (y < 6)
+	{
+		increment_numbers(num, y + 1);
+		cub->skullwolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skullwolf[i][y].width, &cub->skullwolf[i][y].height);
+		cub->skullwolf[i][y].addr = mlx_get_data_addr(cub->skullwolf[i][y].img, &cub->skullwolf[i][y].bits_per_pixel,
+			&cub->skullwolf[i][y].line_length, &cub->skullwolf[i][y].endian);
+		cub->skullwolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	free(num);
+	cub->skullwolf[i]->delay = 8;
+	cub->skullwolf[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->skullwolf[i] = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skullwolf/run/run1.xpm");
+	while (y < 5)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->skullwolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skullwolf[i][y].width, &cub->skullwolf[i][y].height);
+		cub->skullwolf[i][y].addr = mlx_get_data_addr(cub->skullwolf[i][y].img, &cub->skullwolf[i][y].bits_per_pixel,
+			&cub->skullwolf[i][y].line_length, &cub->skullwolf[i][y].endian);
+		cub->skullwolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skullwolf[i]->delay = 10;
+	cub->skullwolf[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->skullwolf[i] = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skullwolf/attack/attack1.xpm");
+	while (y < 5)
+	{
+		increment_numbers(num, y + 1);
+		cub->skullwolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skullwolf[i][y].width, &cub->skullwolf[i][y].height);
+		cub->skullwolf[i][y].addr = mlx_get_data_addr(cub->skullwolf[i][y].img, &cub->skullwolf[i][y].bits_per_pixel,
+			&cub->skullwolf[i][y].line_length, &cub->skullwolf[i][y].endian);
+		cub->skullwolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skullwolf[i]->delay = 10;
+	cub->skullwolf[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->skullwolf[i] = (t_txt *)malloc(4 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skullwolf/hurt/hurt1.xpm");
+	while (y < 4)
+	{
+		increment_numbers(num, y + 1);
+		cub->skullwolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skullwolf[i][y].width, &cub->skullwolf[i][y].height);
+		cub->skullwolf[i][y].addr = mlx_get_data_addr(cub->skullwolf[i][y].img, &cub->skullwolf[i][y].bits_per_pixel,
+			&cub->skullwolf[i][y].line_length, &cub->skullwolf[i][y].endian);
+		cub->skullwolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skullwolf[i]->delay = 12;
+	cub->skullwolf[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->skullwolf[i] = (t_txt *)malloc(7 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skullwolf/death/death1.xpm");
+	while (y < 7)
+	{
+		increment_numbers(num, y + 1);
+		cub->skullwolf[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skullwolf[i][y].width, &cub->skullwolf[i][y].height);
+		cub->skullwolf[i][y].addr = mlx_get_data_addr(cub->skullwolf[i][y].img, &cub->skullwolf[i][y].bits_per_pixel,
+			&cub->skullwolf[i][y].line_length, &cub->skullwolf[i][y].endian);
+		cub->skullwolf[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skullwolf[i]->delay = 8;
+	cub->skullwolf[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_warrior(t_cube *cub)
+{
+	int		i;
+	int		y;
+	char	*num;
+
+	cub->warrior = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->warrior[i] = (t_txt *)malloc(10 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/warrior/idle/idle1.xpm");
+	while (y < 10)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/warrior/idle/idle10.xpm"));
+		else
+			increment_numbers(num, y + 1);
+		cub->warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->warrior[i][y].width, &cub->warrior[i][y].height);
+		cub->warrior[i][y].addr = mlx_get_data_addr(cub->warrior[i][y].img, &cub->warrior[i][y].bits_per_pixel,
+			&cub->warrior[i][y].line_length, &cub->warrior[i][y].endian);
+		cub->warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	free(num);
+	cub->warrior[i]->delay = 8;
+	cub->warrior[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->warrior[i] = (t_txt *)malloc(8 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/warrior/run/run1.xpm");
+	while (y < 8)
+	{
+
+		increment_numbers(num, y + 1);
+		cub->warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->warrior[i][y].width, &cub->warrior[i][y].height);
+		cub->warrior[i][y].addr = mlx_get_data_addr(cub->warrior[i][y].img, &cub->warrior[i][y].bits_per_pixel,
+			&cub->warrior[i][y].line_length, &cub->warrior[i][y].endian);
+		cub->warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->warrior[i]->delay = 10;
+	cub->warrior[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->warrior[i] = (t_txt *)malloc(7 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/warrior/attack/attack1.xpm");
+	while (y < 7)
+	{
+		increment_numbers(num, y + 1);
+		cub->warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->warrior[i][y].width, &cub->warrior[i][y].height);
+		cub->warrior[i][y].addr = mlx_get_data_addr(cub->warrior[i][y].img, &cub->warrior[i][y].bits_per_pixel,
+			&cub->warrior[i][y].line_length, &cub->warrior[i][y].endian);
+		cub->warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->warrior[i]->delay = 14;
+	cub->warrior[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->warrior[i] = (t_txt *)malloc(3 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/warrior/hurt/hurt1.xpm");
+	while (y < 3)
+	{
+		increment_numbers(num, y + 1);
+		cub->warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->warrior[i][y].width, &cub->warrior[i][y].height);
+		cub->warrior[i][y].addr = mlx_get_data_addr(cub->warrior[i][y].img, &cub->warrior[i][y].bits_per_pixel,
+			&cub->warrior[i][y].line_length, &cub->warrior[i][y].endian);
+		cub->warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->warrior[i]->delay = 12;
+	cub->warrior[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->warrior[i] = (t_txt *)malloc(7 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/warrior/death/death1.xpm");
+	while (y < 7)
+	{
+		increment_numbers(num, y + 1);
+		cub->warrior[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->warrior[i][y].width, &cub->warrior[i][y].height);
+		cub->warrior[i][y].addr = mlx_get_data_addr(cub->warrior[i][y].img, &cub->warrior[i][y].bits_per_pixel,
+			&cub->warrior[i][y].line_length, &cub->warrior[i][y].endian);
+		cub->warrior[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->warrior[i]->delay = 8;
+	cub->warrior[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_skeleton(t_cube *cub)
+{
+	int		i;
+	int		y;
+	char	*num;
+
+	cub->skeleton = (t_txt **)malloc(5 * sizeof(t_txt *));
+	i = 0;
+	y = 0;
+	cub->skeleton[i] = (t_txt *)malloc(11 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skeleton/idle/idle1.xpm");
+	while (y < 11)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/skeleton/idle/idle10.xpm"));
+		else if (y >= 10 && y < 19)
+			increment_numbers_2(num, y - 10 + 1);
+		else
+			increment_numbers(num, y + 1);
+		cub->skeleton[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skeleton[i][y].width, &cub->skeleton[i][y].height);
+		cub->skeleton[i][y].addr = mlx_get_data_addr(cub->skeleton[i][y].img, &cub->skeleton[i][y].bits_per_pixel,
+			&cub->skeleton[i][y].line_length, &cub->skeleton[i][y].endian);
+		cub->skeleton[i][y].tmp_delay = 0;
+		y++;
+	}
+	free(num);
+	cub->skeleton[i]->delay = 8;
+	cub->skeleton[i]->current_frame = 0;
+	i++;
+	y = 0;
+	cub->skeleton[i] = (t_txt *)malloc(13 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skeleton/run/run1.xpm");
+	while (y < 13)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/skeleton/run/run10.xpm"));
+		else if (y >= 10 && y < 19)
+			increment_numbers_2(num, y - 10 + 1);
+		else
+			increment_numbers(num, y + 1);
+		cub->skeleton[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skeleton[i][y].width, &cub->skeleton[i][y].height);
+		cub->skeleton[i][y].addr = mlx_get_data_addr(cub->skeleton[i][y].img, &cub->skeleton[i][y].bits_per_pixel,
+			&cub->skeleton[i][y].line_length, &cub->skeleton[i][y].endian);
+		cub->skeleton[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skeleton[i]->delay = 2;
+	cub->skeleton[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->skeleton[i] = (t_txt *)malloc(18 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skeleton/attack/attack1.xpm");
+	while (y < 18)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/skeleton/attack/attack10.xpm"));
+		else if (y >= 10 && y < 19)
+			increment_numbers_2(num, y - 10 + 1);
+		else
+			increment_numbers(num, y + 1);
+		cub->skeleton[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skeleton[i][y].width, &cub->skeleton[i][y].height);
+		cub->skeleton[i][y].addr = mlx_get_data_addr(cub->skeleton[i][y].img, &cub->skeleton[i][y].bits_per_pixel,
+			&cub->skeleton[i][y].line_length, &cub->skeleton[i][y].endian);
+		cub->skeleton[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skeleton[i]->delay = 8;
+	cub->skeleton[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->skeleton[i] = (t_txt *)malloc(8 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skeleton/hurt/hurt1.xpm");
+	while (y < 8)
+	{
+		increment_numbers(num, y + 1);
+		cub->skeleton[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skeleton[i][y].width, &cub->skeleton[i][y].height);
+		cub->skeleton[i][y].addr = mlx_get_data_addr(cub->skeleton[i][y].img, &cub->skeleton[i][y].bits_per_pixel,
+			&cub->skeleton[i][y].line_length, &cub->skeleton[i][y].endian);
+		cub->skeleton[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skeleton[i]->delay = 8;
+	cub->skeleton[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->skeleton[i] = (t_txt *)malloc(13 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/skeleton/death/death1.xpm");
+	while (y < 13)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/skeleton/death/death10.xpm"));
+		else if (y >= 10 && y < 19)
+			increment_numbers_2(num, y - 10 + 1);
+		else
+			increment_numbers(num, y + 1);
+		cub->skeleton[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->skeleton[i][y].width, &cub->skeleton[i][y].height);
+		cub->skeleton[i][y].addr = mlx_get_data_addr(cub->skeleton[i][y].img, &cub->skeleton[i][y].bits_per_pixel,
+			&cub->skeleton[i][y].line_length, &cub->skeleton[i][y].endian);
+		cub->skeleton[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->skeleton[i]->delay = 8;
+	cub->skeleton[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_alphabet(t_cube *cub)
+{
+	int		i;
+	int		x;
+	int		y;
+	char	*num;
+
 	i = 0;
 	cub->abc = (t_txt *)malloc(26 * sizeof(t_txt));
+	num = ft_strdup("./textures/alphabet/A.xpm");
 	while (i < 26)
 	{
-		cub->abc[i].img = mlx_xpm_file_to_image(cub->con, alpha, &x, &y);
+		cub->abc[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
 		cub->abc[i].addr = mlx_get_data_addr(cub->abc[i].img, &cub->abc[i].bits_per_pixel,
 			&cub->abc[i].line_length, &cub->abc[i].endian);
 		cub->abc[i].width = 22;
 		cub->abc[i].height = 34;
 		i++;
-		increment_alphabet(alpha, i);
-	}
-	i = 0;
-	cub->nums = (t_txt *)malloc(10 * sizeof(t_txt));
-	while (i < 10)
-	{
-		cub->nums[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		cub->nums[i].addr = mlx_get_data_addr(cub->nums[i].img, &cub->nums[i].bits_per_pixel,
-			&cub->nums[i].line_length, &cub->nums[i].endian);
-		cub->nums[i].width = 22;
-		cub->nums[i].height = 34;
-		i++;
-		increment_numbers(num, i);
-	}
-	i = 0;
-	free(num);
-	cub->sword_ani = (t_txt *)malloc(5 * sizeof(t_txt));
-	num = ft_strdup("./textures/sword_animation/sword1.xpm");
-	while (i < 5)
-	{
-		increment_numbers(num, i + 1);
-		cub->sword_ani[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		cub->sword_ani[i].addr = mlx_get_data_addr(cub->sword_ani[i].img, &cub->sword_ani[i].bits_per_pixel,
-			&cub->sword_ani[i].line_length, &cub->sword_ani[i].endian);
-		cub->sword_ani[i].width = 637;
-		cub->sword_ani[i].height = 595;
-		cub->sword_ani[i].tmp_delay = 0;
-		i++;
-	}
-	cub->sword_ani->delay = 10;
-	cub->sword_ani->current_frame = 0;
-	i = 0;
-	free(num);
-	num = ft_strdup("./textures/hp/hp1.xpm");
-	cub->hp_frame = (t_txt *)malloc(8 * sizeof(t_txt));
-	while (i < 8)
-	{
-		increment_numbers(num, i + 1);
-		cub->hp_frame[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
-		cub->hp_frame[i].addr = mlx_get_data_addr(cub->hp_frame[i].img, &cub->hp_frame[i].bits_per_pixel,
-			&cub->hp_frame[i].line_length, &cub->hp_frame[i].endian);
-		cub->hp_frame[i].width = 160;
-		cub->hp_frame[i].height = 48;
-		cub->hp_frame[i].tmp_delay = 0;
-		i++;
-	}
-	cub->hp_frame->delay = 6;
-	cub->hp_frame->current_frame = 1;
-	free(num);
-	i = 0;
-	cub->crossbow = (t_txt *)malloc(6 * sizeof(t_txt));
-	num = ft_strdup("./textures/crossbow_animation/crossbow1.xpm");
-	while (i < 6)
-	{
-		increment_numbers(num, i + 1);
-		cub->crossbow[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->crossbow[i].width, &cub->crossbow[i].height);
-		cub->crossbow[i].addr = mlx_get_data_addr(cub->crossbow[i].img, &cub->crossbow[i].bits_per_pixel,
-			&cub->crossbow[i].line_length, &cub->crossbow[i].endian);
-		cub->crossbow[i].tmp_delay = 0;
-		i++;
-	}
-	cub->crossbow->delay = 18;
-	cub->crossbow->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->dragon = (t_txt *)malloc(5 * sizeof(t_txt));
-	num = ft_strdup("./textures/dragon_animation/dragon1.xpm");
-	while (i < 5)
-	{
-		increment_numbers(num, i + 1);
-		cub->dragon[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->dragon[i].width, &cub->dragon[i].height);
-		cub->dragon[i].addr = mlx_get_data_addr(cub->dragon[i].img, &cub->dragon[i].bits_per_pixel,
-			&cub->dragon[i].line_length, &cub->dragon[i].endian);
-		cub->dragon[i].tmp_delay = 0;
-		i++;
-	}
-	cub->dragon->delay = 15;
-	cub->dragon->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->explosion = (t_txt *)malloc(13 * sizeof(t_txt));
-	num = ft_strdup("./textures/explosion_animation/explosion1.xpm");
-	while (i < 13)
-	{
-		if (i == 9)
-		{
-			free(num);
-			num = ft_strdup("./textures/explosion_animation/explosion10.xpm");
-		}
-		else if (i >= 10)
-			increment_numbers_2(num, i / 10 + 1);
-		else
-			increment_numbers(num, i + 1);
-		cub->explosion[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->explosion[i].width, &cub->explosion[i].height);
-		cub->explosion[i].addr = mlx_get_data_addr(cub->explosion[i].img, &cub->explosion[i].bits_per_pixel,
-			&cub->explosion[i].line_length, &cub->explosion[i].endian);
-		cub->explosion[i].tmp_delay = 0;
-		i++;
-	}
-	cub->explosion->delay = 7;
-	cub->explosion->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->title_screen = (t_txt *)malloc(29 * sizeof(t_txt));
-	num = ft_strdup("./textures/title_screen/title1.xpm");
-	while (i < 29)
-	{
-		if (i == 9)
-			(free(num), num = ft_strdup("./textures/title_screen/title10.xpm"));
-		else if (i == 19)
-			(free(num), num = ft_strdup("./textures/title_screen/title20.xpm"));
-		else if (i >= 10 && i < 19)
-			increment_numbers_2(num, i - 10 + 1);
-		else if (i >= 20)
-			increment_numbers_2(num, i - 20 + 1);
-		else
-			increment_numbers(num, i + 1);
-		cub->title_screen[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->title_screen[i].width, &cub->title_screen[i].height);
-		cub->title_screen[i].addr = mlx_get_data_addr(cub->title_screen[i].img, &cub->title_screen[i].bits_per_pixel,
-			&cub->title_screen[i].line_length, &cub->title_screen[i].endian);
-		cub->title_screen[i].tmp_delay = 0;
-		i++;
-	}
-	cub->title_screen->delay = 70;
-	cub->title_screen->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->main_menu_bg = (t_txt *)malloc(24 * sizeof(t_txt));
-	num = ft_strdup("./textures/main_menu/bg1.xpm");
-	while (i < 24)
-	{
-		if (i == 9)
-			(free(num), num = ft_strdup("./textures/main_menu/bg10.xpm"));
-		else if (i == 19)
-			(free(num), num = ft_strdup("./textures/main_menu/bg20.xpm"));
-		else if (i >= 10 && i < 19)
-			increment_numbers_2(num, i - 10 + 1);
-		else if (i >= 20 && i < 29)
-			increment_numbers_2(num, i - 20 + 1);
-		else
-			increment_numbers(num, i + 1);
-		cub->main_menu_bg[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->main_menu_bg[i].width, &cub->main_menu_bg[i].height);
-		cub->main_menu_bg[i].addr = mlx_get_data_addr(cub->main_menu_bg[i].img, &cub->main_menu_bg[i].bits_per_pixel,
-			&cub->main_menu_bg[i].line_length, &cub->main_menu_bg[i].endian);
-		cub->main_menu_bg[i].tmp_delay = 0;
-		i++;
-	}
-	cub->main_menu_bg->delay = 20;
-	cub->main_menu_bg->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->main_menu_start = (t_txt *)malloc(19 * sizeof(t_txt));
-	num = ft_strdup("./textures/main_menu/start/start1.xpm");
-	while (i < 19)
-	{
-		if (i == 9)
-			(free(num), num = ft_strdup("./textures/main_menu/start/start10.xpm"));
-		else if (i >= 10 && i < 19)
-			increment_numbers_2(num, i - 10 + 1);
-		else
-			increment_numbers(num, i + 1);
-		cub->main_menu_start[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->main_menu_start[i].width, &cub->main_menu_start[i].height);
-		cub->main_menu_start[i].addr = mlx_get_data_addr(cub->main_menu_start[i].img, &cub->main_menu_start[i].bits_per_pixel,
-			&cub->main_menu_start[i].line_length, &cub->main_menu_start[i].endian);
-		cub->main_menu_start[i].tmp_delay = 0;
-		i++;
-	}
-	cub->main_menu_start->delay = 10;
-	cub->main_menu_start->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->game_over = (t_txt *)malloc(11 * sizeof(t_txt));
-	num = ft_strdup("./textures/game_over/died1.xpm");
-	while (i < 11)
-	{
-		if (i == 9)
-			(free(num), num = ft_strdup("./textures/game_over/died10.xpm"));
-		else if (i >= 10 && i < 19)
-			increment_numbers_2(num, i - 10 + 1);
-		else
-			increment_numbers(num, i + 1);
-		cub->game_over[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->game_over[i].width, &cub->game_over[i].height);
-		cub->game_over[i].addr = mlx_get_data_addr(cub->game_over[i].img, &cub->game_over[i].bits_per_pixel,
-			&cub->game_over[i].line_length, &cub->game_over[i].endian);
-		cub->game_over[i].tmp_delay = 0;
-		i++;
-	}
-	cub->game_over->delay = 20;
-	cub->game_over->current_frame = 0;
-	free(num);
-	i = 0;
-	cub->keyboard = (t_txt *)malloc(12 * sizeof(t_txt));
-	num = ft_strdup("./textures/keyboard_assets/1.xpm");
-	while (i < 12)
-	{
-		if (i == 9)
-			(free(num), num = ft_strdup("./textures/keyboard_assets/10.xpm"));
-		else if (i >= 10 && i < 19)
-			increment_numbers_2(num, i - 10 + 1);
-		else
-			increment_numbers(num, i + 1);
-		cub->keyboard[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->keyboard[i].width, &cub->keyboard[i].height);
-		cub->keyboard[i].addr = mlx_get_data_addr(cub->keyboard[i].img, &cub->keyboard[i].bits_per_pixel,
-			&cub->keyboard[i].line_length, &cub->keyboard[i].endian);
-		cub->keyboard[i].tmp_delay = 0;
-		i++;
+		increment_alphabet(num, i);
 	}
 	free(num);
+}
+
+void	init_textures(t_cube *cub)
+{
+	cub->txt[4].type = NULL;
+	cub->txt[4].path = ft_strdup("./textures/options_menu_resized.xpm");
+	cub->txt[5].type = NULL;
+	cub->txt[5].path = ft_strdup("./textures/arrow_right.xpm");
+	cub->txt[6].type = NULL;
+	cub->txt[6].path = ft_strdup("./textures/arrow_left.xpm");
+	cub->txt[7].type = NULL;
+	cub->txt[7].path = ft_strdup("./textures/weapon_slot.xpm");
+	cub->txt[8].type = NULL;
+	cub->txt[8].path = ft_strdup("./textures/weapon_slot_white.xpm");
+	cub->txt[9].type = NULL;
+	cub->txt[9].path = ft_strdup("./textures/sword_weapon_slot.xpm");
+	cub->txt[10].type = ft_strdup("D");
+	cub->txt[10].path = ft_strdup("textures/Door.xpm");
+	cub->txt[11].type = NULL;
+	cub->txt[11].path = ft_strdup("textures/crossbow_weapon_slot.xpm");
+	cub->txt[12].type = NULL;
+	cub->txt[12].path = ft_strdup("textures/shield.xpm");
+	cub->txt[13].type = NULL;
+	cub->txt[13].path = ft_strdup("textures/shield_weapon_slot.xpm");
+	cub->txt[14].type = NULL;
+	cub->txt[14].path = ft_strdup("textures/fire_weapon_slot.xpm");
+	cub->txt[15].type = NULL;
+	cub->txt[15].path = ft_strdup("textures/speed_item_hud.xpm");
+	cub->txt[16].type = NULL;
+	cub->txt[16].path = ft_strdup("textures/attack_item_hud.xpm");
+	cub->txt[17].type = NULL;
+	cub->txt[17].path = ft_strdup("textures/arrow_item_hud.xpm");
+	cub->txt[18].type = NULL;
+	cub->txt[18].path = ft_strdup("textures/Casket.xpm");
+	cub->txt[19].type = NULL;
+	cub->txt[19].path = ft_strdup("textures/crosshair.xpm");
+}
+
+void	init_nightborne(t_cube *cub)
+{
+	int		i;
+	int		y;
+	char	*num;
+
 	cub->nightborne = (t_txt **)malloc(5 * sizeof(t_txt *));
 	i = 0;
 	y = 0;
@@ -809,54 +1354,372 @@ void window_init(t_cube *cub)
 	cub->nightborne[i]->delay = 8;
 	cub->nightborne[i]->current_frame = 0;
 	free(num);
+	i++;
+	y = 0;
+	cub->nightborne[i] = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/Nightborne/hurt/hurt1.xpm");
+	while (y < 5)
+	{
+		increment_numbers(num, y + 1);
+		cub->nightborne[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->nightborne[i][y].width, &cub->nightborne[i][y].height);
+		cub->nightborne[i][y].addr = mlx_get_data_addr(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
+			&cub->nightborne[i][y].line_length, &cub->nightborne[i][y].endian);
+		cub->nightborne[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->nightborne[i]->delay = 8;
+	cub->nightborne[i]->current_frame = 0;
+	free(num);
+	i++;
+	y = 0;
+	cub->nightborne[i] = (t_txt *)malloc(22 * sizeof(t_txt));
+	num = ft_strdup("./textures/Enemies/Nightborne/death/death1.xpm");
+	while (y < 22)
+	{
+		if (y == 9)
+			(free(num), num = ft_strdup("./textures/Enemies/Nightborne/death/death10.xpm"));
+		else if (y == 19)
+			(free(num), num = ft_strdup("./textures/Enemies/Nightborne/death/death20.xpm"));
+		else if (y >= 10 && y < 19)
+			increment_numbers_2(num, y - 10 + 1);
+		else if (y >= 20 && y < 29)
+			increment_numbers_2(num, y - 20 + 1);
+		else
+			increment_numbers(num, y + 1);
+		cub->nightborne[i][y].img = mlx_xpm_file_to_image(cub->con, num, &cub->nightborne[i][y].width, &cub->nightborne[i][y].height);
+		cub->nightborne[i][y].addr = mlx_get_data_addr(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
+			&cub->nightborne[i][y].line_length, &cub->nightborne[i][y].endian);
+		cub->nightborne[i][y].tmp_delay = 0;
+		y++;
+	}
+	cub->nightborne[i]->delay = 8;
+	cub->nightborne[i]->current_frame = 0;
+	free(num);
+}
+
+void	init_keyboard(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->keyboard = (t_txt *)malloc(12 * sizeof(t_txt));
+	num = ft_strdup("./textures/keyboard_assets/1.xpm");
+	while (i < 12)
+	{
+		if (i == 9)
+			(free(num), num = ft_strdup("./textures/keyboard_assets/10.xpm"));
+		else if (i >= 10 && i < 19)
+			increment_numbers_2(num, i - 10 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->keyboard[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->keyboard[i].width, &cub->keyboard[i].height);
+		cub->keyboard[i].addr = mlx_get_data_addr(cub->keyboard[i].img, &cub->keyboard[i].bits_per_pixel,
+			&cub->keyboard[i].line_length, &cub->keyboard[i].endian);
+		cub->keyboard[i].tmp_delay = 0;
+		i++;
+	}
+	free(num);
+}
+
+void	init_game_over(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->game_over = (t_txt *)malloc(11 * sizeof(t_txt));
+	num = ft_strdup("./textures/game_over/died1.xpm");
+	while (i < 11)
+	{
+		if (i == 9)
+			(free(num), num = ft_strdup("./textures/game_over/died10.xpm"));
+		else if (i >= 10 && i < 19)
+			increment_numbers_2(num, i - 10 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->game_over[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->game_over[i].width, &cub->game_over[i].height);
+		cub->game_over[i].addr = mlx_get_data_addr(cub->game_over[i].img, &cub->game_over[i].bits_per_pixel,
+			&cub->game_over[i].line_length, &cub->game_over[i].endian);
+		cub->game_over[i].tmp_delay = 0;
+		i++;
+	}
+	cub->game_over->delay = 20;
+	cub->game_over->current_frame = 0;
+	free(num);
+}
+
+void	init_main_menu_start(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->main_menu_start = (t_txt *)malloc(19 * sizeof(t_txt));
+	num = ft_strdup("./textures/main_menu/start/start1.xpm");
+	while (i < 19)
+	{
+		if (i == 9)
+			(free(num), num = ft_strdup("./textures/main_menu/start/start10.xpm"));
+		else if (i >= 10 && i < 19)
+			increment_numbers_2(num, i - 10 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->main_menu_start[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->main_menu_start[i].width, &cub->main_menu_start[i].height);
+		cub->main_menu_start[i].addr = mlx_get_data_addr(cub->main_menu_start[i].img, &cub->main_menu_start[i].bits_per_pixel,
+			&cub->main_menu_start[i].line_length, &cub->main_menu_start[i].endian);
+		cub->main_menu_start[i].tmp_delay = 0;
+		i++;
+	}
+	cub->main_menu_start->delay = 10;
+	cub->main_menu_start->current_frame = 0;
+	free(num);
+}
+
+void	init_main_menu_bg(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->main_menu_bg = (t_txt *)malloc(24 * sizeof(t_txt));
+	num = ft_strdup("./textures/main_menu/bg1.xpm");
+	while (i < 24)
+	{
+		if (i == 9)
+			(free(num), num = ft_strdup("./textures/main_menu/bg10.xpm"));
+		else if (i == 19)
+			(free(num), num = ft_strdup("./textures/main_menu/bg20.xpm"));
+		else if (i >= 10 && i < 19)
+			increment_numbers_2(num, i - 10 + 1);
+		else if (i >= 20 && i < 29)
+			increment_numbers_2(num, i - 20 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->main_menu_bg[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->main_menu_bg[i].width, &cub->main_menu_bg[i].height);
+		cub->main_menu_bg[i].addr = mlx_get_data_addr(cub->main_menu_bg[i].img, &cub->main_menu_bg[i].bits_per_pixel,
+			&cub->main_menu_bg[i].line_length, &cub->main_menu_bg[i].endian);
+		cub->main_menu_bg[i].tmp_delay = 0;
+		i++;
+	}
+	cub->main_menu_bg->delay = 20;
+	cub->main_menu_bg->current_frame = 0;
+	free(num);
+}
+
+void	init_title(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->title_screen = (t_txt *)malloc(29 * sizeof(t_txt));
+	num = ft_strdup("./textures/title_screen/title1.xpm");
+	while (i < 29)
+	{
+		if (i == 9)
+			(free(num), num = ft_strdup("./textures/title_screen/title10.xpm"));
+		else if (i == 19)
+			(free(num), num = ft_strdup("./textures/title_screen/title20.xpm"));
+		else if (i >= 10 && i < 19)
+			increment_numbers_2(num, i - 10 + 1);
+		else if (i >= 20)
+			increment_numbers_2(num, i - 20 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->title_screen[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->title_screen[i].width, &cub->title_screen[i].height);
+		cub->title_screen[i].addr = mlx_get_data_addr(cub->title_screen[i].img, &cub->title_screen[i].bits_per_pixel,
+			&cub->title_screen[i].line_length, &cub->title_screen[i].endian);
+		cub->title_screen[i].tmp_delay = 0;
+		i++;
+	}
+	cub->title_screen->delay = 70;
+	cub->title_screen->current_frame = 0;
+	free(num);
+}
+
+void	init_explosion(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->explosion = (t_txt *)malloc(14 * sizeof(t_txt));
+	num = ft_strdup("./textures/explosion_animation/explosion1.xpm");
+	while (i < 14)
+	{
+		if (i == 9)
+		{
+			free(num);
+			num = ft_strdup("./textures/explosion_animation/explosion10.xpm");
+		}
+		else if (i >= 10)
+			increment_numbers_2(num, i / 10 + 1);
+		else
+			increment_numbers(num, i + 1);
+		cub->explosion[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->explosion[i].width, &cub->explosion[i].height);
+		cub->explosion[i].addr = mlx_get_data_addr(cub->explosion[i].img, &cub->explosion[i].bits_per_pixel,
+			&cub->explosion[i].line_length, &cub->explosion[i].endian);
+		cub->explosion[i].tmp_delay = 0;
+		i++;
+	}
+	cub->explosion->delay = 7;
+	cub->explosion->current_frame = 0;
+	free(num);
+}
+
+void	init_dragon(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->dragon = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/dragon_animation/dragon1.xpm");
+	while (i < 5)
+	{
+		increment_numbers(num, i + 1);
+		cub->dragon[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->dragon[i].width, &cub->dragon[i].height);
+		cub->dragon[i].addr = mlx_get_data_addr(cub->dragon[i].img, &cub->dragon[i].bits_per_pixel,
+			&cub->dragon[i].line_length, &cub->dragon[i].endian);
+		cub->dragon[i].tmp_delay = 0;
+		i++;
+	}
+	cub->dragon->delay = 15;
+	cub->dragon->current_frame = 0;
+	free(num);
+}
+
+void	init_crossbow(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->crossbow = (t_txt *)malloc(6 * sizeof(t_txt));
+	num = ft_strdup("./textures/crossbow_animation/crossbow1.xpm");
+	while (i < 6)
+	{
+		increment_numbers(num, i + 1);
+		cub->crossbow[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->crossbow[i].width, &cub->crossbow[i].height);
+		cub->crossbow[i].addr = mlx_get_data_addr(cub->crossbow[i].img, &cub->crossbow[i].bits_per_pixel,
+			&cub->crossbow[i].line_length, &cub->crossbow[i].endian);
+		cub->crossbow[i].tmp_delay = 0;
+		i++;
+	}
+	cub->crossbow->delay = 18;
+	cub->crossbow->current_frame = 0;
+	free(num);
+}
+
+void	init_hp(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	num = ft_strdup("./textures/hp/hp1.xpm");
+	cub->hp_frame = (t_txt *)malloc(8 * sizeof(t_txt));
+	while (i < 8)
+	{
+		increment_numbers(num, i + 1);
+		cub->hp_frame[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->hp_frame->width, &cub->hp_frame->height);
+		cub->hp_frame[i].addr = mlx_get_data_addr(cub->hp_frame[i].img, &cub->hp_frame[i].bits_per_pixel,
+			&cub->hp_frame[i].line_length, &cub->hp_frame[i].endian);
+		cub->hp_frame[i].tmp_delay = 0;
+		i++;
+	}
+	cub->hp_frame->delay = 6;
+	cub->hp_frame->current_frame = 1;
+	free(num);
+}
+
+void	init_sword(t_cube *cub)
+{
+	int		i;
+	char	*num;
+
+	i = 0;
+	cub->sword_ani = (t_txt *)malloc(5 * sizeof(t_txt));
+	num = ft_strdup("./textures/sword_animation/sword1.xpm");
+	while (i < 5)
+	{
+		increment_numbers(num, i + 1);
+		cub->sword_ani[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->sword_ani->width, &cub->sword_ani->height);
+		cub->sword_ani[i].addr = mlx_get_data_addr(cub->sword_ani[i].img, &cub->sword_ani[i].bits_per_pixel,
+			&cub->sword_ani[i].line_length, &cub->sword_ani[i].endian);
+		cub->sword_ani[i].tmp_delay = 0;
+		i++;
+	}
+	cub->sword_ani->delay = 10;
+	cub->sword_ani->current_frame = 0;
+	free(num);
+}
+
+void	init_numbers(t_cube *cub)
+{
+	int		i;
+	int		x;
+	int		y;
+	char	*num;
+
+	i = 0;
+	cub->nums = (t_txt *)malloc(10 * sizeof(t_txt));
+	num = ft_strdup("./textures/numbers/0.xpm");
+	while (i < 10)
+	{
+		cub->nums[i].img = mlx_xpm_file_to_image(cub->con, num, &x, &y);
+		cub->nums[i].addr = mlx_get_data_addr(cub->nums[i].img, &cub->nums[i].bits_per_pixel,
+			&cub->nums[i].line_length, &cub->nums[i].endian);
+		cub->nums[i].width = 22;
+		cub->nums[i].height = 34;
+		i++;
+		increment_numbers(num, i);
+	}
+	free(num);
+}
+
+void window_init(t_cube *cub)
+{
+
+	cub->con = mlx_init();
+	if (cub->con == NULL)
+		(printf("Error\nCouldn't start minilibx.\n"), exit_free(cub));
+	cub->win = mlx_new_window(cub->con, WIDTH, HEIGHT, "cub3d");
+	if (cub->win == NULL)
+	{
+		mlx_destroy_display(cub->con);
+		free(cub->con);
+		printf("Error\nCouldn't open the window.\n");
+		exit_free(cub);
+	}
+	init_alphabet(cub);
+	init_numbers(cub);
+	init_sword(cub);
+	init_hp(cub);
+	init_crossbow(cub);
+	init_dragon(cub);
+	init_explosion(cub);
+	init_title(cub);
+	init_main_menu_bg(cub);
+	init_main_menu_start(cub);
+	init_game_over(cub);
+	init_keyboard(cub);
+	init_nightborne(cub);
+	init_skeleton(cub);
+	init_warrior(cub);
+	init_skullwolf(cub);
+	init_s_warrior(cub);
+	init_plague_doctor(cub);
+	init_cute_wolf(cub);
 	cub->main_menu_assets = (t_txt *)malloc(1 * sizeof(t_txt));
 	cub->main_menu_assets[0].type = NULL;
 	cub->main_menu_assets[0].path = ft_strdup("./textures/main_menu/title_main_menu.xpm");
 	load_textures(cub, cub->main_menu_assets, 1);
-	cub->txt[4].type = NULL;
-	cub->txt[4].path = ft_strdup("./textures/options_menu_resized.xpm");
-	cub->txt[5].type = NULL;
-	cub->txt[5].path = ft_strdup("./textures/arrow_right.xpm");
-	cub->txt[6].type = NULL;
-	cub->txt[6].path = ft_strdup("./textures/arrow_left.xpm");
-	cub->txt[7].type = NULL;
-	cub->txt[7].path = ft_strdup("./textures/weapon_slot.xpm");
-	cub->txt[8].type = NULL;
-	cub->txt[8].path = ft_strdup("./textures/weapon_slot_white.xpm");
-	cub->txt[9].type = NULL;
-	cub->txt[9].path = ft_strdup("./textures/sword_weapon_slot.xpm");
-	cub->txt[10].type = ft_strdup("D");
-	cub->txt[10].path = ft_strdup("textures/Door.xpm");
-	cub->txt[11].type = NULL;
-	cub->txt[11].path = ft_strdup("textures/crossbow_weapon_slot.xpm");
-	cub->txt[12].type = NULL;
-	cub->txt[12].path = ft_strdup("textures/shield.xpm");
-	cub->txt[13].type = NULL;
-	cub->txt[13].path = ft_strdup("textures/shield_weapon_slot.xpm");
-	cub->txt[14].type = NULL;
-	cub->txt[14].path = ft_strdup("textures/fire_weapon_slot.xpm");
-	cub->txt[15].type = NULL;
-	cub->txt[15].path = ft_strdup("textures/speed_item_hud.xpm");
-	cub->txt[16].type = NULL;
-	cub->txt[16].path = ft_strdup("textures/attack_item_hud.xpm");
-	cub->txt[17].type = NULL;
-	cub->txt[17].path = ft_strdup("textures/arrow_item_hud.xpm");
-	cub->txt[18].type = NULL;
-	cub->txt[18].path = ft_strdup("textures/Casket.xpm");
-	cub->txt[19].type = NULL;
-	cub->txt[19].path = ft_strdup("textures/rat_peace.xpm");
-	cub->txt[20].type = NULL;
-	cub->txt[20].path = ft_strdup("textures/rat.xpm");
-	cub->txt[21].type = NULL;
-	cub->txt[21].path = ft_strdup("textures/rat_left.xpm");
-	cub->enemies->txt = cub->nightborne[0][0];
-	cub->enemies[0].x = 2;
-	cub->enemies[0].y = 2;
-
+	init_textures(cub);
 	items_parsing(cub);
-	
 	mlx_mouse_hide(cub->con, cub->win);
-	load_textures(cub, cub->txt, 22);
+	load_textures(cub, cub->txt, 20);
 	start_keys(cub);
 	mlx_key_hook(cub->win, handle_key_release, cub);
 	mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
@@ -880,7 +1743,6 @@ void	player_rotation_init(t_cube *cub)
 	else if (cub->player.dir == 3)
 		cub->rr.angle_rad = M_PI;
 }
-
 
 void	rotate_player(t_cube *cub, double dir)
 {

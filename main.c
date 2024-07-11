@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 00:51:40 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/11 14:46:57 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,12 @@ int	main(void)
 	cub->casket_y = 2;
 	cub->weapon_counter = 0;
 	cub->items_counter = 0;
+	cub->retry = 0;
 	if (check_cub(path))
 		(printf("Error\nMap file must end in .cub\n"), exit(1));
 	file = read_file(path);
-	cub->txt = (t_txt *)malloc(22 * sizeof(t_txt));
-	cub->rays = (t_raycast *) malloc (WIDTH * sizeof(t_raycast));
+	cub->txt = (t_txt *)malloc(20 * sizeof(t_txt));
+	cub->rays = (t_raycast *)malloc((WIDTH + 1) * sizeof(t_raycast));
 	save_file(cub, file);
 	player_checker(cub);
 	if (cub->weapon_counter > 0)

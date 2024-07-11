@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   textures.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 15:33:42 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 19:39:00 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/09 15:27:01 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ void increment_numbers_2(char *str, int index)
 	int i;
 
 	i = 0;
-	while (str[i] && str[i] != '1')
+	while (str[i] && str[i] != '1' && str[i] != '2')
 		i++;
-	str[i + 1] = 48 + index;
+	if (str[i + 1])
+		str[i + 1] = 48 + index;
 }

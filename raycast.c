@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 15:12:36 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/11 21:38:38 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,94 +206,62 @@ void	cast_ray(t_cube *cub, int index)
 	int	my;
 
 	ray.ra = cub->rr.angle_rad;
-
-	// printf("\n ANGLE %f\n", ray.ra * (180 / M_PI));
-	// for (ray.r = 0; ray.r < WIDTH; ray.r++)
-	// {
-		ray.r = index;
-		ray.ra = cub->rr.angle_rad + (index - WIDTH / 2) * (cub->fov * 0.0174533 / WIDTH); // Adjust the angle based on the screen width
-		if (ray.ra < 0)
-			ray.ra += 2 * M_PI;
-		else if (ray.ra > 2 * M_PI)
-			ray.ra -= 2 * M_PI;
-		ray.dof = 0;
-		ray.h_dist = 9999999;
-		ray.hx = cub->player.x * TILE_SIZE;
-		ray.hy = cub->player.y * TILE_SIZE;
-		check_horizontal(cub, &ray);
-		ray.dof = 0;
-		ray.v_dist = 9999999;
-		ray.vx = cub->player.x * TILE_SIZE;
-		ray.vy = cub->player.y * TILE_SIZE;
-		check_vertical(cub, &ray);
-		if (ray.v_dist < ray.h_dist)
+	ray.r = index;
+	ray.ra = cub->rr.angle_rad + (index - WIDTH / 2) * (cub->fov * 0.0174533 / WIDTH); // Adjust the angle based on the screen width
+	if (ray.ra < 0)
+		ray.ra += 2 * M_PI;
+	else if (ray.ra > 2 * M_PI)
+		ray.ra -= 2 * M_PI;
+	ray.dof = 0;
+	ray.h_dist = 9999999;
+	ray.hx = cub->player.x * TILE_SIZE;
+	ray.hy = cub->player.y * TILE_SIZE;
+	check_horizontal(cub, &ray);
+	ray.dof = 0;
+	ray.v_dist = 9999999;
+	ray.vx = cub->player.x * TILE_SIZE;
+	ray.vy = cub->player.y * TILE_SIZE;
+	check_vertical(cub, &ray);
+	if (ray.v_dist < ray.h_dist)
+	{
+		ray.rx = ray.vx;
+		ray.ry = ray.vy;
+		mx = (int)(ray.rx / TILE_SIZE);
+		my = (int)(ray.ry / TILE_SIZE);
+		ray.dist = ray.v_dist;
+		if (cub->map.map[my][mx] == '1')
 		{
-			ray.rx = ray.vx;
-			ray.ry = ray.vy;
-			mx = (int)(ray.rx / TILE_SIZE);
-			my = (int)(ray.ry / TILE_SIZE);
-			ray.dist = ray.v_dist;
-			if (cub->map.map[my][mx] == '1')
-			{
-				if (ray.ra > M_PI / 2 && ray.ra < ((3 * M_PI) / 2))
-					ray.flag = 'W';
-				else
-					ray.flag = 'E';
-			}
-			else if (cub->map.map[my][mx] == 'D')
-				ray.flag = 'D';
+			if (ray.ra > M_PI / 2 && ray.ra < ((3 * M_PI) / 2))
+				ray.flag = 'W';
+			else
+				ray.flag = 'E';
 		}
-		else
+		else if (cub->map.map[my][mx] == 'D')
+			ray.flag = 'D';
+	}
+	else
+	{
+		ray.rx = ray.hx;
+		ray.ry = ray.hy;
+		mx = (int)(ray.rx / TILE_SIZE);
+		my = (int)(ray.ry / TILE_SIZE);
+		ray.dist = ray.h_dist;
+		if (cub->map.map[my][mx] == '1')
 		{
-			ray.rx = ray.hx;
-			ray.ry = ray.hy;
-			mx = (int)(ray.rx / TILE_SIZE);
-			my = (int)(ray.ry / TILE_SIZE);
-			ray.dist = ray.h_dist;
-			if (cub->map.map[my][mx] == '1')
-			{
-				if (ray.ra < M_PI)
-					ray.flag = 'N';
-				else
-					ray.flag = 'S';
-			}
-			else if (cub->map.map[my][mx] == 'D')
-				ray.flag = 'D';
+			if (ray.ra < M_PI)
+				ray.flag = 'N';
+			else
+				ray.flag = 'S';
 		}
-		cub->rays[index].dist = ray.dist;
-		cub->rays[index].r = index;
-		// printf("distance is %f\n", ray.v_dist);
-		// draw_p_to_image(cub->addr, cub->line_length, ray.rx, ray.ry, color);
+		else if (cub->map.map[my][mx] == 'D')
+			ray.flag = 'D';
+	}
+	cub->rays[index].dist = ray.dist;
+	cub->rays[index].r = index;
+	cub->rays[index].rx = ray.rx;
+	cub->rays[index].ry = ray.ry;
 
-		// cub->casket_dist = dist(cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE, cub->casket_x, cub->casket_y);
-
-		// double angle_diff = angle_to_casket - cub->rr.angle_rad;
-
-		// // Normalize the angle_diff to the range [-PI, PI]
-		// if (angle_diff < -M_PI)
-		// 	angle_diff += 2 * M_PI;
-		// if (angle_diff > M_PI)
-		// 	angle_diff -= 2 * M_PI;
-
-		// int screen_x = (WIDTH / 2) - (angle_diff * (WIDTH / cub->fov * 0.0174533)); // FOV is in degrees
-
-		// int casket_height = (WALL_SIZE / cub->casket_dist) * TILE_SIZE; // Adjust TILE_SIZE according to your needs
-
-		
-		//call the function to render the 3d
-		// double xx = cub->player.x * TILE_SIZE;
-		// double yy = cub->player.y * TILE_SIZE;
-		render_3d(cub, &ray);
-		// draw_ray(cub->addr, cub->line_length, xx, yy, ray.rx, ray.ry, color);
-
-
-
-		
-				
-
-	// }
-	// draw_sprite(cub);
-
+	render_3d(cub, &ray);
 }
 
 void	draw_items(t_cube *cub)
@@ -321,6 +289,12 @@ void	render_game(t_cube *cub)
 		i++;
 	}
 	// draw_sprite(cub, 15);
-	draw_enemy(cub, &cub->enemies[0], 0.2, 20);
+	draw_enemy(cub, &cub->enemies[0], cub->enemies[0].scale, cub->enemies[0].z_index);
+	//draw_enemy(cub, &cub->enemies[1], cub->enemies[1].scale, cub->enemies[1].z_index);
+	//draw_enemy(cub, &cub->enemies[2], cub->enemies[2].scale, cub->enemies[2].z_index);
+	//draw_enemy(cub, &cub->enemies[3], cub->enemies[3].scale, cub->enemies[3].z_index);
+	//draw_enemy(cub, &cub->enemies[4], cub->enemies[4].scale, cub->enemies[4].z_index);
+	//draw_enemy(cub, &cub->enemies[5], cub->enemies[5].scale, cub->enemies[5].z_index);
+	//draw_enemy(cub, &cub->enemies[6], cub->enemies[6].scale, cub->enemies[6].z_index);
 	draw_items(cub);
 }

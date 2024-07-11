@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:29:06 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/04 19:34:39 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/11 14:53:59 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,6 @@ void	died_handler(t_cube *cub)
 	{
 		cub->game_over->current_frame = 0;
 		cub->bg_bool = 1;
-		cub->enter_pressed = 0;
 	}
 }
 
@@ -153,10 +152,9 @@ void	update_animation_idle(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_handler(t_cube *cub, t_txt *txt, int max_frame)
+t_txt	enemy_animation_handler(t_txt *txt, int max_frame)
 {
 	update_animation_idle(txt);
-	draw_xpm_animation(txt->current_frame, WIDTH / 2.2, HEIGHT / 1.1, cub, txt);
 	if (txt->current_frame == max_frame)
 		txt->current_frame = 0;
 	return (txt[txt->current_frame]);
@@ -172,19 +170,64 @@ void	update_animation_atk(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int max_frame, int dist)
+t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int index, int dist)
 {
 	update_animation_atk(txt);
-	draw_xpm_animation(txt->current_frame, WIDTH / 2.2, HEIGHT / 1.1, cub, txt);
-	if (txt->current_frame == max_frame)
+	if (txt->current_frame == cub->enemies[index].atk_max_frame)
 	{
 		txt->current_frame = 0;
 		if (dist < 150)
-			cub->enemies[0].last_attack = 1;	
-		cub->enemies[0].attacking_bool = 0;
+			cub->enemies[index].last_attack = 1;	
+		cub->enemies[index].attacking_bool = 0;
 	}
 	else
-		cub->enemies[0].attacking_bool = 1;
+	{
+		cub->enemies[index].last_attack = 0;
+		cub->enemies[index].attacking_bool = 1;
+	}
+	return (txt[txt->current_frame]);
+}
+
+void	update_animation_hurt(t_txt *txt)
+{
+
+	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
+	{
+		txt[txt->current_frame].tmp_delay = 0;
+		txt->current_frame++;
+	}
+}
+
+t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, int index, int max_frame)
+{
+	update_animation_hurt(txt);
+	if (txt->current_frame == max_frame)
+	{
+		txt->current_frame = 0;
+		cub->enemies[index].hurt = 0;	
+		cub->enemies[index].attacking_bool = 0;
+	}
+	return (txt[txt->current_frame]);
+}
+
+void	update_animation_death(t_txt *txt)
+{
+
+	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
+	{
+		txt[txt->current_frame].tmp_delay = 0;
+		txt->current_frame++;
+	}
+}
+
+t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, int index, int max_frame)
+{
+	update_animation_death(txt);
+	if (txt->current_frame == max_frame)
+	{
+		cub->enemies[index].dead = 1;	
+		cub->enemies[index].attacking_bool = 0;
+	}
 	return (txt[txt->current_frame]);
 }
 

@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 19:33:42 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/11 21:31:49 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,9 @@ typedef struct s_txt
 	int		delay;
 	int		current_frame;
 	int		frame_max;
+	int		x;
+	int		y;
+	int		launched;
 }	t_txt;
 
 typedef struct s_rotation_ray
@@ -106,6 +109,8 @@ typedef struct s_player
 	int	atk;
 	int	atk_item_amount;
 	int	speed_item_amount;
+	int	hit;
+	int	last_atk;
 	double	speed;
 }	t_player;
 
@@ -117,7 +122,19 @@ typedef struct s_enemy
 	double	dist;
 	long int		last_attack;
 	int	hp;
+	int	hurt;
 	int	attacking_bool;
+	int	draw_start;
+	int	draw_end;
+	int	dead;
+	double	scale;
+	int	z_index;
+	int	atk_max_frame;
+	int	death_max_frame;
+	int	hurt_max_frame;
+	int	idle_max_frame;
+	int	run_max_frame;
+	int	attack_range;
 }	t_enemy;
 
 typedef struct s_item
@@ -162,17 +179,24 @@ typedef struct s_cube
 	t_txt		*game_over;
 	t_txt		*keyboard;
 	t_txt		**nightborne;
+	t_txt		**skeleton;
+	t_txt		**warrior;
+	t_txt		**skullwolf;
+	t_txt		**s_warrior;
+	t_txt		**plague_doctor;
+	t_txt		**cute_wolf;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
 	t_raycast	*rays;
-	t_enemy		enemies[4];
+	t_enemy		enemies[8];
 	t_item		*weapons;
 	void		*con;
 	void		*win;
 	char		*addr;
 	void		*img;
-	int			enter_pressed;
+	int			retry;
+	int			enemies_nb;
 	int			title_bool;
 	int			bg_bool;
 	int			fov;
@@ -274,13 +298,19 @@ void	fade_to_black(t_cube *cub, double fade_factor, int bits_per_pixel);
 t_cube	*call_cub(void);
 
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color); //DELETE
-void	draw_sprite(t_cube *cub, int index);
+//void	draw_sprite(t_cube *cub, int index);
 void	render_game(t_cube *cub);
 void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index);
 void	draw_weapon(t_cube *cub, int index);
 void	display_messages(t_cube *cub);
 void	check_pick_up(t_cube *cub);
-t_txt	enemy_animation_handler(t_cube *cub, t_txt *txt, int max_frame);
-t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int max_frame, int dist);
+t_txt	enemy_animation_handler(t_txt *txt, int max_frame);
+t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int index, int dist);
+t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, int index, int max_frame);
+void	draw_sprite(t_cube *cub, t_txt *txt, int x, int y, double scale, int z_index);
+void	explosion_sprite(t_cube *cub);
+t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, int index, int max_frame);
+void	start_keys(t_cube *cub);
+void	init_enemies(t_cube *cub);
 
 #endif

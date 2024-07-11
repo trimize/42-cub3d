@@ -6,7 +6,7 @@
 /*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 15:11:54 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/05 17:44:18 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,8 +264,10 @@ void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index)
     // int spriteWidth = abs((int) (HEIGHT / (transformY)));
     int spriteWidth = abs((int) (spriteHeight * aspectRatio));
     int drawStartX = -spriteWidth / 2 + spriteScreenX;
+    enemy->draw_start = drawStartX;
     if (drawStartX < 0) drawStartX = 0;
     int drawEndX = spriteWidth / 2 + spriteScreenX;
+    enemy->draw_end = drawEndX;
     if (drawEndX >= WIDTH) drawEndX = WIDTH - 1;
 
     // loop through every vertical stripe of the sprite on screen
@@ -289,6 +291,86 @@ void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index)
 
 					// int color = cub->txt[15].addr[texY * (cub->txt[15].line_length / 4) + texX];
 					int color = *(int*) (enemy->txt.addr + ((texX + (texY * enemy->txt.width)) * (enemy->txt.bits_per_pixel / 8)));
+
+					if ((color) != 0x0000FF) { // Assuming 0x000000 is the transparent color
+						// if (index > 120 && stripe < 126)
+						// {
+						// 	printf("HAHAH %d and %d\n", y, stripe);
+						// 	color = YELLOW;
+						// }
+						((int *)(cub->addr))[y * (cub->line_length / 4) + stripe] = color;
+						// mlx_pixel_put(cub->con, cub->win, index, y, color);
+					}
+				}
+			}
+		// }
+	}
+}
+
+void	draw_sprite(t_cube *cub, t_txt *txt, int x, int y, double scale, int z_index)
+{
+    double spriteX = x - (cub->player.x);
+    double spriteY = y - (cub->player.y);
+
+    int distance = dist(x, y, cub->player.x, cub->player.y);
+
+	double fovRadians = cub->fov * (M_PI / 180.0);
+	double planeLength = tan(fovRadians / 2.0);
+
+    double dirX = cos(-cub->rr.angle_rad);
+    double dirY = sin(-cub->rr.angle_rad);
+
+    double planeX = -dirY * planeLength;
+    double planeY = dirX * planeLength;
+
+    double invDet = 1.0 / (planeX * dirY - dirX * planeY); // required for correct matrix multiplication
+
+    double transformX = invDet * (dirY * spriteX - dirX * spriteY) * scale;
+    double transformY = invDet * (-planeY * spriteX + planeX * spriteY) * scale; // this is actually the depth inside the screen, that what Z is in 3D
+
+    int spriteScreenX = (int) ((WIDTH / 2) * (1 + transformX / transformY));
+
+	int zPosition = z_index;
+	int scaledZPosition = (int)(zPosition / transformY);
+
+    // calculate height of the sprite on screen
+    int spriteHeight = abs((int) (HEIGHT / (transformY))); // using 'transformY' instead of the real distance prevents fisheye
+    // calculate lowest and highest pixel to fill in current stripe
+    int drawStartY = -spriteHeight / 2 + HEIGHT / 2 + scaledZPosition;
+    if (drawStartY < 0) drawStartY = 0;
+    int drawEndY = spriteHeight / 2 + HEIGHT / 2 + scaledZPosition;
+    if (drawEndY >= HEIGHT) drawEndY = HEIGHT - 1;
+
+	double aspectRatio = (double)txt->width / (double)txt->height;
+    // calculate width of the sprite
+    // int spriteWidth = abs((int) (HEIGHT / (transformY)));
+    int spriteWidth = abs((int) (spriteHeight * aspectRatio));
+    int drawStartX = -spriteWidth / 2 + spriteScreenX;
+    if (drawStartX < 0) drawStartX = 0;
+    int drawEndX = spriteWidth / 2 + spriteScreenX;
+    if (drawEndX >= WIDTH) drawEndX = WIDTH - 1;
+
+    // loop through every vertical stripe of the sprite on screen
+	// int stripe = index;
+	// if (stripe >= drawStartX && stripe < drawEndX)
+	// {
+		for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
+			if (cub->rays[WIDTH - stripe].dist < distance)
+				continue ;
+			// printf("\ndrawStart %d, drawEnd %d and ray %d\n", drawStartX, drawEndX, stripe);
+			int texX = (int) (256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * txt->width / spriteWidth) / 256;
+			// the conditions in the if are:
+			// 1) it's in front of camera plane so you don't see things behind you
+			// 2) it's on the screen (left)
+			// 3) it's on the screen (right)
+			// 4) ZBuffer, with perpendicular distance
+			if (transformY > 0 && stripe > 0 && stripe < WIDTH) {
+				for (int y = drawStartY; y < drawEndY; y++) { // for every pixel of the current stripe
+					int d = (y - scaledZPosition) * 256 - HEIGHT * 128 + spriteHeight * 128; // 256 and 128 factors to avoid floats
+					int texY = ((d * txt->height) / spriteHeight) / 256;
+
+					// int color = cub->txt[15].addr[texY * (cub->txt[15].line_length / 4) + texX];
+					int color = *(int*) (txt->addr + ((texX + (texY * txt->width)) * (txt->bits_per_pixel / 8)));
 
 					if ((color) != 0x0000FF) { // Assuming 0x000000 is the transparent color
 						// if (index > 120 && stripe < 126)
