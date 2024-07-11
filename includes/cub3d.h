@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/11 21:31:49 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/12 00:01:01 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,11 @@
 
 # define WIDTH 1280
 # define HEIGHT 720
-# define PLAYER_SIZE 2
+# define PLAYER_SIZE 5
 # define ENEMY_SPEED 0.01
 # define TILE_SIZE 64
 # define WALL_SIZE 80000
+# define MINIMAP_SIZE (TILE_SIZE / 6)
 
 # define L_CONTROL_KEY 65507 //Replace
 
@@ -69,6 +70,16 @@ typedef struct s_rotation_ray
 	double	pdy;
 }	t_rr;
 
+typedef struct s_door
+{
+	int	is_open;
+	int	is_closing;
+	double	x;
+	double	y;
+	t_txt	*txt;
+	int		frame;
+}	t_door;
+
 typedef struct s_raycast
 {
 	int		r;
@@ -76,6 +87,18 @@ typedef struct s_raycast
 	int		my;
 	int		mp;
 	int		dof;
+	int		is_door;
+	t_door	*door;
+	t_txt	*txt;
+	double	vdx;
+	double	vdy;
+	double	dx;
+	double	dy;
+	double	hdx;
+	double	hdy;
+	double	vd_dist;
+	double	hd_dist;
+	double	d_dist;
 	double	rx;
 	double	ry;
 	double	ra;
@@ -89,6 +112,7 @@ typedef struct s_raycast
 	double	v_dist;
 	double	dist;
 	char	flag;
+	char	door_flag;
 }	t_raycast;
 
 typedef struct s_map
@@ -145,6 +169,7 @@ typedef struct s_item
 	double	dist;
 	char	type;
 	int		display;
+	int		msg;
 	long int	last_text;
 }	t_item;
 
@@ -155,6 +180,7 @@ typedef struct s_key
 	int		a;
 	int		s;
 	int		d;
+	int		e;
 	int		left;
 	int		right;
 	int		mouse_l;
@@ -171,7 +197,6 @@ typedef struct s_cube
 	t_txt		*nums;
 	t_txt		*hp_frame;
 	t_txt		*abc;
-	t_txt		casket;
 	t_txt		*title_screen;
 	t_txt		*main_menu_bg;
 	t_txt		*main_menu_assets;
@@ -185,12 +210,15 @@ typedef struct s_cube
 	t_txt		**s_warrior;
 	t_txt		**plague_doctor;
 	t_txt		**cute_wolf;
+	t_txt		*door;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
 	t_raycast	*rays;
 	t_enemy		enemies[8];
 	t_item		*weapons;
+	t_item		*items;
+	t_door		*doors;
 	void		*con;
 	void		*win;
 	char		*addr;
@@ -213,17 +241,17 @@ typedef struct s_cube
 	int			mouse_x;
 	int			mouse_y;
 	int			option_bool;
+	int			door_open_msg;
+	int			door_close_msg;
 	int			weapon_counter;
 	int			items_counter;
+	int			door_counter;
 	int			sensi;
 	int			speed;
 	int			weapons_in_slot[4];
 	int			tuto;
 	double			fade_factor;
 	double			p_rotation;
-	double		casket_x;
-	double		casket_y;
-	double		casket_dist;
 }	t_cube;
 
 char	**ft_split(char const *s, char const c);
@@ -239,6 +267,7 @@ int		char_checker(char *line);
 int		space_checker_horizontal(char **map);
 int		space_checker_vertical(char **map);
 void	exit_free(t_cube *cub);
+void	check_door(t_cube *cub);
 void	free_stuff(t_cube *cub);
 void	map_filler(t_map *map);
 int		check_cub(char *file);
@@ -260,6 +289,8 @@ void	draw_player_to_image(t_cube *cub, char *addr, int line_length);
 void	draw_map_to_image(t_cube *cub, char *addr, int line_length);
 int		search_txt(t_cube *cub, char c);
 double	dist(double ax, double ay, double bx, double by);
+t_door	*search_door(t_cube *cub, int x, int y);
+void	save_doors(t_cube *cub);
 
 void	draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt);
 void	draw_xpm_hp(int alpha, int x, int y, t_cube *cub);
@@ -298,12 +329,17 @@ void	fade_to_black(t_cube *cub, double fade_factor, int bits_per_pixel);
 t_cube	*call_cub(void);
 
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color); //DELETE
-//void	draw_sprite(t_cube *cub, int index);
 void	render_game(t_cube *cub);
-void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index);
 void	draw_weapon(t_cube *cub, int index);
+void	draw_item(t_cube *cub, int index);
 void	display_messages(t_cube *cub);
+void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index);
 void	check_pick_up(t_cube *cub);
+void	update_animation_txt(t_txt *txt, t_door *door);
+t_txt	*txt_handler(t_cube *cub, t_txt *txt, int max_frame, t_raycast ray);
+void	update_animation_txt_r(t_txt *txt, t_door *door);
+t_txt	*txt_handler_r(t_cube *cub, t_txt *txt, t_raycast ray);
+int		can_walk(t_cube *cub, int y, int x);
 t_txt	enemy_animation_handler(t_txt *txt, int max_frame);
 t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int index, int dist);
 t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, int index, int max_frame);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   animate_sprite.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:29:06 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/11 14:53:59 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/11 23:36:30 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void	animate_health_bar(t_cube *cub, int limite)
 }
 void	update_animation_title(t_cube *cub)
 {
-
 	if (cub->title_screen[cub->title_screen->current_frame].tmp_delay++ == cub->title_screen->delay)
 		cub->title_screen->current_frame++;
 }
@@ -140,6 +139,53 @@ void	died_handler(t_cube *cub)
 		cub->game_over->current_frame = 0;
 		cub->bg_bool = 1;
 	}
+}
+
+void	update_animation_txt(t_txt *txt, t_door *door)
+{
+
+	if (txt[door->frame].tmp_delay++ == txt->delay)
+	{
+		txt[door->frame].tmp_delay = 0;
+		door->frame++;
+	}
+}
+
+t_txt	*txt_handler(t_cube *cub, t_txt *txt, int max_frame, t_raycast ray)
+{
+	update_animation_txt(txt, ray.door);
+	if (ray.door->frame == max_frame)
+	{
+		cub->key.e = 0;
+		ray.door->is_open = 1;
+	}
+	return (&txt[ray.door->frame]);
+}
+
+void	update_animation_txt_r(t_txt *txt, t_door *door)
+{
+
+	if (txt[door->frame].tmp_delay++ == txt->delay)
+	{
+		txt[door->frame].tmp_delay = 0;
+		door->frame--;
+	}
+}
+
+t_txt	*txt_handler_r(t_cube *cub, t_txt *txt, t_raycast ray)
+{
+	update_animation_txt_r(txt, ray.door);
+	if (ray.door->frame == 6)
+	{
+		ray.door->is_open = 0;
+		ray.door->is_closing = 1;
+	}
+	else if (ray.door->frame == 0)
+	{
+		cub->key.e = 0;
+		ray.door->is_closing = 0;
+	}
+	return (&txt[ray.door->frame]);
 }
 
 void	update_animation_idle(t_txt *txt)

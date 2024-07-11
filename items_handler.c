@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 01:01:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 01:29:23 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 00:32:15 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,33 @@ void	update_dist(t_cube *cub)
 
 	i = -1;
 	while (++i < cub->weapon_counter)
-		cub->weapons[i].dist = dist(cub->weapons[i].x, cub->weapons[i].y, cub->player.x, cub->player.y);
+		cub->weapons[i].dist = dist((cub->weapons[i].x * TILE_SIZE), (cub->weapons[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
+	i = -1;
+	while (++i < cub->items_counter)
+		cub->items[i].dist = dist((cub->items[i].x * TILE_SIZE), (cub->items[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
+}
+
+void	equip_item(t_cube *cub, char type)
+{
+	if (type == 'Q')
+	{
+		cub->player.arrows += 3;
+	}
+	if (type == 'V')
+	{
+		cub->player.speed += 0.02;
+		cub->player.speed_item_amount++;
+	}
+	if (type == 'A')
+	{
+		cub->player.atk += 20;
+		cub->player.atk_item_amount++;
+	}
+	if (type == 'H')
+	{
+		cub->hp_frame->current_frame -= 2;
+		cub->player.hp += 25;
+	}
 }
 
 void	add_weapon_to_slot(t_cube *cub, int index)
@@ -53,11 +79,30 @@ void	check_pick_up(t_cube *cub)
 	i = 0;
 	while (i < cub->weapon_counter)
 	{
-		if (cub->weapons[i].display == 1 && cub->weapons[i].dist < 1)
+		if (cub->weapons[i].display == 1 && cub->weapons[i].dist < 30)
 		{
 			cub->weapons[i].display = 0;
 			cub->weapons[i].last_text = get_current_time();
 			add_weapon_to_slot(cub, i);
+		}
+		i++;
+	}
+	i = 0;
+	while (i < cub->items_counter)
+	{
+		if (cub->items[i].display == 1 && cub->items[i].dist < 30)
+		{
+			if (cub->items[i].type == 'H' && cub->player.hp == 100)
+			{
+				cub->items[i].msg = 1;
+				cub->items[i].last_text = get_current_time();
+			}
+			else
+			{	
+				cub->items[i].display = 0;
+				cub->items[i].last_text = get_current_time();
+				equip_item(cub, cub->items[i].type);
+			}
 		}
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/04 01:31:09 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/09 17:18:34 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	char_checker(char *line)
 	char	*chars;
 
 	i = 0;
-	chars = "10NSEW D|OCG";
+	chars = "10NSEW D|OCGHAQV";
 	while (line[i])
 	{
 		j = 0;
@@ -41,6 +41,10 @@ void	check_characters(t_cube *cub, int y, int x)
 {
 	if (cub->map.map[y][x] == '|' || cub->map.map[y][x] == 'O' || cub->map.map[y][x] == 'C' || cub->map.map[y][x] == 'G')
 		cub->weapon_counter++;
+	else if (cub->map.map[y][x] == 'A' || cub->map.map[y][x] == 'H' || cub->map.map[y][x] == 'Q' || cub->map.map[y][x] == 'V')
+		cub->items_counter++;
+	else if (cub->map.map[y][x] == 'D')
+		cub->door_counter++;
 }
 
 void	player_checker(t_cube *cub)
@@ -266,9 +270,11 @@ void	items_parsing(t_cube *cub)
 	int	y;
 	int	x;
 	int	i;
+	int j;
 
 	y = 0;
 	i = 0;
+	j = 0;
 	while (cub->map.map[y])
 	{
 		x = 0;
@@ -309,6 +315,44 @@ void	items_parsing(t_cube *cub)
 				cub->weapons[i].type = 'G';
 				cub->weapons[i].display = 1;
 				i++;
+			}
+			else if (cub->map.map[y][x] == 'Q')
+			{
+				cub->items[j].txt = &cub->txt[17];
+				cub->items[j].x = x;
+				cub->items[j].y = y;
+				cub->items[j].type = 'Q';
+				cub->items[j].display = 1;
+				j++;
+			}
+			else if (cub->map.map[y][x] == 'A')
+			{
+				cub->items[j].txt = &cub->txt[16];
+				cub->items[j].x = x;
+				cub->items[j].y = y;
+				cub->items[j].type = 'A';
+				cub->items[j].display = 1;
+				j++;
+			}
+			else if (cub->map.map[y][x] == 'H')
+			{
+				cub->items[j].txt = &cub->txt[22];
+				cub->items[j].x = x;
+				cub->items[j].y = y;
+				cub->items[j].type = 'H';
+				cub->items[j].display = 1;
+				cub->items[j].msg = 0;
+				cub->items[j].last_text = -1;
+				j++;
+			}
+			else if (cub->map.map[y][x] == 'V')
+			{
+				cub->items[j].txt = &cub->txt[15];
+				cub->items[j].x = x;
+				cub->items[j].y = y;
+				cub->items[j].type = 'V';
+				cub->items[j].display = 1;
+				j++;
 			}
 			x++;
 		}

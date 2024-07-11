@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/11 14:46:57 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/12 00:09:07 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,23 @@ int	main(void)
 	char	**file;
 
 	cub = call_cub();
-	cub->casket_x = 2;
-	cub->casket_y = 2;
 	cub->weapon_counter = 0;
 	cub->items_counter = 0;
+	cub->door_counter = 0;
 	cub->retry = 0;
 	if (check_cub(path))
 		(printf("Error\nMap file must end in .cub\n"), exit(1));
 	file = read_file(path);
-	cub->txt = (t_txt *)malloc(20 * sizeof(t_txt));
-	cub->rays = (t_raycast *)malloc((WIDTH + 1) * sizeof(t_raycast));
+	cub->txt = (t_txt *)malloc(23 * sizeof(t_txt));
+	cub->rays = (t_raycast *) malloc ((WIDTH + 1) * sizeof(t_raycast));
 	save_file(cub, file);
 	player_checker(cub);
 	if (cub->weapon_counter > 0)
 		cub->weapons = (t_item *) malloc(cub->weapon_counter * sizeof(t_item));
+	if (cub->items_counter > 0)
+		cub->items = (t_item *) malloc(cub->items_counter * sizeof(t_item));
+	if (cub->door_counter > 0)
+		cub->doors = (t_door *) malloc(cub->door_counter * sizeof(t_door));
 	map_filler(&cub->map);
 	variables_checker(cub);
 	if (first_and_last_checker(cub->map.map) || space_checker_horizontal(cub->map.map) || space_checker_vertical(cub->map.map))

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/11 21:38:38 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/12 00:37:26 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,13 @@ void check_horizontal(t_cube *cub, t_raycast *ray)
         // if (ray->mx < 0 || ray->my < 0)
         //     return;
         // printf("Values, mx: %d, my: %d\n", ray->mx, ray->my);
-        if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && (cub->map.map[ray->my][ray->mx] == '1' || cub->map.map[ray->my][ray->mx] == 'D')) // Wall was hit
+		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == 'D')
+		{
+			ray->hdx = ray->rx;
+			ray->hdy = ray->ry;
+			ray->hd_dist = dist(px, py, ray->hdx, ray->hdy);
+		}
+        if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && (cub->map.map[ray->my][ray->mx] == '1')) // Wall was hit
         {
         //     printf("Wall hit at mx: %d, my: %d\n", ray->mx, ray->my);
             ray->hx = ray->rx;
@@ -137,7 +143,13 @@ void	check_vertical(t_cube *cub, t_raycast *ray)
 		// if (ray->mx < 0 || ray->my < 0)
 		// 	return ;
 		// printf("Values , mx: %d, my: %d\n", ray->mx, ray->my);
-		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && (cub->map.map[ray->my][ray->mx] == '1' || cub->map.map[ray->my][ray->mx] == 'D')) //Wall was hit
+		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == 'D')
+		{
+			ray->vdx = ray->rx;
+			ray->vdy = ray->ry;
+			ray->vd_dist = dist(px, py, ray->vdx, ray->vdy);
+		}
+		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && (cub->map.map[ray->my][ray->mx] == '1')) //Wall was hit
 		{
 			// printf("Wall hit at mx: %d, my: %d value of the wall : %c\n", ray->mx, ray->my, cub->map.map[ray->my][ray->mx]);
 			ray->vx = ray->rx;
@@ -206,62 +218,122 @@ void	cast_ray(t_cube *cub, int index)
 	int	my;
 
 	ray.ra = cub->rr.angle_rad;
-	ray.r = index;
-	ray.ra = cub->rr.angle_rad + (index - WIDTH / 2) * (cub->fov * 0.0174533 / WIDTH); // Adjust the angle based on the screen width
-	if (ray.ra < 0)
-		ray.ra += 2 * M_PI;
-	else if (ray.ra > 2 * M_PI)
-		ray.ra -= 2 * M_PI;
-	ray.dof = 0;
-	ray.h_dist = 9999999;
-	ray.hx = cub->player.x * TILE_SIZE;
-	ray.hy = cub->player.y * TILE_SIZE;
-	check_horizontal(cub, &ray);
-	ray.dof = 0;
-	ray.v_dist = 9999999;
-	ray.vx = cub->player.x * TILE_SIZE;
-	ray.vy = cub->player.y * TILE_SIZE;
-	check_vertical(cub, &ray);
-	if (ray.v_dist < ray.h_dist)
-	{
-		ray.rx = ray.vx;
-		ray.ry = ray.vy;
-		mx = (int)(ray.rx / TILE_SIZE);
-		my = (int)(ray.ry / TILE_SIZE);
-		ray.dist = ray.v_dist;
-		if (cub->map.map[my][mx] == '1')
+
+	// printf("\n ANGLE %f\n", ray.ra * (180 / M_PI));
+	// for (ray.r = 0; ray.r < WIDTH; ray.r++)
+	// {
+		ray.r = index;
+		ray.ra = cub->rr.angle_rad + (index - WIDTH / 2) * (cub->fov * 0.0174533 / WIDTH); // Adjust the angle based on the screen width
+		if (ray.ra < 0)
+			ray.ra += 2 * M_PI;
+		else if (ray.ra > 2 * M_PI)
+			ray.ra -= 2 * M_PI;
+		ray.dof = 0;
+		ray.is_door = 0;
+		ray.h_dist = 9999999;
+		ray.d_dist = 9999999;
+		ray.vd_dist = 9999999;
+		ray.hd_dist = 9999999;
+		ray.hx = cub->player.x * TILE_SIZE;
+		ray.hy = cub->player.y * TILE_SIZE;
+		check_horizontal(cub, &ray);
+		ray.dof = 0;
+		ray.v_dist = 9999999;
+		ray.vx = cub->player.x * TILE_SIZE;
+		ray.vy = cub->player.y * TILE_SIZE;
+		check_vertical(cub, &ray);
+		if (ray.v_dist < ray.h_dist)
 		{
+			ray.rx = ray.vx;
+			ray.ry = ray.vy;
+			mx = (int)(ray.rx / TILE_SIZE);
+			my = (int)(ray.ry / TILE_SIZE);
+			ray.dist = ray.v_dist;
 			if (ray.ra > M_PI / 2 && ray.ra < ((3 * M_PI) / 2))
 				ray.flag = 'W';
 			else
 				ray.flag = 'E';
 		}
-		else if (cub->map.map[my][mx] == 'D')
-			ray.flag = 'D';
-	}
-	else
-	{
-		ray.rx = ray.hx;
-		ray.ry = ray.hy;
-		mx = (int)(ray.rx / TILE_SIZE);
-		my = (int)(ray.ry / TILE_SIZE);
-		ray.dist = ray.h_dist;
-		if (cub->map.map[my][mx] == '1')
+		else
 		{
+			ray.rx = ray.hx;
+			ray.ry = ray.hy;
+			mx = (int)(ray.rx / TILE_SIZE);
+			my = (int)(ray.ry / TILE_SIZE);
+			ray.dist = ray.h_dist;
 			if (ray.ra < M_PI)
 				ray.flag = 'N';
 			else
 				ray.flag = 'S';
 		}
-		else if (cub->map.map[my][mx] == 'D')
-			ray.flag = 'D';
-	}
-	cub->rays[index].dist = ray.dist;
-	cub->rays[index].r = index;
-	cub->rays[index].rx = ray.rx;
-	cub->rays[index].ry = ray.ry;
+		if (ray.vd_dist < ray.hd_dist)
+		{
+			ray.d_dist = ray.vd_dist;
+			ray.dx = ray.vdx;
+			ray.dy = ray.vdy;
+			if (ray.ra > M_PI / 2 && ray.ra < ((3 * M_PI) / 2))
+				ray.door_flag = 'W';
+			else
+				ray.door_flag = 'E';
+		}
+		else
+		{
+			ray.d_dist = ray.hd_dist;
+			ray.dx = ray.hdx;
+			ray.dy = ray.hdy;
+			if (ray.ra < M_PI)
+				ray.door_flag = 'N';
+			else
+				ray.door_flag = 'S';
+		}
+		if (ray.d_dist < ray.dist)
+		{
+			ray.is_door = 1;
+			ray.door = search_door(cub, (int) ray.dx / TILE_SIZE, (int) ray.dy / TILE_SIZE);
+		}
+		// else if (cub->map.map[(int) ray.ry / TILE_SIZE][(int) ray.rx / TILE_SIZE] == 'd')
+		// 	ray.flag = 'd';
+		cub->rays[index].rx = ray.rx;
+		cub->rays[index].ry = ray.ry;
+		cub->rays[index].dist = ray.dist;
+		cub->rays[index].d_dist = ray.d_dist;
+		cub->rays[index].r = index;
+		cub->rays[index].door = ray.door;
+		cub->rays[index].is_door = ray.is_door;
+		cub->rays[index].dx = ray.dx;
+		cub->rays[index].dy = ray.dy;
+		// printf("distance is %f\n", ray.v_dist);
+		// draw_p_to_image(cub->addr, cub->line_length, ray.rx, ray.ry, color);
 
-	render_3d(cub, &ray);
+		// cub->casket_dist = dist(cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE, cub->casket_x, cub->casket_y);
+
+		// double angle_diff = angle_to_casket - cub->rr.angle_rad;
+
+		// // Normalize the angle_diff to the range [-PI, PI]
+		// if (angle_diff < -M_PI)
+		// 	angle_diff += 2 * M_PI;
+		// if (angle_diff > M_PI)
+		// 	angle_diff -= 2 * M_PI;
+
+		// int screen_x = (WIDTH / 2) - (angle_diff * (WIDTH / cub->fov * 0.0174533)); // FOV is in degrees
+
+		// int casket_height = (WALL_SIZE / cub->casket_dist) * TILE_SIZE; // Adjust TILE_SIZE according to your needs
+
+		
+		//call the function to render the 3d
+		// double xx = cub->player.x * TILE_SIZE;
+		// double yy = cub->player.y * TILE_SIZE;
+		render_3d(cub, &ray);
+		// draw_ray(cub->addr, cub->line_length, xx, yy, ray.rx, ray.ry, color);
+
+
+
+		
+				
+
+	// }
+	// draw_sprite(cub);
+
 }
 
 void	draw_items(t_cube *cub)
@@ -273,6 +345,13 @@ void	draw_items(t_cube *cub)
 	{
 		if (cub->weapons[i].display == 1)
 			draw_weapon(cub, i);
+		i++;
+	}
+	i = 0;
+	while (i < cub->items_counter)
+	{
+		if (cub->items[i].display == 1)
+			draw_item(cub, i);
 		i++;
 	}
 }
@@ -290,11 +369,11 @@ void	render_game(t_cube *cub)
 	}
 	// draw_sprite(cub, 15);
 	draw_enemy(cub, &cub->enemies[0], cub->enemies[0].scale, cub->enemies[0].z_index);
-	//draw_enemy(cub, &cub->enemies[1], cub->enemies[1].scale, cub->enemies[1].z_index);
-	//draw_enemy(cub, &cub->enemies[2], cub->enemies[2].scale, cub->enemies[2].z_index);
-	//draw_enemy(cub, &cub->enemies[3], cub->enemies[3].scale, cub->enemies[3].z_index);
-	//draw_enemy(cub, &cub->enemies[4], cub->enemies[4].scale, cub->enemies[4].z_index);
-	//draw_enemy(cub, &cub->enemies[5], cub->enemies[5].scale, cub->enemies[5].z_index);
-	//draw_enemy(cub, &cub->enemies[6], cub->enemies[6].scale, cub->enemies[6].z_index);
-	draw_items(cub);
+	draw_enemy(cub, &cub->enemies[1], cub->enemies[1].scale, cub->enemies[1].z_index);
+	draw_enemy(cub, &cub->enemies[2], cub->enemies[2].scale, cub->enemies[2].z_index);
+	draw_enemy(cub, &cub->enemies[3], cub->enemies[3].scale, cub->enemies[3].z_index);
+	draw_enemy(cub, &cub->enemies[4], cub->enemies[4].scale, cub->enemies[4].z_index);
+	draw_enemy(cub, &cub->enemies[5], cub->enemies[5].scale, cub->enemies[5].z_index);
+	draw_enemy(cub, &cub->enemies[6], cub->enemies[6].scale, cub->enemies[6].z_index);
+	draw_items(cub); //TODO Need to sort the sprites, because when multiple items on the ground, one further can appear on top of a closer.
 }

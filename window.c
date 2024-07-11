@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/11 21:58:30 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/12 00:41:35 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	close_x(t_cube *cub)
 
 int mouse_events(int key)
 {
-	if (key == 1 && (call_cub())->player.hp > 0)
+	if (key == 1)
 	{
 		(call_cub())->key.mouse_l = 1;
 	}
@@ -44,65 +44,84 @@ int	handle_key_press(int key, t_cube *cub)
 		close_x(cub);
 		exit(1);
 	}
-	else if (key == 119 && cub->option_bool == -1)
+	else if (key == XK_w && cub->option_bool == -1)
 		cub->key.w = 1;
-	else if (key == 115 && cub->option_bool == -1)
+	else if (key == XK_s && cub->option_bool == -1)
 		cub->key.s = 1;
-	else if (key == 97 && cub->option_bool == -1)
+	else if (key == XK_a && cub->option_bool == -1)
 		cub->key.a = 1;
-	else if (key == 100 && cub->option_bool == -1)
+	else if (key == XK_d && cub->option_bool == -1)
 		cub->key.d = 1;
-	else if (key == 65361)
+	else if (key == XK_Left)
 		cub->key.left = 1;
-	else if (key == 65363)
+	else if (key == XK_Right)
 		cub->key.right = 1;
-	else if (key == 65513 && !cub->tuto)
+	else if (key == XK_Alt_L && !cub->tuto)
 		cub->option_bool = -cub->option_bool;
-	else if (key == 65289)
+	else if (key == XK_Tab)
 	{
 		if (!cub->bg_bool && !cub->title_bool && cub->tuto)
 			cub->tuto = 0;
 	}
-	else if (key == 49 && cub->player.hp > 0)
+	else if (key == XK_1 && cub->player.hp > 0)
 		cub->player.weapon = 1;
-	else if (key == 50 && cub->player.hp > 0)
+	else if (key == XK_2 && cub->player.hp > 0)
 		cub->player.weapon = 2;
-	else if (key == 51 && cub->player.hp > 0)
+	else if (key == XK_3 && cub->player.hp > 0)
 		cub->player.weapon = 3;
-	else if (key == 52 && cub->player.hp > 0)
+	else if (key == XK_4 && cub->player.hp > 0)
 		cub->player.weapon = 4;
-	else if (key == 101)
-		cub->map.map[7][8] = 'd';
-	else if (key == 65293)
+	else if (key == XK_e)
+		cub->key.e = 1;
+	else if (key == XK_Return)
 		cub->bg_bool = 0;
 	return (0);
 }
 
 int	handle_key_release(int key, t_cube *cub)
 {
-	if (key == 119)
+	if (key == XK_w)
 		cub->key.w = 0;
-	else if (key == 115)
+	else if (key == XK_s)
 		cub->key.s = 0;
-	else if (key == 97)
+	else if (key == XK_a)
 		cub->key.a = 0;
-	else if (key == 100)
+	else if (key == XK_d)
 		cub->key.d = 0;
-	else if (key == 65361)
+	else if (key == XK_Left)
 		cub->key.left = 0;
-	else if (key == 65363)
+	else if (key == XK_Right)
 		cub->key.right = 0;
 	return (0);
 }
+
+// void	game_loop(t_cube *cub)
+// {
+// 	while (1)
+// 	{
+// 		draw_player(cub);
+// 		mlx_do_sync(cub->con);
+// 	}
+// }
+
+//int	loop_hook(t_cube *cub)
+//{
+//	mlx_clear_window(cub->con, cub->win);
+//	draw_map(cub);
+//	draw_player(cub);
+//	mlx_do_sync(cub->con);
+//	return (0);
+//}
+
 
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
 {
 	int	i;
 	int	j;
 
-	for (i = 0; i < 20; i++)
+	for (i = 0; i < MINIMAP_SIZE; i++)
 	{
-		for (j = 0; j < 20; j++)
+		for (j = 0; j < MINIMAP_SIZE; j++)
 		{
 			((int *)(addr))[(y + i) * line_length / 4 + x + j] = color;
 		}
@@ -136,8 +155,8 @@ void	draw_player_to_image(t_cube *cub, char *addr, int line_length)
     color = 0xFF0000;  // Red
 
     // Calculate the player's position in pixels
-    x = cub->player.x * TILE_SIZE;
-    y = cub->player.y * TILE_SIZE;
+    x = cub->player.x * MINIMAP_SIZE;
+    y = cub->player.y * MINIMAP_SIZE;
 
     // Draw the player as a square
     draw_p_to_image(addr, line_length, x, y, color);
@@ -154,13 +173,13 @@ void	draw_map_to_image(t_cube *cub, char *addr, int line_length)
 		for (x = 0; x < cub->map.cols; x++)
 		{
 			if (cub->map.map[y][x] == '1')  // Wall
-				color = 0xFFFFFF;  // White
+				color = 0x00004A;  // Green
 			else if (cub->map.map[y][x] == ' ')
-				color = 0x000000;
+				continue ;
 			else
-				color = 0x4DB8FF;  // Green
+				color = 0xffece0;  // White
 
-			draw_square_to_image(addr, line_length, x * TILE_SIZE, y * TILE_SIZE, color);
+			draw_square_to_image(addr, line_length, x * MINIMAP_SIZE, y * MINIMAP_SIZE, color);
 		}
 	}
 }
@@ -219,21 +238,6 @@ void mouse_rotate(t_cube *cub)
 	// printf("Mouse position :\nx : %d\ny : %d\n\n", cub->mouse_x, cub->mouse_y);
 }
 
-int	is_same_axis(double px, double x)
-{
-	if (px > x)
-	{
-		if (px - x >= 0.1)
-			return (0);
-	}
-	else
-	{
-		if (x - px >= 0.1)
-			return (0);
-	}
-	return (1);
-}
-
 void	tutorial(t_cube *cub, int bits_per_pixel)
 {
 	fade_to_black(cub, 0.4, bits_per_pixel);
@@ -255,41 +259,6 @@ void	tutorial(t_cube *cub, int bits_per_pixel)
 	draw_xpm_animation(10, WIDTH / 2.5, HEIGHT / 1.2, cub, cub->keyboard);
 	mlx_string_put(cub->con, cub->win, WIDTH / 2.2, HEIGHT / 1.175, 0xFFFFFF, " -   Close the tutorial !");
 }
-
-//void swap(t_enemy *a, t_enemy *b)
-//{
-//	t_enemy temp = *a;
-//	*a = *b;
-//	*b = temp;
-//}
-
-//// Partition function to find the pivot position and rearrange the elements
-//int partition(int low, int high, t_enemy *arr) {
-//    t_enemy pivot = arr[high];  // Choosing the last element as pivot
-//    int i = low;      // Index of smaller element
-
-//    for (int j = low; j <= high - 1; j++)
-//    {
-//        if (arr[j].dist < pivot.dist)
-//	{
-//            swap(&arr[i], &arr[j]);
-//            i++;
-//        }
-//    }
-//    swap(&arr[i], &arr[high]);
-//    return (i);
-//}
-
-//// QuickSort function
-//void quickSort(t_enemy *arr, int low, int high) {
-//    if (low < high) {
-//        int pi = partition(low, high, arr);
-
-//        // Recursively sort elements before and after partition
-//        quickSort(arr, low, pi - 1);
-//        quickSort(arr, pi + 1, high);
-//    }
-//}
 
 void	enemy_handler(t_cube *cub, int index, t_txt **txt)
 {
@@ -319,13 +288,13 @@ void	enemy_handler(t_cube *cub, int index, t_txt **txt)
 				cub->enemies[index].hp -= 25;
 				cub->enemies[index].hurt = 1;
 			}
-			if (cub->player.x > cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x + ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x + ENEMY_SPEED)] != 'D')
+			if (cub->player.x > cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x + ENEMY_SPEED)] != '1' && can_walk(cub, (int) cub->enemies[index].y, (int) (cub->enemies[index].x + ENEMY_SPEED)))
 				cub->enemies[index].x += ENEMY_SPEED;
-			else if (cub->player.x < cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x - ENEMY_SPEED)] != '1' && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x - ENEMY_SPEED)] != 'D')
+			else if (cub->player.x < cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x - ENEMY_SPEED)] != '1' && can_walk(cub, (int) cub->enemies[index].y, (int) (cub->enemies[index].x - ENEMY_SPEED)))
 				cub->enemies[index].x -= ENEMY_SPEED;
-			if (cub->player.y > cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y + ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && cub->map.map[(int) (cub->enemies[index].y + ENEMY_SPEED)][(int) cub->enemies[index].x] != 'D')
+			if (cub->player.y > cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y + ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && can_walk(cub, (int) (cub->enemies[index].y + ENEMY_SPEED), (int) cub->enemies[index].x))
 				cub->enemies[index].y += ENEMY_SPEED;
-			else if (cub->player.y < cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y - ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && cub->map.map[(int) (cub->enemies[index].y - ENEMY_SPEED)][(int) cub->enemies[index].x] != 'D')
+			else if (cub->player.y < cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y - ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && can_walk(cub, (int) (cub->enemies[index].y - ENEMY_SPEED), (int) cub->enemies[index].x))
 				cub->enemies[index].y -= ENEMY_SPEED;
 		}
 		else
@@ -334,7 +303,7 @@ void	enemy_handler(t_cube *cub, int index, t_txt **txt)
 			{
 				cub->player.hit = 0;
 				//printf("player hit !\n");
-				cub->enemies[index].hp -= 25;
+				cub->enemies[index].hp -= cub->player.atk;
 				cub->enemies[index].hurt = 1;
 			}
 			if (cub->option_bool == -1 && !cub->enemies[index].hurt)
@@ -373,7 +342,7 @@ int	loop_hook(t_cube *cub)
 			if (cub->key.w)
 			{
 				if ((cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x + (cub->player.speed * cos(-cub->rr.angle_rad)))] != '1')
-						&& (cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x + (cub->player.speed * cos(-cub->rr.angle_rad)))] != 'D'))
+						&& can_walk(cub, (int) (cub->player.y + (cub->player.speed * sin(-cub->rr.angle_rad))), (int) (cub->player.x + (cub->player.speed * cos(-cub->rr.angle_rad)))))
 				{
 					if ((cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x + (cub->player.speed * cos(-cub->rr.angle_rad)))] != '2') && remove_corners(cub, (int) (cub->player.x + (cub->player.speed * cos(-cub->rr.angle_rad))), (int) (cub->player.y + (cub->player.speed * sin(-cub->rr.angle_rad)))))
 					{
@@ -381,12 +350,12 @@ int	loop_hook(t_cube *cub)
 						cub->player.x += cub->player.speed * (cos(-cub->rr.angle_rad));
 					}
 				}
-				else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != '1' && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != 'D' && is_corner(cub, (int) cub->player.x, (int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))))
+				else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != '1' && can_walk(cub, (int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad)), (int) cub->player.x) && is_corner(cub, (int) cub->player.x, (int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))))
 				{
 					if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != '2')
 						cub->player.y += cub->player.speed * (sin(-cub->rr.angle_rad));	
 				}
-				else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad))] != '1' && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad))] != 'D' && is_corner(cub, (int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad)), (int) cub->player.y))
+				else if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad))] != '1' && can_walk(cub, (int) cub->player.y, (int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad))) && is_corner(cub, (int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad)), (int) cub->player.y))
 				{
 					if (-cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(-cub->rr.angle_rad))] != '2')
 						cub->player.x += cub->player.speed * (cos(-cub->rr.angle_rad));
@@ -394,7 +363,7 @@ int	loop_hook(t_cube *cub)
 			}
 			if (cub->key.s)
 			{
-				if (cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad)))] != '1' && cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad)))] != 'D' && remove_corners(cub, (int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad))), (int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad)))))
+				if (cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad)))] != '1' && can_walk(cub, (int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad))), (int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad)))) && remove_corners(cub, (int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad))), (int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad)))))
 				{
 					if (cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(-cub->rr.angle_rad)))][(int) (cub->player.x - (cub->player.speed * cos(-cub->rr.angle_rad)))] != '2')
 					{	
@@ -402,12 +371,12 @@ int	loop_hook(t_cube *cub)
 						cub->player.x -= cub->player.speed * cos(-cub->rr.angle_rad);
 					}
 				}
-				else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != '1' && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != 'D' && is_corner(cub, (int) cub->player.x, (int) (cub->player.y - cub->player.speed * sin(-cub->rr.angle_rad))))
+				else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != '1' && can_walk(cub, (int) (cub->player.y - cub->player.speed * sin(-cub->rr.angle_rad)), (int) cub->player.x)&& is_corner(cub, (int) cub->player.x, (int) (cub->player.y - cub->player.speed * sin(-cub->rr.angle_rad))))
 				{
 						if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(-cub->rr.angle_rad))][(int) cub->player.x] != '2')
 							cub->player.y -= cub->player.speed * sin(-cub->rr.angle_rad);
 				}
-				else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad))] != '1' && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad))] != 'D' && is_corner(cub, (int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad)), (int) cub->player.y))
+				else if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad))] != '1' && can_walk(cub, (int) cub->player.y, (int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad))) && is_corner(cub, (int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad)), (int) cub->player.y))
 				{
 					if (-cub->rr.angle_rad != 3 * M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(-cub->rr.angle_rad))] != '2')
 						cub->player.x -= cub->player.speed * cos(-cub->rr.angle_rad);
@@ -415,7 +384,7 @@ int	loop_hook(t_cube *cub)
 			}
 			if (cub->key.a)
 			{
-				if (cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != '1' && cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != 'D' && remove_corners(cub, (int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))), (int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))))
+				if (cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != '1' && can_walk(cub, (int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))), (int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))) && remove_corners(cub, (int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))), (int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))))
 				{
 					if (cub->map.map[(int) (cub->player.y - (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x - (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != '2')
 					{
@@ -423,12 +392,12 @@ int	loop_hook(t_cube *cub)
 						cub->player.x -= cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2);
 					}
 				}
-				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '1' && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != 'D' && is_corner(cub, (int) cub->player.x, (int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))))
+				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '1' && can_walk(cub, (int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)), (int) cub->player.x) && is_corner(cub, (int) cub->player.x, (int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))))
 				{
 					if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y - cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '2')
 						cub->player.y -= cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2);
 				}
-				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != '1' && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != 'D' && !is_corner(cub, (int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)), (int) cub->player.y))
+				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != '1' && can_walk(cub, (int) cub->player.y, (int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))) && !is_corner(cub, (int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)), (int) cub->player.y))
 				{
 					if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x - cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != '2')
 						cub->player.x -= cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2);
@@ -436,7 +405,7 @@ int	loop_hook(t_cube *cub)
 			}
 			if (cub->key.d)
 			{
-				if (cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != '1' && cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != 'D' && remove_corners(cub, (int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))), (int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))))
+				if (cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != '1' && can_walk(cub, (int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))), (int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))) && remove_corners(cub, (int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))), (int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))))
 				{
 					if (cub->map.map[(int) (cub->player.y + (cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)))][(int) (cub->player.x + (cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)))] != '2')
 					{	
@@ -444,12 +413,12 @@ int	loop_hook(t_cube *cub)
 						cub->player.x += cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2);
 					}
 				}
-				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '1' && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != 'D' && is_corner(cub, (int) cub->player.x, (int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))))
+				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '1' && can_walk(cub, (int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2)), (int) cub->player.x) && is_corner(cub, (int) cub->player.x, (int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))))
 				{
 					if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) (cub->player.y + cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2))][(int) cub->player.x] != '2')
 						cub->player.y += cub->player.speed * sin(- cub->rr.angle_rad + M_PI / 2);	
 				}
-				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != '1' && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != 'D' && is_corner(cub, (int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)), (int) cub->player.y))
+				else if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != '1' && can_walk(cub, (int) cub->player.y, (int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))) && is_corner(cub, (int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2)), (int) cub->player.y))
 				{
 					if (- cub->rr.angle_rad != M_PI / 2 && cub->map.map[(int) cub->player.y][(int) (cub->player.x + cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2))] != '2')
 						cub->player.x += cub->player.speed * cos(- cub->rr.angle_rad + M_PI / 2);
@@ -470,6 +439,7 @@ int	loop_hook(t_cube *cub)
 		check_pick_up(cub);
 		// printf("weaponsss %d\n", cub->weapon_counter);
 		render_game(cub);
+		check_door(cub);
 		// mlx_string_put(cub->con, cub->win, WIDTH / 2, HEIGHT - (HEIGHT / 4), 0xFFFFFF, "You picked up a sword.");
 		sword_handler(cub);
 		hp_handler(cub);
@@ -481,7 +451,6 @@ int	loop_hook(t_cube *cub)
 		draw_xpm_texture(15, WIDTH / 1.08, HEIGHT / 6, cub);
 		draw_xpm_texture(16, WIDTH / 1.08, HEIGHT / 10, cub);
 		draw_xpm_texture(17, WIDTH / 1.069, HEIGHT / 22, cub);
-	// draw_map_to_image(cub, cub->addr, cub->line_length);
 		if (cub->start == 1)
 			player_rotation_init(cub);
 		if (cub->option_bool == -1)
@@ -493,13 +462,12 @@ int	loop_hook(t_cube *cub)
 			
 		// cub->casket_dist = dist((cub->casket_x * TILE_SIZE), (cub->casket_y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
 		enemy_handler(cub, 0, cub->nightborne);
-		//enemy_handler(cub, 1, cub->skeleton);
-		//enemy_handler(cub, 2, cub->warrior);
-		//enemy_handler(cub, 3, cub->skullwolf);
-		//enemy_handler(cub, 4, cub->s_warrior);
-		//enemy_handler(cub, 5, cub->plague_doctor);
-		//enemy_handler(cub, 6, cub->cute_wolf);
-		//quickSort(cub->enemies, 0, cub->enemies_nb - 1);
+		enemy_handler(cub, 1, cub->skeleton);
+		enemy_handler(cub, 2, cub->warrior);
+		enemy_handler(cub, 3, cub->skullwolf);
+		enemy_handler(cub, 4, cub->s_warrior);
+		enemy_handler(cub, 5, cub->plague_doctor);
+		enemy_handler(cub, 6, cub->cute_wolf);
 	}
 	if (cub->title_bool == 1)
 		title_handler(cub);
@@ -510,10 +478,16 @@ int	loop_hook(t_cube *cub)
 		start_handler(cub);
 		start_keys(cub);
 		init_enemies(cub);
+		cub->player.x = 2;
+		cub->player.y = 13;
 	}
-	// draw_player_to_image(cub, cub->addr, cub->line_length);
 	mlx_put_image_to_window(cub->con, cub->win, cub->img, 0, 0);
 	display_messages(cub);
+	if (!cub->title_bool && !cub->bg_bool)
+	{
+		draw_map_to_image(cub, cub->addr, cub->line_length);
+		draw_player_to_image(cub, cub->addr, cub->line_length);
+	}
 	if (cub->title_bool == 0 && cub->bg_bool == 0)
 	{
 		if (cub->option_bool == 1 && cub->player.hp > 0 && !cub->tuto)
@@ -564,7 +538,7 @@ void	init_enemies(t_cube *cub)
 	}
 	cub->enemies[0].x = 2;
 	cub->enemies[0].y = 2;
-	cub->enemies[0].scale = 0.2;
+	cub->enemies[0].scale = 0.4;
 	cub->enemies[0].z_index = 20;
 	cub->enemies[0].atk_max_frame = 11;
 	cub->enemies[0].death_max_frame = 21;
@@ -622,7 +596,7 @@ void	init_enemies(t_cube *cub)
 	cub->enemies[5].idle_max_frame = 3;
 	cub->enemies[5].run_max_frame = 3;
 	cub->enemies[5].attack_range = 70;
-	cub->enemies[6].x = 7;
+	cub->enemies[6].x = 2;
 	cub->enemies[6].y = 11;
 	cub->enemies[6].scale = 0.6;
 	cub->enemies[6].z_index = 80;
@@ -652,7 +626,7 @@ void	start_keys(t_cube *cub)
 	init_w_slots(cub);
 	cub->player.arrows = 5;
 	cub->player.speed = 0.006;
-	cub->player.atk = 10;
+	cub->player.atk = 25;
 	cub->player.atk_item_amount = 0;
 	cub->player.speed_item_amount = 0;
 	if (!cub->retry)
@@ -1271,7 +1245,7 @@ void	init_textures(t_cube *cub)
 	cub->txt[9].type = NULL;
 	cub->txt[9].path = ft_strdup("./textures/sword_weapon_slot.xpm");
 	cub->txt[10].type = ft_strdup("D");
-	cub->txt[10].path = ft_strdup("textures/Door.xpm");
+	cub->txt[10].path = ft_strdup("./textures/sword_weapon_slot.xpm");
 	cub->txt[11].type = NULL;
 	cub->txt[11].path = ft_strdup("textures/crossbow_weapon_slot.xpm");
 	cub->txt[12].type = NULL;
@@ -1290,6 +1264,12 @@ void	init_textures(t_cube *cub)
 	cub->txt[18].path = ft_strdup("textures/Casket.xpm");
 	cub->txt[19].type = NULL;
 	cub->txt[19].path = ft_strdup("textures/crosshair.xpm");
+	cub->txt[20].type = NULL;
+	cub->txt[20].path = ft_strdup("textures/rat.xpm");
+	cub->txt[21].type = NULL;
+	cub->txt[21].path = ft_strdup("textures/rat_left.xpm");
+	cub->txt[22].type = NULL;
+	cub->txt[22].path = ft_strdup("textures/health_potion.xpm");
 }
 
 void	init_nightborne(t_cube *cub)
@@ -1623,7 +1603,7 @@ void	init_hp(t_cube *cub)
 	while (i < 8)
 	{
 		increment_numbers(num, i + 1);
-		cub->hp_frame[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->hp_frame->width, &cub->hp_frame->height);
+		cub->hp_frame[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->hp_frame[i].width, &cub->hp_frame[i].height);
 		cub->hp_frame[i].addr = mlx_get_data_addr(cub->hp_frame[i].img, &cub->hp_frame[i].bits_per_pixel,
 			&cub->hp_frame[i].line_length, &cub->hp_frame[i].endian);
 		cub->hp_frame[i].tmp_delay = 0;
@@ -1645,14 +1625,14 @@ void	init_sword(t_cube *cub)
 	while (i < 5)
 	{
 		increment_numbers(num, i + 1);
-		cub->sword_ani[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->sword_ani->width, &cub->sword_ani->height);
+		cub->sword_ani[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->sword_ani[i].width, &cub->sword_ani[i].height);
 		cub->sword_ani[i].addr = mlx_get_data_addr(cub->sword_ani[i].img, &cub->sword_ani[i].bits_per_pixel,
 			&cub->sword_ani[i].line_length, &cub->sword_ani[i].endian);
 		cub->sword_ani[i].tmp_delay = 0;
 		i++;
 	}
-	cub->sword_ani->delay = 10;
 	cub->sword_ani->current_frame = 0;
+	cub->sword_ani->delay = 10;
 	free(num);
 }
 
@@ -1675,6 +1655,27 @@ void	init_numbers(t_cube *cub)
 		cub->nums[i].height = 34;
 		i++;
 		increment_numbers(num, i);
+	}
+	free(num);
+}
+
+void	init_door(t_cube *cub)
+{
+	int		i;
+	char 	*num;
+
+	cub->door = (t_txt *)malloc(7 * sizeof(t_txt));
+	i = 0;
+	num = ft_strdup("./textures/door/Door1.xpm");
+	while (i < 7)
+	{
+		increment_numbers(num, i + 1);
+		cub->door[i].img = mlx_xpm_file_to_image(cub->con, num, &cub->door[i].width, &cub->door[i].height);
+		cub->door[i].addr = mlx_get_data_addr(cub->door[i].img, &cub->door[i].bits_per_pixel,
+			&cub->door[i].line_length, &cub->door[i].endian);
+		cub->door[i].tmp_delay = 0;
+		cub->door[i].delay = 7;
+		i++;
 	}
 	free(num);
 }
@@ -1712,6 +1713,8 @@ void window_init(t_cube *cub)
 	init_s_warrior(cub);
 	init_plague_doctor(cub);
 	init_cute_wolf(cub);
+	init_door(cub);
+	save_doors(cub);
 	cub->main_menu_assets = (t_txt *)malloc(1 * sizeof(t_txt));
 	cub->main_menu_assets[0].type = NULL;
 	cub->main_menu_assets[0].path = ft_strdup("./textures/main_menu/title_main_menu.xpm");
@@ -1719,7 +1722,7 @@ void window_init(t_cube *cub)
 	init_textures(cub);
 	items_parsing(cub);
 	mlx_mouse_hide(cub->con, cub->win);
-	load_textures(cub, cub->txt, 20);
+	load_textures(cub, cub->txt, 23);
 	start_keys(cub);
 	mlx_key_hook(cub->win, handle_key_release, cub);
 	mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
