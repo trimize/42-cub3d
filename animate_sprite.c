@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:29:06 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/11 23:36:30 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:07:45 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,20 +216,21 @@ void	update_animation_atk(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int index, int dist)
+t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, t_enemy *enemy, int dist)
 {
+	(void) cub;
 	update_animation_atk(txt);
-	if (txt->current_frame == cub->enemies[index].atk_max_frame)
+	if (txt->current_frame == enemy->atk_max_frame)
 	{
 		txt->current_frame = 0;
 		if (dist < 150)
-			cub->enemies[index].last_attack = 1;	
-		cub->enemies[index].attacking_bool = 0;
+			enemy->last_attack = 1;	
+		enemy->attacking_bool = 0;
 	}
 	else
 	{
-		cub->enemies[index].last_attack = 0;
-		cub->enemies[index].attacking_bool = 1;
+		enemy->last_attack = 0;
+		enemy->attacking_bool = 1;
 	}
 	return (txt[txt->current_frame]);
 }
@@ -244,14 +245,15 @@ void	update_animation_hurt(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, int index, int max_frame)
+t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame)
 {
+	(void) cub;
 	update_animation_hurt(txt);
 	if (txt->current_frame == max_frame)
 	{
 		txt->current_frame = 0;
-		cub->enemies[index].hurt = 0;	
-		cub->enemies[index].attacking_bool = 0;
+		enemy->hurt = 0;	
+		enemy->attacking_bool = 0;
 	}
 	return (txt[txt->current_frame]);
 }
@@ -266,13 +268,14 @@ void	update_animation_death(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, int index, int max_frame)
+t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame)
 {
+	(void) cub;
 	update_animation_death(txt);
 	if (txt->current_frame == max_frame)
 	{
-		cub->enemies[index].dead = 1;	
-		cub->enemies[index].attacking_bool = 0;
+		enemy->dead = 1;	
+		enemy->attacking_bool = 0;
 	}
 	return (txt[txt->current_frame]);
 }

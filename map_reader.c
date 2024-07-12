@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/09 17:18:34 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:48:11 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	char_checker(char *line)
 	char	*chars;
 
 	i = 0;
-	chars = "10NSEW D|OCGHAQV";
+	chars = "10NSEW D|OCGHAQVRrncpvswk";
 	while (line[i])
 	{
 		j = 0;
@@ -41,10 +41,12 @@ void	check_characters(t_cube *cub, int y, int x)
 {
 	if (cub->map.map[y][x] == '|' || cub->map.map[y][x] == 'O' || cub->map.map[y][x] == 'C' || cub->map.map[y][x] == 'G')
 		cub->weapon_counter++;
-	else if (cub->map.map[y][x] == 'A' || cub->map.map[y][x] == 'H' || cub->map.map[y][x] == 'Q' || cub->map.map[y][x] == 'V')
+	else if (cub->map.map[y][x] == 'A' || cub->map.map[y][x] == 'H' || cub->map.map[y][x] == 'Q' || cub->map.map[y][x] == 'V' || cub->map.map[y][x] == 'R')
 		cub->items_counter++;
 	else if (cub->map.map[y][x] == 'D')
 		cub->door_counter++;
+	else if (cub->map.map[y][x] == 'r' || cub->map.map[y][x] == 'n' || cub->map.map[y][x] == 'c' || cub->map.map[y][x] == 'p' || cub->map.map[y][x] == 'v' || cub->map.map[y][x] == 's' || cub->map.map[y][x] == 'w' || cub->map.map[y][x] == 'k')
+		cub->enemy_counter++;
 }
 
 void	player_checker(t_cube *cub)
@@ -271,10 +273,12 @@ void	items_parsing(t_cube *cub)
 	int	x;
 	int	i;
 	int j;
+	int	w;
 
 	y = 0;
 	i = 0;
 	j = 0;
+	w = 0;
 	while (cub->map.map[y])
 	{
 		x = 0;
@@ -353,6 +357,167 @@ void	items_parsing(t_cube *cub)
 				cub->items[j].type = 'V';
 				cub->items[j].display = 1;
 				j++;
+			}
+			else if (cub->map.map[y][x] == 'R')
+			{
+				cub->items[j].x = x;
+				cub->items[j].y = y;
+				random_item(cub, &cub->items[j]);
+				j++;
+			}
+			else if (cub->map.map[y][x] == 'r')
+			{
+				// cub->all_enemies[w].txt = &cub->enemies[];
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				w++;
+			}
+			else if (cub->map.map[y][x] == 'n')
+			{
+				cub->all_enemies[w].type = 'n';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.4;
+				cub->all_enemies[w].z_index = 20;
+				cub->all_enemies[w].atk_max_frame = 11;
+				cub->all_enemies[w].death_max_frame = 21;
+				cub->all_enemies[w].hurt_max_frame = 4;
+				cub->all_enemies[w].idle_max_frame = 8;
+				cub->all_enemies[w].run_max_frame = 5;
+				cub->all_enemies[w].attack_range = 150;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 500;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->nightborne[0][0];
+				w++;
+			}
+			else if (cub->map.map[y][x] == 'c')
+			{
+				cub->all_enemies[w].type = 'c';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.6;
+				cub->all_enemies[w].z_index = 80;
+				cub->all_enemies[w].atk_max_frame = 4;
+				cub->all_enemies[w].death_max_frame = 4;
+				cub->all_enemies[w].hurt_max_frame = 2;
+				cub->all_enemies[w].idle_max_frame = 3;
+				cub->all_enemies[w].run_max_frame = 3;
+				cub->all_enemies[w].attack_range = 70;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 100;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->cute_wolf[0][0];
+				w++;
+			}
+			else if (cub->map.map[y][x] == 'p')
+			{
+				cub->all_enemies[w].type = 'p';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.6;
+				cub->all_enemies[w].z_index = 80;
+				cub->all_enemies[w].atk_max_frame = 4;
+				cub->all_enemies[w].death_max_frame = 5;
+				cub->all_enemies[w].hurt_max_frame = 2;
+				cub->all_enemies[w].idle_max_frame = 3;
+				cub->all_enemies[w].run_max_frame = 3;
+				cub->all_enemies[w].attack_range = 70;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 500;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->plague_doctor[0][0];
+				w++;
+			}
+			else if (cub->map.map[y][x] == 'v')
+			{
+				cub->all_enemies[w].type = 'v';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.6;
+				cub->all_enemies[w].z_index = 80;
+				cub->all_enemies[w].atk_max_frame = 3;
+				cub->all_enemies[w].death_max_frame = 8;
+				cub->all_enemies[w].hurt_max_frame = 2;
+				cub->all_enemies[w].idle_max_frame = 5;
+				cub->all_enemies[w].run_max_frame = 7;
+				cub->all_enemies[w].attack_range = 100;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 100;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->s_warrior[0][0];
+				w++;
+			}
+			else if (cub->map.map[y][x] == 's')
+			{
+				cub->all_enemies[w].type = 's';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.8;
+				cub->all_enemies[w].z_index = 100;
+				cub->all_enemies[w].atk_max_frame = 17;
+				cub->all_enemies[w].death_max_frame = 12;
+				cub->all_enemies[w].hurt_max_frame = 7;
+				cub->all_enemies[w].idle_max_frame = 10;
+				cub->all_enemies[w].run_max_frame = 12;
+				cub->all_enemies[w].attack_range = 80;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 100;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->skeleton[0][0];
+				w++;
+			}
+			else if (cub->map.map[y][x] == 'w')
+			{
+				cub->all_enemies[w].type = 'w';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.4;
+				cub->all_enemies[w].z_index = 70;
+				cub->all_enemies[w].atk_max_frame = 6;
+				cub->all_enemies[w].death_max_frame = 6;
+				cub->all_enemies[w].hurt_max_frame = 2;
+				cub->all_enemies[w].idle_max_frame = 9;
+				cub->all_enemies[w].run_max_frame = 7;
+				cub->all_enemies[w].attack_range = 80;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 500;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->warrior[0][0];
+				w++;
+			}
+			else if (cub->map.map[y][x] == 'k')
+			{
+				cub->all_enemies[w].type = 'k';
+				cub->all_enemies[w].x = x;
+				cub->all_enemies[w].y = y;
+				cub->all_enemies[w].scale = 0.6;
+				cub->all_enemies[w].z_index = 80;
+				cub->all_enemies[w].atk_max_frame = 4;
+				cub->all_enemies[w].death_max_frame = 6;
+				cub->all_enemies[w].hurt_max_frame = 3;
+				cub->all_enemies[w].idle_max_frame = 5;
+				cub->all_enemies[w].run_max_frame = 4;
+				cub->all_enemies[w].attack_range = 80;
+				cub->all_enemies[w].attacking_bool = 0;
+				cub->all_enemies[w].last_attack = -1;
+				cub->all_enemies[w].dead = 0;
+				cub->all_enemies[w].hp = 100;
+				cub->all_enemies[w].hurt = 0;
+				cub->all_enemies[w].txt = cub->skullwolf[0][0];
+				w++;
 			}
 			x++;
 		}

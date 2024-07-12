@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 00:37:26 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:04:13 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void check_horizontal(t_cube *cub, t_raycast *ray)
         // if (ray->mx < 0 || ray->my < 0)
         //     return;
         // printf("Values, mx: %d, my: %d\n", ray->mx, ray->my);
-		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == 'D')
+		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == 'D' && ray->hd_dist == 9999999)
 		{
 			ray->hdx = ray->rx;
 			ray->hdy = ray->ry;
@@ -143,7 +143,7 @@ void	check_vertical(t_cube *cub, t_raycast *ray)
 		// if (ray->mx < 0 || ray->my < 0)
 		// 	return ;
 		// printf("Values , mx: %d, my: %d\n", ray->mx, ray->my);
-		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == 'D')
+		if (ray->my >= 0 && ray->mx >= 0 && ray->my < cub->map.rows && ray->mx < cub->map.cols && cub->map.map[ray->my][ray->mx] == 'D' && ray->vd_dist == 9999999)
 		{
 			ray->vdx = ray->rx;
 			ray->vdy = ray->ry;
@@ -367,13 +367,19 @@ void	render_game(t_cube *cub)
 		cast_ray(cub, i);
 		i++;
 	}
+	i = 0;
+	while (i < cub->enemy_counter)
+	{
+		draw_enemy(cub, &cub->all_enemies[i]);
+		i++;
+	}
 	// draw_sprite(cub, 15);
-	draw_enemy(cub, &cub->enemies[0], cub->enemies[0].scale, cub->enemies[0].z_index);
-	draw_enemy(cub, &cub->enemies[1], cub->enemies[1].scale, cub->enemies[1].z_index);
-	draw_enemy(cub, &cub->enemies[2], cub->enemies[2].scale, cub->enemies[2].z_index);
-	draw_enemy(cub, &cub->enemies[3], cub->enemies[3].scale, cub->enemies[3].z_index);
-	draw_enemy(cub, &cub->enemies[4], cub->enemies[4].scale, cub->enemies[4].z_index);
-	draw_enemy(cub, &cub->enemies[5], cub->enemies[5].scale, cub->enemies[5].z_index);
-	draw_enemy(cub, &cub->enemies[6], cub->enemies[6].scale, cub->enemies[6].z_index);
+	// draw_enemy(cub, &cub->enemies[0], cub->enemies[0].scale, cub->enemies[0].z_index);
+	// draw_enemy(cub, &cub->enemies[1], cub->enemies[1].scale, cub->enemies[1].z_index);
+	// draw_enemy(cub, &cub->enemies[2], cub->enemies[2].scale, cub->enemies[2].z_index);
+	// draw_enemy(cub, &cub->enemies[3], cub->enemies[3].scale, cub->enemies[3].z_index);
+	// draw_enemy(cub, &cub->enemies[4], cub->enemies[4].scale, cub->enemies[4].z_index);
+	// draw_enemy(cub, &cub->enemies[5], cub->enemies[5].scale, cub->enemies[5].z_index);
+	// draw_enemy(cub, &cub->enemies[6], cub->enemies[6].scale, cub->enemies[6].z_index);
 	draw_items(cub); //TODO Need to sort the sprites, because when multiple items on the ground, one further can appear on top of a closer.
 }

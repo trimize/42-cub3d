@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:17:31 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/11 23:43:01 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:15:46 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,22 @@ void	dragon_handler(t_cube *cub)
 
 void	explosion_sprite(t_cube *cub)
 {
+	int	i;
+	t_enemy *enemy;
+
+
+	i = 0;
+	if (cub->enemy_counter)
+	{
+		enemy = &cub->all_enemies[i++];
+		while (i < cub->enemy_counter)
+		{
+			if (cub->all_enemies[i].dist < enemy->dist && cub->all_enemies[i].draw_start > 0 && cub->all_enemies[i].draw_end < WIDTH)
+				enemy = &cub->all_enemies[i];
+			i++;
+		}
+	}
+	
 	if (cub->option_bool == -1 && cub->key.mouse_l == 1 && cub->weapons_in_slot[cub->player.weapon - 1] == 4)
 	{
 		update_animation_explosion(cub);
@@ -154,17 +170,17 @@ void	explosion_sprite(t_cube *cub)
 			cub->player.hit = 0;
 		}
 		//draw_xpm_animation(cub->explosion->current_frame, WIDTH / 2.7, HEIGHT / 3.5, cub, cub->explosion);
-		if (cub->rays[(WIDTH / 2) - 1].dist < cub->enemies[0].dist && cub->enemies[0].draw_start > 0 && cub->enemies[0].draw_end < WIDTH && cub->explosion->launched)
+		if (cub->rays[(WIDTH / 2) - 1].dist < enemy->dist && enemy->draw_start > 0 && enemy->draw_end < WIDTH && cub->explosion->launched)
 		{
 			cub->explosion->x = cub->rays[(WIDTH / 2) - 1].rx / TILE_SIZE;
 			cub->explosion->y = cub->rays[(WIDTH / 2) - 1].ry / TILE_SIZE;
 		}
-		else if (cub->rays[(WIDTH / 2) - 1].dist > cub->enemies[0].dist && cub->enemies[0].draw_start > WIDTH / 3 && cub->enemies[0].draw_end < WIDTH / 1.8 && cub->explosion->launched)
+		else if (cub->rays[(WIDTH / 2) - 1].dist > enemy->dist && enemy->draw_start > WIDTH / 3 && enemy->draw_end < WIDTH / 1.8 && cub->explosion->launched)
 		{
-			cub->explosion->x = cub->enemies[0].x;
-			cub->explosion->y = cub->enemies[0].y;
+			cub->explosion->x = enemy->x;
+			cub->explosion->y = enemy->y;
 		}
-		else if ((cub->enemies[0].draw_start < WIDTH || cub->enemies[0].draw_end > WIDTH) && cub->explosion->launched)
+		else if ((enemy->draw_start < WIDTH || enemy->draw_end > WIDTH) && cub->explosion->launched)
 		{
 			//printf("launched !\n");
 			cub->explosion->x = cub->rays[WIDTH / 2].rx / TILE_SIZE;

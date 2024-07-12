@@ -6,11 +6,44 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 01:01:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 00:32:15 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 19:02:09 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
+
+void	random_item(t_cube *cub, t_item *item)
+{
+	int type;
+
+	type = get_current_time() % 4;
+	if (type == 0)
+	{
+		item->txt = &cub->txt[17];
+		item->type = 'Q';
+		item->display = 1;
+	}
+	else if (type == 1)
+	{
+		item->txt = &cub->txt[16];
+		item->type = 'A';
+		item->display = 1;
+	}
+	else if (type == 2)
+	{
+		item->txt = &cub->txt[22];
+		item->type = 'H';
+		item->display = 1;
+		item->msg = 0;
+		item->last_text = -1;
+	}
+	else if (type == 3)
+	{
+		item->txt = &cub->txt[15];
+		item->type = 'V';
+		item->display = 1;
+	}
+}
 
 void	update_dist(t_cube *cub)
 {

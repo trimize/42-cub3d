@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 00:01:01 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:26:42 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,7 @@ typedef struct s_enemy
 	double	y;
 	double	dist;
 	long int		last_attack;
+	char	type;
 	int	hp;
 	int	hurt;
 	int	attacking_bool;
@@ -215,9 +216,11 @@ typedef struct s_cube
 	t_key		key;
 	t_rr		rr;
 	t_raycast	*rays;
-	t_enemy		enemies[8];
+	// t_enemy		enemies[8];
+	t_enemy		*all_enemies;
 	t_item		*weapons;
 	t_item		*items;
+	t_item		*dropped_items;
 	t_door		*doors;
 	void		*con;
 	void		*win;
@@ -244,6 +247,7 @@ typedef struct s_cube
 	int			door_open_msg;
 	int			door_close_msg;
 	int			weapon_counter;
+	int			enemy_counter;
 	int			items_counter;
 	int			door_counter;
 	int			sensi;
@@ -333,7 +337,7 @@ void	render_game(t_cube *cub);
 void	draw_weapon(t_cube *cub, int index);
 void	draw_item(t_cube *cub, int index);
 void	display_messages(t_cube *cub);
-void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index);
+void draw_enemy(t_cube *cub, t_enemy *enemy);
 void	check_pick_up(t_cube *cub);
 void	update_animation_txt(t_txt *txt, t_door *door);
 t_txt	*txt_handler(t_cube *cub, t_txt *txt, int max_frame, t_raycast ray);
@@ -341,12 +345,13 @@ void	update_animation_txt_r(t_txt *txt, t_door *door);
 t_txt	*txt_handler_r(t_cube *cub, t_txt *txt, t_raycast ray);
 int		can_walk(t_cube *cub, int y, int x);
 t_txt	enemy_animation_handler(t_txt *txt, int max_frame);
-t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, int index, int dist);
-t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, int index, int max_frame);
+t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, t_enemy *enemy, int dist);
+t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame);
 void	draw_sprite(t_cube *cub, t_txt *txt, int x, int y, double scale, int z_index);
 void	explosion_sprite(t_cube *cub);
-t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, int index, int max_frame);
+t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame);
 void	start_keys(t_cube *cub);
 void	init_enemies(t_cube *cub);
+void	random_item(t_cube *cub, t_item *item);
 
 #endif

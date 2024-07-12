@@ -9,7 +9,11 @@
                 "-g",
                 "${fileDirname}/libft/*.c",
                 "${fileDirname}/get_next_line/*.c",
-                "${fileDirname}/*.c",
+                "${fileDirname}/main.c",
+                "${fileDirname}/utils.c",
+                "${fileDirname}/free.c",
+                "${fileDirname}/player.c",
+                "${fileDirname}/map_reader.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 00:00:45 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:37:37 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,13 @@ void	color_background(t_cube *cub, int length, int ray_i)
 	int	i;
 
 	i = (HEIGHT - length) / 2;
+	if (i < 0)
+		return ;
 	while (i >= 0)
 		((int *)(cub->addr))[i-- * (cub->line_length / 4) + WIDTH - ray_i] = cub->c_rgb;
 	i = (HEIGHT + length) / 2;
+	if (i > HEIGHT)
+		return ;
 	while (i <= HEIGHT)
 			((int *)(cub->addr))[i++ * (cub->line_length / 4) + WIDTH - ray_i] = cub->f_rgb;
 }
@@ -84,12 +88,12 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 		}
 	}
 
-	if (ray->is_door && (ray->door_flag == 'N' || ray->door_flag == 'S')) {
+	if (ray->is_door && !ray->door->is_open && (ray->door_flag == 'N' || ray->door_flag == 'S')) {
 		x_o = (int)fmod(x, TILE_SIZE) * ray->txt->width / TILE_SIZE;
 		if (ray->door_flag == 'S') {
 			x_o = ray->txt->width - x_o - 1; // Flip for south
 		}
-	} else if (ray->is_door) {
+	} else if (ray->is_door && !ray->door->is_open) {
 		x_o = (int)fmod(y, TILE_SIZE) * ray->txt->width / TILE_SIZE;
 		if (ray->door_flag == 'W') {
 			x_o = ray->txt->width - x_o - 1; // Flip for west
@@ -105,11 +109,6 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 		t_pix = 0;
 
 	y_o = (t_pix - (HEIGHT / 2) + (length / 2)) * factor;
-
-	if (ray->r == WIDTH / 2 && ray->is_door)
-	{
-		printf("it is %d and flag is %c\n", ray->is_door, ray->door_flag);
-	}
 
 	while (t_pix < b_pix)
 	{
@@ -141,17 +140,17 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 				}
 			}
 
-			if (ray->is_door && (ray->door_flag == 'N' || ray->door_flag == 'S')) {
-				x_o = (int)fmod(x, TILE_SIZE) * ray->txt->width / TILE_SIZE;
-				if (ray->door_flag == 'S') {
-					x_o = ray->txt->width - x_o - 1; // Flip for south
-				}
-			} else if (ray->is_door) {
-				x_o = (int)fmod(y, TILE_SIZE) * ray->txt->width / TILE_SIZE;
-				if (ray->door_flag == 'W') {
-					x_o = ray->txt->width - x_o - 1; // Flip for west
-				}
-			}
+			// if (ray->is_door && !ray->door->is_open && (ray->door_flag == 'N' || ray->door_flag == 'S')) {
+			// 	x_o = (int)fmod(x, TILE_SIZE) * ray->txt->width / TILE_SIZE;
+			// 	if (ray->door_flag == 'S') {
+			// 		x_o = ray->txt->width - x_o - 1; // Flip for south
+			// 	}
+			// } else if (ray->is_door) {
+			// 	x_o = (int)fmod(y, TILE_SIZE) * ray->txt->width / TILE_SIZE;
+			// 	if (ray->door_flag == 'W') {
+			// 		x_o = ray->txt->width - x_o - 1; // Flip for west
+			// 	}
+			// }
 
 			t_pix = (HEIGHT / 2) - (length / 2);
 			b_pix = (HEIGHT / 2) + (length / 2);
@@ -303,8 +302,10 @@ void	draw_vertical_line(t_cube *cub, t_raycast *ray)
 //     // }
 // }
 
-void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index)
+void draw_enemy(t_cube *cub, t_enemy *enemy)
 {
+	double scale = enemy->scale;
+	double z_index = enemy->z_index;
     double spriteX = (enemy->x) - (cub->player.x);
     double spriteY = (enemy->y) - (cub->player.y);
 
@@ -350,7 +351,7 @@ void draw_enemy(t_cube *cub, t_enemy *enemy, double scale, int z_index)
 	// if (stripe >= drawStartX && stripe < drawEndX)
 	// {
 		for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-			if (cub->rays[WIDTH - stripe].dist < enemy->dist)
+			if (cub->rays[WIDTH - stripe].dist < enemy->dist || (cub->rays[WIDTH - stripe].is_door && !cub->rays[WIDTH - stripe].door->is_open && enemy->dist > cub->rays[WIDTH - stripe].d_dist))
 				continue ;
 			// printf("\ndrawStart %d, drawEnd %d and ray %d\n", drawStartX, drawEndX, stripe);
 			int texX = (int) (256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * enemy->txt.width / spriteWidth) / 256;

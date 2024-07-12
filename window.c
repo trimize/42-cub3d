@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 00:41:35 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/12 22:19:21 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,66 +260,65 @@ void	tutorial(t_cube *cub, int bits_per_pixel)
 	mlx_string_put(cub->con, cub->win, WIDTH / 2.2, HEIGHT / 1.175, 0xFFFFFF, " -   Close the tutorial !");
 }
 
-void	enemy_handler(t_cube *cub, int index, t_txt **txt)
+void	enemy_handler(t_cube *cub, t_enemy *enemy, t_txt **txt)
 {
-	if (cub->enemies[index].hp > 0)
+	if (enemy->hp > 0)
 	{
-		cub->enemies[index].dist = dist((cub->enemies[index].x * TILE_SIZE), (cub->enemies[index].y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
-		if (cub->enemies[index].dist > 500 && cub->option_bool == -1)
+		enemy->dist = dist((enemy->x * TILE_SIZE), (enemy->y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
+		if (enemy->dist > 500 && cub->option_bool == -1)
 		{
-			cub->enemies[index].txt = enemy_animation_handler(txt[0], cub->enemies[index].idle_max_frame);
-			//printf("draw start : %d\ndraw end : %d", cub->enemies[index].draw_start, cub->enemies[index].draw_end);
-			if (cub->player.hit == 1 && cub->enemies[index].draw_start >= WIDTH / 4 && cub->enemies[index].draw_end <= WIDTH / 1.4 && (cub->weapons_in_slot[cub->player.weapon - 1] == 2 || cub->weapons_in_slot[cub->player.weapon - 1] == 4) && cub->rays[WIDTH / 2].dist > cub->enemies[index].dist)
+			enemy->txt = enemy_animation_handler(txt[0], enemy->idle_max_frame);
+			//printf("draw start : %d\ndraw end : %d", enemy->draw_start, enemy->draw_end);
+			if (cub->player.hit == 1 && enemy->draw_start >= WIDTH / 4 && enemy->draw_end <= WIDTH / 1.4 && (cub->weapons_in_slot[cub->player.weapon - 1] == 2 || cub->weapons_in_slot[cub->player.weapon - 1] == 4) && cub->rays[WIDTH / 2].dist > enemy->dist)
 			{
 				cub->player.hit = 0;
 				//printf("player hit !\n");
-				cub->enemies[index].hp -= 25;
-				cub->enemies[index].hurt = 1;
+				enemy->hp -= 25;
+				enemy->hurt = 1;
 			}
 		}
-		else if (cub->enemies[index].dist > cub->enemies[index].attack_range && cub->enemies[index].attacking_bool == 0 && cub->option_bool == -1)
+		else if (enemy->dist > enemy->attack_range && enemy->attacking_bool == 0 && cub->option_bool == -1)
 		{
-			//printf("draw start : %d\n", cub->enemies[index].draw_start);
-			cub->enemies[index].txt = enemy_animation_handler(txt[1], cub->enemies[index].run_max_frame);
-			if (cub->player.hit == 1 && cub->enemies[index].draw_start >= WIDTH / 8 && cub->enemies[index].draw_end <= WIDTH / 1.1 && (cub->weapons_in_slot[cub->player.weapon - 1] == 2 || cub->weapons_in_slot[cub->player.weapon - 1] == 4) && cub->rays[WIDTH / 2].dist > cub->enemies[index].dist)
+			//printf("draw start : %d\n", enemy->draw_start);
+			enemy->txt = enemy_animation_handler(txt[1], enemy->run_max_frame);
+			if (cub->player.hit == 1 && enemy->draw_start >= WIDTH / 8 && enemy->draw_end <= WIDTH / 1.1 && (cub->weapons_in_slot[cub->player.weapon - 1] == 2 || cub->weapons_in_slot[cub->player.weapon - 1] == 4) && cub->rays[WIDTH / 2].dist > enemy->dist)
 			{
 				cub->player.hit = 0;
-				printf("player hit !\n");
-				cub->enemies[index].hp -= 25;
-				cub->enemies[index].hurt = 1;
+				enemy->hp -= 25;
+				enemy->hurt = 1;
 			}
-			if (cub->player.x > cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x + ENEMY_SPEED)] != '1' && can_walk(cub, (int) cub->enemies[index].y, (int) (cub->enemies[index].x + ENEMY_SPEED)))
-				cub->enemies[index].x += ENEMY_SPEED;
-			else if (cub->player.x < cub->enemies[index].x && cub->map.map[(int) cub->enemies[index].y][(int) (cub->enemies[index].x - ENEMY_SPEED)] != '1' && can_walk(cub, (int) cub->enemies[index].y, (int) (cub->enemies[index].x - ENEMY_SPEED)))
-				cub->enemies[index].x -= ENEMY_SPEED;
-			if (cub->player.y > cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y + ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && can_walk(cub, (int) (cub->enemies[index].y + ENEMY_SPEED), (int) cub->enemies[index].x))
-				cub->enemies[index].y += ENEMY_SPEED;
-			else if (cub->player.y < cub->enemies[index].y && cub->map.map[(int) (cub->enemies[index].y - ENEMY_SPEED)][(int) cub->enemies[index].x] != '1' && can_walk(cub, (int) (cub->enemies[index].y - ENEMY_SPEED), (int) cub->enemies[index].x))
-				cub->enemies[index].y -= ENEMY_SPEED;
+			if (cub->player.x > enemy->x && cub->map.map[(int) enemy->y][(int) (enemy->x + ENEMY_SPEED)] != '1' && can_walk(cub, (int) enemy->y, (int) (enemy->x + ENEMY_SPEED)))
+				enemy->x += ENEMY_SPEED;
+			else if (cub->player.x < enemy->x && cub->map.map[(int) enemy->y][(int) (enemy->x - ENEMY_SPEED)] != '1' && can_walk(cub, (int) enemy->y, (int) (enemy->x - ENEMY_SPEED)))
+				enemy->x -= ENEMY_SPEED;
+			if (cub->player.y > enemy->y && cub->map.map[(int) (enemy->y + ENEMY_SPEED)][(int) enemy->x] != '1' && can_walk(cub, (int) (enemy->y + ENEMY_SPEED), (int) enemy->x))
+				enemy->y += ENEMY_SPEED;
+			else if (cub->player.y < enemy->y && cub->map.map[(int) (enemy->y - ENEMY_SPEED)][(int) enemy->x] != '1' && can_walk(cub, (int) (enemy->y - ENEMY_SPEED), (int) enemy->x))
+				enemy->y -= ENEMY_SPEED;
 		}
 		else
 		{
-			if (cub->player.hit == 1 && cub->enemies[index].dist < cub->enemies[index].attack_range && cub->rays[WIDTH / 2].dist > cub->enemies[index].dist)
+			if (cub->player.hit == 1 && enemy->dist < enemy->attack_range && cub->rays[WIDTH / 2].dist > enemy->dist)
 			{
 				cub->player.hit = 0;
 				//printf("player hit !\n");
-				cub->enemies[index].hp -= cub->player.atk;
-				cub->enemies[index].hurt = 1;
+				enemy->hp -= cub->player.atk;
+				enemy->hurt = 1;
 			}
-			if (cub->option_bool == -1 && !cub->enemies[index].hurt)
-				cub->enemies[index].txt = enemy_animation_atk(cub, txt[2], index, cub->enemies[index].dist);
-			if (cub->enemies[index].last_attack == 1 && cub->enemies[index].dist < cub->enemies[index].attack_range && cub->option_bool == -1)
+			if (cub->option_bool == -1 && !enemy->hurt)
+				enemy->txt = enemy_animation_atk(cub, txt[2], enemy, enemy->dist);
+			if (enemy->last_attack == 1 && enemy->dist < enemy->attack_range && cub->option_bool == -1)
 			{
 				cub->player.hp -= 25;
-				cub->enemies[index].last_attack = -1;
-				//cub->enemies[index].last_attack = get_current_time();
+				enemy->last_attack = -1;
+				//enemy->last_attack = get_current_time();
 			}
 		}
-		if (cub->option_bool == -1 && cub->enemies[index].hurt)
-			cub->enemies[index].txt = enemy_animation_hurt(cub, txt[3], index, cub->enemies[index].hurt_max_frame);
+		if (cub->option_bool == -1 && enemy->hurt)
+			enemy->txt = enemy_animation_hurt(cub, txt[3], enemy, enemy->hurt_max_frame);
 	}
-	else if (cub->enemies[index].dead == 0)
-		cub->enemies[index].txt = enemy_animation_death(cub, txt[4], index, cub->enemies[index].death_max_frame);
+	else if (enemy->dead == 0)
+		enemy->txt = enemy_animation_death(cub, txt[4], enemy, enemy->death_max_frame);
 }
 
 int	loop_hook(t_cube *cub)
@@ -461,13 +460,33 @@ int	loop_hook(t_cube *cub)
 			rotate_player(cub, -(cub->p_rotation));
 			
 		// cub->casket_dist = dist((cub->casket_x * TILE_SIZE), (cub->casket_y * TILE_SIZE), cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
-		enemy_handler(cub, 0, cub->nightborne);
-		enemy_handler(cub, 1, cub->skeleton);
-		enemy_handler(cub, 2, cub->warrior);
-		enemy_handler(cub, 3, cub->skullwolf);
-		enemy_handler(cub, 4, cub->s_warrior);
-		enemy_handler(cub, 5, cub->plague_doctor);
-		enemy_handler(cub, 6, cub->cute_wolf);
+		int idx = 0;
+		while (idx < cub->enemy_counter)
+		{
+			if (cub->all_enemies[idx].type == 'n')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->nightborne);
+			else if (cub->all_enemies[idx].type == 'c')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->cute_wolf);
+			else if (cub->all_enemies[idx].type == 'p')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->plague_doctor);
+			else if (cub->all_enemies[idx].type == 'v')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->s_warrior);
+			else if (cub->all_enemies[idx].type == 's')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->skeleton);
+			else if (cub->all_enemies[idx].type == 'w')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->warrior);
+			else if (cub->all_enemies[idx].type == 'k')
+				enemy_handler(cub, &cub->all_enemies[idx], cub->skullwolf);
+			idx++;
+		}
+		// enemy_handler(cub, 0, cub->nightborne);
+		// enemy_handler(cub, 0, cub->nightborne);
+		// enemy_handler(cub, 1, cub->skeleton);
+		// enemy_handler(cub, 2, cub->warrior);
+		// enemy_handler(cub, 3, cub->skullwolf);
+		// enemy_handler(cub, 4, cub->s_warrior);
+		// enemy_handler(cub, 5, cub->plague_doctor);
+		// enemy_handler(cub, 6, cub->cute_wolf);
 	}
 	if (cub->title_bool == 1)
 		title_handler(cub);
@@ -477,7 +496,8 @@ int	loop_hook(t_cube *cub)
 		draw_xpm_animation(0, WIDTH /10, HEIGHT / 25, cub, cub->main_menu_assets);
 		start_handler(cub);
 		start_keys(cub);
-		init_enemies(cub);
+		items_parsing(cub);
+		// init_enemies(cub);
 		cub->player.x = 2;
 		cub->player.y = 13;
 	}
@@ -520,93 +540,93 @@ int	loop_hook(t_cube *cub)
 	return (0);
 }
 
-void	init_enemies(t_cube *cub)
-{
-	int	i;
+// void	init_enemies(t_cube *cub)
+// {
+// 	int	i;
 
-	i = 0;
-	while (i < 7)
-	{
-		cub->enemies[i].attacking_bool = 0;
-		cub->enemies[i].last_attack = -1;
-		cub->enemies[i].dead = 0;
-		if (i == 0 || i == 2 || i == 5)
-			cub->enemies[i].hp = 500;
-		else
-			cub->enemies[i].hp = 100;
-		i++;
-	}
-	cub->enemies[0].x = 2;
-	cub->enemies[0].y = 2;
-	cub->enemies[0].scale = 0.4;
-	cub->enemies[0].z_index = 20;
-	cub->enemies[0].atk_max_frame = 11;
-	cub->enemies[0].death_max_frame = 21;
-	cub->enemies[0].hurt_max_frame = 4;
-	cub->enemies[0].idle_max_frame = 8;
-	cub->enemies[0].run_max_frame = 5;
-	cub->enemies[0].attack_range = 150;
-	cub->enemies[1].x = 8;
-	cub->enemies[1].y = 6;
-	cub->enemies[1].scale = 0.8;
-	cub->enemies[1].z_index = 100;
-	cub->enemies[1].atk_max_frame = 17;
-	cub->enemies[1].death_max_frame = 12;
-	cub->enemies[1].hurt_max_frame = 7;
-	cub->enemies[1].idle_max_frame = 10;
-	cub->enemies[1].run_max_frame = 12;
-	cub->enemies[1].attack_range = 80;
-	cub->enemies[2].x = 13;
-	cub->enemies[2].y = 12;
-	cub->enemies[2].scale = 0.4;
-	cub->enemies[2].z_index = 70;
-	cub->enemies[2].atk_max_frame = 6;
-	cub->enemies[2].death_max_frame = 6;
-	cub->enemies[2].hurt_max_frame = 2;
-	cub->enemies[2].idle_max_frame = 9;
-	cub->enemies[2].run_max_frame = 7;
-	cub->enemies[2].attack_range = 80;
-	cub->enemies[3].x = 5;
-	cub->enemies[3].y = 12;
-	cub->enemies[3].scale = 0.6;
-	cub->enemies[3].z_index = 80;
-	cub->enemies[3].atk_max_frame = 4;
-	cub->enemies[3].death_max_frame = 6;
-	cub->enemies[3].hurt_max_frame = 3;
-	cub->enemies[3].idle_max_frame = 5;
-	cub->enemies[3].run_max_frame = 4;
-	cub->enemies[3].attack_range = 80;
-	cub->enemies[4].x = 8;
-	cub->enemies[4].y = 11;
-	cub->enemies[4].scale = 0.6;
-	cub->enemies[4].z_index = 80;
-	cub->enemies[4].atk_max_frame = 3;
-	cub->enemies[4].death_max_frame = 8;
-	cub->enemies[4].hurt_max_frame = 2;
-	cub->enemies[4].idle_max_frame = 5;
-	cub->enemies[4].run_max_frame = 7;
-	cub->enemies[4].attack_range = 100;
-	cub->enemies[5].x = 7;
-	cub->enemies[5].y = 11;
-	cub->enemies[5].scale = 0.6;
-	cub->enemies[5].z_index = 80;
-	cub->enemies[5].atk_max_frame = 4;
-	cub->enemies[5].death_max_frame = 5;
-	cub->enemies[5].hurt_max_frame = 2;
-	cub->enemies[5].idle_max_frame = 3;
-	cub->enemies[5].run_max_frame = 3;
-	cub->enemies[5].attack_range = 70;
-	cub->enemies[6].x = 2;
-	cub->enemies[6].y = 11;
-	cub->enemies[6].scale = 0.6;
-	cub->enemies[6].z_index = 80;
-	cub->enemies[6].atk_max_frame = 4;
-	cub->enemies[6].death_max_frame = 4;
-	cub->enemies[6].hurt_max_frame = 2;
-	cub->enemies[6].idle_max_frame = 3;
-	cub->enemies[6].run_max_frame = 3;
-	cub->enemies[6].attack_range = 70;
-}
+// 	i = 0;
+// 	while (i < 7)
+// 	{
+// 		cub->enemies[i].attacking_bool = 0;
+// 		cub->enemies[i].last_attack = -1;
+// 		cub->enemies[i].dead = 0;
+// 		if (i == 0 || i == 2 || i == 5)
+// 			cub->enemies[i].hp = 500;
+// 		else
+// 			cub->enemies[i].hp = 100;
+// 		i++;
+// 	}
+// 	cub->enemies[0].x = 2;
+// 	cub->enemies[0].y = 2;
+// 	cub->enemies[0].scale = 0.4;
+// 	cub->enemies[0].z_index = 20;
+// 	cub->enemies[0].atk_max_frame = 11;
+// 	cub->enemies[0].death_max_frame = 21;
+// 	cub->enemies[0].hurt_max_frame = 4;
+// 	cub->enemies[0].idle_max_frame = 8;
+// 	cub->enemies[0].run_max_frame = 5;
+// 	cub->enemies[0].attack_range = 150;
+// 	cub->enemies[1].x = 8;
+// 	cub->enemies[1].y = 6;
+// 	cub->enemies[1].scale = 0.8;
+// 	cub->enemies[1].z_index = 100;
+// 	cub->enemies[1].atk_max_frame = 17;
+// 	cub->enemies[1].death_max_frame = 12;
+// 	cub->enemies[1].hurt_max_frame = 7;
+// 	cub->enemies[1].idle_max_frame = 10;
+// 	cub->enemies[1].run_max_frame = 12;
+// 	cub->enemies[1].attack_range = 80;
+// 	cub->enemies[2].x = 13;
+// 	cub->enemies[2].y = 12;
+// 	cub->enemies[2].scale = 0.4;
+// 	cub->enemies[2].z_index = 70;
+// 	cub->enemies[2].atk_max_frame = 6;
+// 	cub->enemies[2].death_max_frame = 6;
+// 	cub->enemies[2].hurt_max_frame = 2;
+// 	cub->enemies[2].idle_max_frame = 9;
+// 	cub->enemies[2].run_max_frame = 7;
+// 	cub->enemies[2].attack_range = 80;
+// 	cub->enemies[3].x = 5;
+// 	cub->enemies[3].y = 12;
+// 	cub->enemies[3].scale = 0.6;
+// 	cub->enemies[3].z_index = 80;
+// 	cub->enemies[3].atk_max_frame = 4;
+// 	cub->enemies[3].death_max_frame = 6;
+// 	cub->enemies[3].hurt_max_frame = 3;
+// 	cub->enemies[3].idle_max_frame = 5;
+// 	cub->enemies[3].run_max_frame = 4;
+// 	cub->enemies[3].attack_range = 80;
+// 	cub->enemies[4].x = 8;
+// 	cub->enemies[4].y = 11;
+// 	cub->enemies[4].scale = 0.6;
+// 	cub->enemies[4].z_index = 80;
+// 	cub->enemies[4].atk_max_frame = 3;
+// 	cub->enemies[4].death_max_frame = 8;
+// 	cub->enemies[4].hurt_max_frame = 2;
+// 	cub->enemies[4].idle_max_frame = 5;
+// 	cub->enemies[4].run_max_frame = 7;
+// 	cub->enemies[4].attack_range = 100;
+// 	cub->enemies[5].x = 7;
+// 	cub->enemies[5].y = 11;
+// 	cub->enemies[5].scale = 0.6;
+// 	cub->enemies[5].z_index = 80;
+// 	cub->enemies[5].atk_max_frame = 4;
+// 	cub->enemies[5].death_max_frame = 5;
+// 	cub->enemies[5].hurt_max_frame = 2;
+// 	cub->enemies[5].idle_max_frame = 3;
+// 	cub->enemies[5].run_max_frame = 3;
+// 	cub->enemies[5].attack_range = 70;
+// 	cub->enemies[6].x = 2;
+// 	cub->enemies[6].y = 11;
+// 	cub->enemies[6].scale = 0.6;
+// 	cub->enemies[6].z_index = 80;
+// 	cub->enemies[6].atk_max_frame = 4;
+// 	cub->enemies[6].death_max_frame = 4;
+// 	cub->enemies[6].hurt_max_frame = 2;
+// 	cub->enemies[6].idle_max_frame = 3;
+// 	cub->enemies[6].run_max_frame = 3;
+// 	cub->enemies[6].attack_range = 70;
+// }
 
 void	start_keys(t_cube *cub)
 {
@@ -642,7 +662,7 @@ void	start_keys(t_cube *cub)
 	cub->explosion->y = 0;
 	cub->explosion->launched = 0;
 	cub->enemies_nb = 2;
-	init_enemies(cub);
+	// init_enemies(cub);
 }
 
 void	init_cute_wolf(t_cube *cub)
