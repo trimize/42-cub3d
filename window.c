@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 15:01:31 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/13 17:16:27 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int	handle_key_release(int key, t_cube *cub)
 //	return (0);
 //}
 
-void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
+void	draw_square_to_image(t_cube *cub, int x, int y, int color)
 {
 	int	i;
 	int	j;
@@ -122,29 +122,29 @@ void	draw_square_to_image(char *addr, int line_length, int x, int y, int color)
 	{
 		for (j = 0; j < MINIMAP_SIZE; j++)
 		{
-			((int *)(addr))[(y + i) * line_length / 4 + x + j] = color;
+			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = color;
 		}
 	}
 }
 
-void	draw_p_to_image(char *addr, int line_length, int x, int y, int color)
+void	draw_p_to_image(t_cube *cub, int x, int y, int color)
 {
 	int	i;
 	int	j;
 
-	if (x < 0 || y < 0 || x + PLAYER_SIZE >= line_length / 4 || y + PLAYER_SIZE >= line_length / 4)
+	if (x < 0 || y < 0 || x + PLAYER_SIZE >= cub->line_length / 4 || y + PLAYER_SIZE >= cub->line_length / 4)
         return;
 
 	for (i = 0; i < PLAYER_SIZE; i++)
 	{
 		for (j = 0; j < PLAYER_SIZE; j++)
 		{
-			((int *)(addr))[(y + i) * line_length / 4 + x + j] = color;
+			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = color;
 		}
 	}
 }
 
-void	draw_player_to_image(t_cube *cub, char *addr, int line_length)
+void	draw_player_to_image(t_cube *cub)
 {
     int	x;
     int	y;
@@ -158,10 +158,10 @@ void	draw_player_to_image(t_cube *cub, char *addr, int line_length)
     y = cub->player.y * MINIMAP_SIZE;
 
     // Draw the player as a square
-    draw_p_to_image(addr, line_length, x, y, color);
+    draw_p_to_image(cub, x, y, color);
 }
 
-void	draw_map_to_image(t_cube *cub, char *addr, int line_length)
+void	draw_map_to_image(t_cube *cub)
 {
 	int	x;
 	int	y;
@@ -178,7 +178,7 @@ void	draw_map_to_image(t_cube *cub, char *addr, int line_length)
 			else
 				color = 0xffece0;  // White
 
-			draw_square_to_image(addr, line_length, x * MINIMAP_SIZE, y * MINIMAP_SIZE, color);
+			draw_square_to_image(cub, x * MINIMAP_SIZE, y * MINIMAP_SIZE, color);
 		}
 	}
 }
@@ -240,22 +240,22 @@ void mouse_rotate(t_cube *cub)
 void	tutorial(t_cube *cub, int bits_per_pixel)
 {
 	fade_to_black(cub, 0.4, bits_per_pixel);
-	draw_xpm_animation(11, WIDTH / 10, HEIGHT / 10, cub, cub->keyboard);
-	draw_xpm_animation(9, WIDTH / 10, HEIGHT / 8, cub, cub->keyboard);
-	draw_xpm_animation(4, WIDTH / 11.5, HEIGHT / 8, cub, cub->keyboard);
-	draw_xpm_animation(8, WIDTH / 8.8, HEIGHT / 8, cub, cub->keyboard);
+	draw_xpm_animation(11, WIDTH / 10, HEIGHT / 10, cub->keyboard);
+	draw_xpm_animation(9, WIDTH / 10, HEIGHT / 8, cub->keyboard);
+	draw_xpm_animation(4, WIDTH / 11.5, HEIGHT / 8, cub->keyboard);
+	draw_xpm_animation(8, WIDTH / 8.8, HEIGHT / 8, cub->keyboard);
 	mlx_string_put(cub->con, cub->win, WIDTH / 7.5, HEIGHT / 7.4, 0xFFFFFF, " -   Player Movement");
-	draw_xpm_animation(0, WIDTH / 2.5, HEIGHT / 8, cub, cub->keyboard);
-	draw_xpm_animation(1, WIDTH / 2.32, HEIGHT / 8, cub, cub->keyboard);
-	draw_xpm_animation(2, WIDTH / 2.17, HEIGHT / 8, cub, cub->keyboard);
-	draw_xpm_animation(3, WIDTH / 2.04, HEIGHT / 8, cub, cub->keyboard);
+	draw_xpm_animation(0, WIDTH / 2.5, HEIGHT / 8, cub->keyboard);
+	draw_xpm_animation(1, WIDTH / 2.32, HEIGHT / 8, cub->keyboard);
+	draw_xpm_animation(2, WIDTH / 2.17, HEIGHT / 8, cub->keyboard);
+	draw_xpm_animation(3, WIDTH / 2.04, HEIGHT / 8, cub->keyboard);
 	mlx_string_put(cub->con, cub->win, WIDTH / 1.94, HEIGHT / 7, 0xFFFFFF, " -   Change weapons");
-	draw_xpm_animation(6, WIDTH / 11, HEIGHT / 3, cub, cub->keyboard);
-	draw_xpm_animation(7, WIDTH / 9.2, HEIGHT / 3, cub, cub->keyboard);
+	draw_xpm_animation(6, WIDTH / 11, HEIGHT / 3, cub->keyboard);
+	draw_xpm_animation(7, WIDTH / 9.2, HEIGHT / 3, cub->keyboard);
 	mlx_string_put(cub->con, cub->win, WIDTH / 7.5, HEIGHT / 2.85, 0xFFFFFF, " -   Look right, look left");
-	draw_xpm_animation(5, WIDTH / 2.2, HEIGHT / 3, cub, cub->keyboard);
+	draw_xpm_animation(5, WIDTH / 2.2, HEIGHT / 3, cub->keyboard);
 	mlx_string_put(cub->con, cub->win, WIDTH / 2.02, HEIGHT / 2.85, 0xFFFFFF, " -   Options menu");
-	draw_xpm_animation(10, WIDTH / 2.5, HEIGHT / 1.2, cub, cub->keyboard);
+	draw_xpm_animation(10, WIDTH / 2.5, HEIGHT / 1.2, cub->keyboard);
 	mlx_string_put(cub->con, cub->win, WIDTH / 2.2, HEIGHT / 1.175, 0xFFFFFF, " -   Close the tutorial !");
 }
 
@@ -489,7 +489,7 @@ int	loop_hook(t_cube *cub)
 	if (cub->bg_bool && !cub->victory)
 	{
 		bg_handler(cub);
-		draw_xpm_animation(0, WIDTH /10, HEIGHT / 25, cub, cub->main_menu_assets);
+		draw_xpm_animation(0, WIDTH /10, HEIGHT / 25, cub->main_menu_assets);
 		start_handler(cub);
 		start_keys(cub);
 		map_parsing(cub);
@@ -498,8 +498,8 @@ int	loop_hook(t_cube *cub)
 	display_messages(cub);
 	if (!cub->title_bool && !cub->bg_bool && !cub->victory && cub->minimap_bool == 1)
 	{
-		draw_map_to_image(cub, cub->addr, cub->line_length);
-		draw_player_to_image(cub, cub->addr, cub->line_length);
+		draw_map_to_image(cub);
+		draw_player_to_image(cub);
 	}
 	if (cub->title_bool == 0 && cub->bg_bool == 0 && !cub->victory)
 	{
@@ -516,7 +516,7 @@ int	loop_hook(t_cube *cub)
 		speed_amount = ft_strdup(" x ");
 		speed_amount = ft_strjoin_gnl(speed_amount, ft_itoa(cub->player.speed_item_amount));
 		mlx_string_put(cub->con, cub->win, WIDTH / 1.049, HEIGHT / 5, 0xFFFFFF, speed_amount);
-		draw_xpm_animation(19, WIDTH / 2, HEIGHT / 2, cub, cub->txt);
+		draw_xpm_animation(19, WIDTH / 2, HEIGHT / 2, cub->txt);
 	}
 	if (cub->player.hp <= 0 && !cub->bg_bool && !cub->victory)
 	{
@@ -535,7 +535,7 @@ int	loop_hook(t_cube *cub)
 		fade_to_black(cub, cub->fade_factor, cub->bits_per_pixel);
 		if (cub->fade_factor == 0.0)
 		{
-			draw_xpm_animation(25, WIDTH / 4.8, HEIGHT / 3.8, cub, cub->txt);
+			draw_xpm_animation(25, WIDTH / 4.8, HEIGHT / 3.8, cub->txt);
 			if (cub->level == 2)
 			{
 				cub->next_lvl_start = WIDTH / 5.2;
@@ -610,7 +610,7 @@ int	loop_hook(t_cube *cub)
 				animation_handler(cub->player_animations[1], cub, ((cub->next_lvl_start) + cub->player_run_value), HEIGHT / 8);
 				cub->player_run_value += 2;
 			}
-			mlx_string_put(cub->con, cub->win, WIDTH / 4.55, HEIGHT / 2.8, 0xFFFFFF, "Village");
+			mlx_string_put(cub->con, cub->win, WIDTH / 4.55, HEIGHT / 2.8, 0xFFFFFF, "Forest");
 			mlx_string_put(cub->con, cub->win, WIDTH / 2.07, HEIGHT / 2.8, 0xFFFFFF, "Cave");
 			mlx_string_put(cub->con, cub->win, WIDTH / 1.37, HEIGHT / 2.8, 0xFFFFFF, "Catacombs");
 		}

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:09:33 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 19:27:57 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 17:53:58 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,11 @@ void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->abc[alpha].width)
 		{
-			if (((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j] == 0xFFFFFF)
-				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->abc[alpha].addr))[(i) * cub->abc[alpha].line_length / 4 + j];
+			if (((int *)(cub->abc[alpha].addr))[(i)
+				* cub->abc[alpha].line_length / 4 + j] == 0xFFFFFF)
+				((int *)(cub->addr))[(y + i) * cub->line_length / 4
+					+ x + j] = ((int *)(cub->abc[alpha].addr))[(i)
+					* cub->abc[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -32,57 +35,55 @@ void	draw_xpm_alpha(int alpha, int x, int y, t_cube *cub)
 	}
 }
 
-void draw_xpm_animation(int alpha, int x, int y, t_cube *cub, t_txt *txt)
+void	draw_xpm_texture2(t_draw *draw)
 {
-    int i, j;
-    int color;
-    char *src;
-    int bytes_per_pixel = txt[alpha].bits_per_pixel / 8;
+	t_cube	*cub;
 
-    for (i = 0; i < txt[alpha].height; i++)
-    {
-        for (j = 0; j < txt[alpha].width; j++)
-        {
-            src = txt[alpha].addr + (i * txt[alpha].line_length + j * bytes_per_pixel);
-            color = *(int *)src;
-
-            // Draw the pixel if it is not the transparent color (assuming 0x0000FF is the transparent color)
-            if (x + j < WIDTH && y + i < HEIGHT && color != 0x0000FF)
-            {
-                ((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = color;
-            }
-        }
-    }
+	cub = call_cub();
+	if (draw->alpha == 7 || draw->alpha == 8 || draw->alpha == 9
+		|| draw->alpha == 11 || draw->alpha == 12 || draw->alpha == 13
+		|| draw->alpha == 14 || draw->alpha == 15
+		|| draw->alpha == 16 || draw->alpha == 17 || draw->alpha == 18)
+	{
+		if (draw->x + draw->j < WIDTH && draw->y + draw->i < HEIGHT && ((int *)
+				(cub->txt[draw->alpha].addr))[(draw->i)
+			* cub->txt[draw->alpha].line_length / 4 + draw->j] != 0x0000FF)
+			((int *)(cub->addr))[(draw->y + draw->i) * cub->line_length
+				/ 4 + draw->x + draw->j] = ((int *)(cub->txt[draw->alpha].addr))
+			[(draw->i) * cub->txt[draw->alpha].line_length / 4 + draw->j];
+	}
+	else
+		((int *)(cub->addr))[(draw->y + draw->i) * cub->line_length / 4
+			+ draw->x + draw->j] = ((int *)(cub->txt[draw->alpha].addr))
+		[(draw->i) * cub->txt[draw->alpha].line_length / 4 + draw->j];
 }
 
 void	draw_xpm_texture(int alpha, int x, int y, t_cube *cub)
 {
-	int	j;
-	int	i;
+	t_draw	draw;
 
-	i = 0;
-	j = 0;
-	while (i < cub->txt[alpha].height)
+	draw.alpha = alpha;
+	draw.x = x;
+	draw.y = y;
+	draw.i = 0;
+	while (draw.i < cub->txt[alpha].height)
 	{
-		while (j < cub->txt[alpha].width)
+		draw.j = 0;
+		while (draw.j < cub->txt[alpha].width)
 		{
-			
 			if (alpha == 5 || alpha == 6)
 			{
-				if (((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] == 0xFFFFFF)
-					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
-			}
-			else if (alpha == 7 || alpha == 8 || alpha == 9 || alpha == 11 || alpha == 12 || alpha == 13 || alpha == 14 || alpha == 15 || alpha == 16 || alpha == 17 || alpha == 18)
-			{
-				if (x + j < WIDTH && y + i < HEIGHT && ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j] != 0x0000FF)
-					((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
+				if (((int *)(cub->txt[alpha].addr))[(draw.i)
+					* cub->txt[alpha].line_length / 4 + draw.j] == 0xFFFFFF)
+					((int *)(cub->addr))[(y + draw.i) * cub->line_length
+						/ 4 + x + draw.j] = ((int *)(cub->txt[alpha].addr))
+					[(draw.i) * cub->txt[alpha].line_length / 4 + draw.j];
 			}
 			else
-				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->txt[alpha].addr))[(i) * cub->txt[alpha].line_length / 4 + j];
-			j++;
+				draw_xpm_texture2(&draw);
+			draw.j++;
 		}
-		j = 0;
-		i++;
+		draw.i++;
 	}
 }
 
@@ -97,7 +98,9 @@ void	draw_xpm_hp(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->hp_frame[alpha].width)
 		{
-			((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->hp_frame[alpha].addr))[(i) * cub->hp_frame[alpha].line_length / 4 + j];
+			((int *)(cub->addr))[(y + i) * cub->line_length
+				/ 4 + x + j] = ((int *)(cub->hp_frame[alpha].addr))[(i)
+				* cub->hp_frame[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;
@@ -116,8 +119,11 @@ void	draw_xpm_number(int alpha, int x, int y, t_cube *cub)
 	{
 		while (j < cub->nums[alpha].width)
 		{
-			if (((int *)(cub->nums[alpha].addr))[(i) * cub->nums[alpha].line_length / 4 + j] == 0xFFFFFF)	
-				((int *)(cub->addr))[(y + i) * cub->line_length / 4 + x + j] = ((int *)(cub->nums[alpha].addr))[(i) * cub->nums[alpha].line_length / 4 + j];
+			if (((int *)(cub->nums[alpha].addr))[(i)
+				* cub->nums[alpha].line_length / 4 + j] == 0xFFFFFF)
+				((int *)(cub->addr))[(y + i) * cub->line_length
+					/ 4 + x + j] = ((int *)(cub->nums[alpha].addr))[(i)
+					* cub->nums[alpha].line_length / 4 + j];
 			j++;
 		}
 		j = 0;

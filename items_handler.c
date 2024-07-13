@@ -3,33 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   items_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 01:01:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 14:36:10 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/13 16:14:17 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
 
-void	random_item(t_cube *cub, t_item *item)
+void	random_item2(t_cube *cub, t_item *item, int type)
 {
-	int type;
-
-	type = get_current_time() % 4;
-	if (type == 0)
-	{
-		item->txt = &cub->txt[17];
-		item->type = 'Q';
-		item->display = 1;
-	}
-	else if (type == 1)
-	{
-		item->txt = &cub->txt[16];
-		item->type = 'A';
-		item->display = 1;
-	}
-	else if (type == 2)
+	if (type == 2)
 	{
 		item->txt = &cub->txt[22];
 		item->type = 'H';
@@ -45,19 +30,46 @@ void	random_item(t_cube *cub, t_item *item)
 	}
 }
 
+void	random_item(t_cube *cub, t_item *item)
+{
+	int	type;
+
+	type = get_current_time() % 4;
+	if (type == 0)
+	{
+		item->txt = &cub->txt[17];
+		item->type = 'Q';
+		item->display = 1;
+	}
+	else if (type == 1)
+	{
+		item->txt = &cub->txt[16];
+		item->type = 'A';
+		item->display = 1;
+	}
+	else
+		random_item2(cub, item, type);
+}
+
 void	update_dist(t_cube *cub)
 {
 	int	i;
 
 	i = -1;
 	while (++i < cub->weapon_counter)
-		cub->weapons[i].dist = dist((cub->weapons[i].x * TILE_SIZE), (cub->weapons[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
+		cub->weapons[i].dist = dist((cub->weapons[i].x * TILE_SIZE),
+				(cub->weapons[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE),
+				(cub->player.y * TILE_SIZE));
 	i = -1;
 	while (++i < cub->items_counter)
-		cub->items[i].dist = dist((cub->items[i].x * TILE_SIZE), (cub->items[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
+		cub->items[i].dist = dist((cub->items[i].x * TILE_SIZE),
+				(cub->items[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE),
+				(cub->player.y * TILE_SIZE));
 	i = -1;
 	while (++i < cub->dropped_index)
-		cub->dropped_items[i].dist = dist((cub->dropped_items[i].x * TILE_SIZE), (cub->dropped_items[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
+		cub->dropped_items[i].dist = dist((cub->dropped_items[i].x * TILE_SIZE),
+				(cub->dropped_items[i].y * TILE_SIZE), (cub->player.x
+					* TILE_SIZE), (cub->player.y * TILE_SIZE));
 }
 
 void	equip_item(t_cube *cub, char type)
@@ -103,67 +115,6 @@ void	add_weapon_to_slot(t_cube *cub, int index)
 		{
 			cub->weapons_in_slot[i] = type;
 			return ;
-		}
-		i++;
-	}
-}
-
-void	check_pick_up(t_cube *cub)
-{
-	int	i;
-
-	i = 0;
-	while (i < cub->weapon_counter)
-	{
-		if (cub->weapons[i].display == 1 && cub->weapons[i].dist < 30)
-		{
-			cub->weapons[i].display = 0;
-			cub->weapons[i].last_text = get_current_time();
-			add_weapon_to_slot(cub, i);
-		}
-		i++;
-	}
-	i = 0;
-	while (i < cub->items_counter)
-	{
-		if (cub->items[i].display == 1 && cub->items[i].dist < 30)
-		{
-			if (cub->items[i].type == 'H' && cub->player.hp == 100)
-			{
-				cub->items[i].msg = 1;
-				cub->items[i].last_text = get_current_time();
-			}
-			else if (cub->items[i].type == 'X')
-			{
-				cub->victory = 1;
-				cub->level++;
-				cub->items[i].display = 0;
-			}
-			else
-			{	
-				cub->items[i].display = 0;
-				cub->items[i].last_text = get_current_time();
-				equip_item(cub, cub->items[i].type);
-			}
-		}
-		i++;
-	}
-	i = 0;
-	while (i < cub->dropped_index)
-	{
-		if (cub->dropped_items[i].display == 1 && cub->dropped_items[i].dist < 30)
-		{
-			if (cub->dropped_items[i].type == 'H' && cub->player.hp == 100)
-			{
-				cub->dropped_items[i].msg = 1;
-				cub->dropped_items[i].last_text = get_current_time();
-			}
-			else
-			{	
-				cub->dropped_items[i].display = 0;
-				cub->dropped_items[i].last_text = get_current_time();
-				equip_item(cub, cub->dropped_items[i].type);
-			}
 		}
 		i++;
 	}

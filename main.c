@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 14:38:12 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/13 15:32:28 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	main(int argc, char **argv)
 	cub->retry = 0;
 	if (argc == 1)
 	{
-		cub->path = ft_strdup("./maps/map_1.cub");
+		cub->path = ft_strdup("./maps/map.cub");
 		cub->level = 1;
 	}
 	else if (argc == 2)

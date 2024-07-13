@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 14:42:47 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/13 15:53:18 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -539,12 +539,12 @@ void	draw_item(t_cube *cub, t_item item)
 	}
 }
 
-void	draw_sprite(t_cube *cub, t_txt *txt, int x, int y, double scale, int z_index)
+void	draw_sprite(t_cube *cub, t_txt *txt, double scale, int z_index)
 {
-    double spriteX = x - (cub->player.x);
-    double spriteY = y - (cub->player.y);
+    double spriteX = cub->explosion->x - (cub->player.x);
+    double spriteY = cub->explosion->y - (cub->player.y);
 
-    int distance = dist(x, y, cub->player.x, cub->player.y);
+    int distance = dist(cub->explosion->x, cub->explosion->y, cub->player.x, cub->player.y);
 
 	double fovRadians = cub->fov * (M_PI / 180.0);
 	double planeLength = tan(fovRadians / 2.0);
