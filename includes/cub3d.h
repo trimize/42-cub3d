@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 22:26:42 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:34:18 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,8 @@ typedef struct s_key
 typedef struct s_cube
 {
 	t_map		map;
+	t_map		map2;
+	t_map		map3;
 	t_txt		*txt;
 	t_txt		*sword_ani;
 	t_txt		*crossbow;
@@ -222,6 +224,10 @@ typedef struct s_cube
 	t_item		*items;
 	t_item		*dropped_items;
 	t_door		*doors;
+	char		*path;
+	int			dropped_index;
+	int			level;
+	int			victory;
 	void		*con;
 	void		*win;
 	char		*addr;
@@ -285,7 +291,7 @@ void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
 void	cast_ray(t_cube *cub, int index);
-void	items_parsing(t_cube *cub);
+void	map_parsing(t_cube *cub);
 void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
 void	render_3d(t_cube *cub, t_raycast *ray);
 int		rgb_to_hex(int r, int g, int b);
@@ -335,7 +341,7 @@ t_cube	*call_cub(void);
 void	draw_square_to_image(char *addr, int line_length, int x, int y, int color); //DELETE
 void	render_game(t_cube *cub);
 void	draw_weapon(t_cube *cub, int index);
-void	draw_item(t_cube *cub, int index);
+void	draw_item(t_cube *cub, t_item item);
 void	display_messages(t_cube *cub);
 void draw_enemy(t_cube *cub, t_enemy *enemy);
 void	check_pick_up(t_cube *cub);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: to <to@student.42.fr>                      +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 19:32:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/06/18 19:28:02 by to               ###   ########.fr       */
+/*   Updated: 2024/07/13 11:35:14 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	exit_free(t_cube *cub)
 		i++;
 	}
 	freetab(cub->map.map);
+	if (cub->level)
+		free(cub->path);
 	exit(1);
 }
 

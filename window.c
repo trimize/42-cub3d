@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 22:19:21 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:20:29 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -334,6 +334,62 @@ int	loop_hook(t_cube *cub)
 	cub->img = img;
 	cub->addr = mlx_get_data_addr(img, &bits_per_pixel, &cub->line_length, &endian);
 	//printf ("Player y is %d and x is %d\n", (int)cub->player.y, (int)cub->player.x);
+	if (cub->level && cub->victory)
+	{
+		if (cub->level == 1)
+		{
+			cub->level = 2;
+			cub->victory = 0;
+			freetab(cub->map.map);
+			free(cub->path);
+			free(cub->all_enemies);
+			free(cub->dropped_items);
+			free(cub->weapons);
+			free(cub->items);
+			free(cub->doors);
+			free(cub->txt[0].path);
+			free(cub->txt[0].type);
+			free(cub->txt[1].path);
+			free(cub->txt[1].type);
+			free(cub->txt[2].path);
+			free(cub->txt[2].type);
+			free(cub->txt[3].path);
+			free(cub->txt[3].type);
+			cub->weapon_counter = 0;
+			cub->items_counter = 0;
+			cub->door_counter = 0;
+			cub->enemy_counter = 0;
+			cub->dropped_index = 0;
+			cub->path = ft_strdup("./maps/campaign2.cub");
+			if (check_cub(cub->path))
+				(printf("Error\nMap file must end in .cub\n"), exit(1));
+			char **file = read_file(cub->path);
+			save_file(cub, file);
+			player_checker(cub);
+			map_filler(&cub->map);
+			variables_checker(cub);
+			if (first_and_last_checker(cub->map.map) || space_checker_horizontal(cub->map.map) || space_checker_vertical(cub->map.map))
+				(printf("Error\nMap must be surrounded by walls.\n"), exit_free(cub)); // TODO Display better error message.
+			int i = 0;
+			while (cub->map.map[i])
+				if (char_checker(cub->map.map[i++]))
+					(printf("Error\nInvalid character on the map.\n"), exit_free(cub));
+			if (cub->weapon_counter > 0)
+				cub->weapons = (t_item *) malloc (cub->weapon_counter * sizeof(t_item));
+			if (cub->items_counter > 0)
+				cub->items = (t_item *) malloc (cub->items_counter * sizeof(t_item));
+			if (cub->door_counter > 0)
+				cub->doors = (t_door *) malloc (cub->door_counter * sizeof(t_door));
+			if (cub->enemy_counter > 0)
+			{
+				cub->all_enemies = (t_enemy *) malloc (cub->enemy_counter * sizeof(t_enemy));
+				cub->dropped_items = (t_item *) malloc (cub->enemy_counter * sizeof(t_item));
+			}
+			cub->start = 1;
+			fill_player(cub);
+			map_parsing(cub);
+		}
+	}
 	if (cub->title_bool == 0 && cub->bg_bool == 0)
 	{
 		if (cub->player.hp > 0)
@@ -496,10 +552,8 @@ int	loop_hook(t_cube *cub)
 		draw_xpm_animation(0, WIDTH /10, HEIGHT / 25, cub, cub->main_menu_assets);
 		start_handler(cub);
 		start_keys(cub);
-		items_parsing(cub);
+		map_parsing(cub);
 		// init_enemies(cub);
-		cub->player.x = 2;
-		cub->player.y = 13;
 	}
 	mlx_put_image_to_window(cub->con, cub->win, cub->img, 0, 0);
 	display_messages(cub);
@@ -1734,13 +1788,13 @@ void window_init(t_cube *cub)
 	init_plague_doctor(cub);
 	init_cute_wolf(cub);
 	init_door(cub);
-	save_doors(cub);
+	map_parsing(cub);
+	// save_doors(cub);
 	cub->main_menu_assets = (t_txt *)malloc(1 * sizeof(t_txt));
 	cub->main_menu_assets[0].type = NULL;
 	cub->main_menu_assets[0].path = ft_strdup("./textures/main_menu/title_main_menu.xpm");
 	load_textures(cub, cub->main_menu_assets, 1);
 	init_textures(cub);
-	items_parsing(cub);
 	mlx_mouse_hide(cub->con, cub->win);
 	load_textures(cub, cub->txt, 23);
 	start_keys(cub);

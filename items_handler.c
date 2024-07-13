@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 01:01:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 19:02:09 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:44:40 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,9 @@ void	update_dist(t_cube *cub)
 	i = -1;
 	while (++i < cub->items_counter)
 		cub->items[i].dist = dist((cub->items[i].x * TILE_SIZE), (cub->items[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
+	i = -1;
+	while (++i < cub->dropped_index)
+		cub->dropped_items[i].dist = dist((cub->dropped_items[i].x * TILE_SIZE), (cub->dropped_items[i].y * TILE_SIZE), (cub->player.x * TILE_SIZE), (cub->player.y * TILE_SIZE));
 }
 
 void	equip_item(t_cube *cub, char type)
@@ -62,6 +65,7 @@ void	equip_item(t_cube *cub, char type)
 	if (type == 'Q')
 	{
 		cub->player.arrows += 3;
+		cub->victory = 1;
 	}
 	if (type == 'V')
 	{
@@ -135,6 +139,25 @@ void	check_pick_up(t_cube *cub)
 				cub->items[i].display = 0;
 				cub->items[i].last_text = get_current_time();
 				equip_item(cub, cub->items[i].type);
+			}
+		}
+		i++;
+	}
+	i = 0;
+	while (i < cub->dropped_index)
+	{
+		if (cub->dropped_items[i].display == 1 && cub->dropped_items[i].dist < 30)
+		{
+			if (cub->dropped_items[i].type == 'H' && cub->player.hp == 100)
+			{
+				cub->dropped_items[i].msg = 1;
+				cub->dropped_items[i].last_text = get_current_time();
+			}
+			else
+			{	
+				cub->dropped_items[i].display = 0;
+				cub->dropped_items[i].last_text = get_current_time();
+				equip_item(cub, cub->dropped_items[i].type);
 			}
 		}
 		i++;

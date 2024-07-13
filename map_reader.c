@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 22:48:11 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 11:50:50 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,24 +267,36 @@ char	**read_file(char *path)
 	return (result);
 }
 
-void	items_parsing(t_cube *cub)
+void	map_parsing(t_cube *cub)
 {
 	int	y;
 	int	x;
 	int	i;
 	int j;
 	int	w;
+	int	d;
 
 	y = 0;
 	i = 0;
 	j = 0;
 	w = 0;
+	d = 0;
 	while (cub->map.map[y])
 	{
 		x = 0;
 		while (cub->map.map[y][x])
 		{
-			if (cub->map.map[y][x] == '|')
+			if (cub->map.map[y][x] == 'D')
+			{
+				cub->doors[d].is_open = 0;
+				cub->doors[d].y = y;
+				cub->doors[d].x = x;
+				cub->doors[d].is_closing = 0;
+				cub->doors[d].txt = cub->door;
+				cub->doors[d].frame = 0;
+				d++;
+			}
+			else if (cub->map.map[y][x] == '|')
 			{
 				cub->weapons[i].txt = &cub->txt[9];
 				cub->weapons[i].x = x;

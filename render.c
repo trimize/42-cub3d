@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 22:37:37 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:33:36 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -461,10 +461,10 @@ void	draw_weapon(t_cube *cub, int index)
 	}
 }
 
-void	draw_item(t_cube *cub, int index)
+void	draw_item(t_cube *cub, t_item item)
 {
-    double spriteX = (cub->items[index].x) - (cub->player.x);
-    double spriteY = (cub->items[index].y) - (cub->player.y);
+    double spriteX = (item.x) - (cub->player.x);
+    double spriteY = (item.y) - (cub->player.y);
 
 	double fovRadians = cub->fov * (M_PI / 180.0);
 	double planeLength = tan(fovRadians / 2.0);
@@ -493,7 +493,7 @@ void	draw_item(t_cube *cub, int index)
     int drawEndY = spriteHeight / 2 + HEIGHT / 2 + scaledZPosition;
     if (drawEndY >= HEIGHT) drawEndY = HEIGHT - 1;
 
-	double aspectRatio = (double)cub->items[index].txt->width / (double)cub->items[index].txt->height;
+	double aspectRatio = (double)item.txt->width / (double)item.txt->height;
     // calculate width of the sprite
     // int spriteWidth = abs((int) (HEIGHT / (transformY)));
     int spriteWidth = abs((int) (spriteHeight * aspectRatio));
@@ -507,10 +507,10 @@ void	draw_item(t_cube *cub, int index)
 	// if (stripe >= drawStartX && stripe < drawEndX)
 	// {
 		for (int stripe = drawStartX; stripe < drawEndX; stripe++) {
-			if (cub->rays[WIDTH - stripe].dist < cub->items[index].dist || (cub->rays[WIDTH - stripe].is_door && !cub->rays[WIDTH - stripe].door->is_open && cub->items[index].dist > cub->rays[WIDTH - stripe].d_dist))
+			if (cub->rays[WIDTH - stripe].dist < item.dist || (cub->rays[WIDTH - stripe].is_door && !cub->rays[WIDTH - stripe].door->is_open && item.dist > cub->rays[WIDTH - stripe].d_dist))
 				continue ;
 			// printf("\ndrawStart %d, drawEnd %d and ray %d\n", drawStartX, drawEndX, stripe);
-			int texX = (int) (256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * cub->items[index].txt->width / spriteWidth) / 256;
+			int texX = (int) (256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * item.txt->width / spriteWidth) / 256;
 			// the conditions in the if are:
 			// 1) it's in front of camera plane so you don't see things behind you
 			// 2) it's on the screen (left)
@@ -519,10 +519,10 @@ void	draw_item(t_cube *cub, int index)
 			if (transformY > 0 && stripe > 0 && stripe < WIDTH) {
 				for (int y = drawStartY; y < drawEndY; y++) { // for every pixel of the current stripe
 					int d = (y - scaledZPosition) * 256 - HEIGHT * 128 + spriteHeight * 128; // 256 and 128 factors to avoid floats
-					int texY = ((d * cub->items[index].txt->height) / spriteHeight) / 256;
+					int texY = ((d * item.txt->height) / spriteHeight) / 256;
 
 					// int color = cub->txt[15].addr[texY * (cub->txt[15].line_length / 4) + texX];
-					int color = *(int*) (cub->items[index].txt->addr + ((texX + (texY * cub->items[index].txt->width)) * (cub->items[index].txt->bits_per_pixel / 8)));
+					int color = *(int*) (item.txt->addr + ((texX + (texY * item.txt->width)) * (item.txt->bits_per_pixel / 8)));
 
 					if ((color) != 0x0000FF) { // Assuming 0x000000 is the transparent color
 						// if (index > 120 && stripe < 126)

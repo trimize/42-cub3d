@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:29:06 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/12 22:07:45 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:25:00 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,6 +276,10 @@ t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_fra
 	{
 		enemy->dead = 1;	
 		enemy->attacking_bool = 0;
+		random_item(cub, &cub->dropped_items[cub->dropped_index]);
+		cub->dropped_items[cub->dropped_index].x = enemy->x;
+		cub->dropped_items[cub->dropped_index].y = enemy->y;
+		cub->dropped_index++;
 	}
 	return (txt[txt->current_frame]);
 }

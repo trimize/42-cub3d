@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 14:40:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/12 22:04:13 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 13:35:28 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,7 +351,14 @@ void	draw_items(t_cube *cub)
 	while (i < cub->items_counter)
 	{
 		if (cub->items[i].display == 1)
-			draw_item(cub, i);
+			draw_item(cub, cub->items[i]);
+		i++;
+	}
+	i = 0;
+	while (i < cub->dropped_index)
+	{
+		if (cub->dropped_items[i].display == 1)
+			draw_item(cub, cub->dropped_items[i]);
 		i++;
 	}
 }
