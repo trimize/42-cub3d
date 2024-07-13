@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   items_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 01:01:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 13:44:40 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:36:10 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void	equip_item(t_cube *cub, char type)
 	if (type == 'Q')
 	{
 		cub->player.arrows += 3;
-		cub->victory = 1;
 	}
 	if (type == 'V')
 	{
@@ -133,6 +132,12 @@ void	check_pick_up(t_cube *cub)
 			{
 				cub->items[i].msg = 1;
 				cub->items[i].last_text = get_current_time();
+			}
+			else if (cub->items[i].type == 'X')
+			{
+				cub->victory = 1;
+				cub->level++;
+				cub->items[i].display = 0;
 			}
 			else
 			{	

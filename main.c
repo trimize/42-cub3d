@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 13:20:02 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:38:12 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	main(int argc, char **argv)
 	cub->retry = 0;
 	if (argc == 1)
 	{
-		cub->path = ft_strdup("./maps/campaign.cub");
+		cub->path = ft_strdup("./maps/map_1.cub");
 		cub->level = 1;
 	}
 	else if (argc == 2)
@@ -46,7 +46,7 @@ int	main(int argc, char **argv)
 	if (check_cub(cub->path))
 		(printf("Error\nMap file must end in .cub\n"), free(cub->path), exit(1));
 	file = read_file(cub->path);
-	cub->txt = (t_txt *)malloc(23 * sizeof(t_txt));
+	cub->txt = (t_txt *)malloc(26 * sizeof(t_txt));
 	cub->rays = (t_raycast *) malloc ((WIDTH + 1) * sizeof(t_raycast));
 	save_file(cub, file);
 	player_checker(cub);

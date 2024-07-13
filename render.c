@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 17:48:17 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 13:33:36 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:42:47 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -689,5 +689,3 @@ void	render_3d(t_cube *cub, t_raycast *ray)
 	draw_vertical_line(cub, ray);
 	// draw_sprite(cub, ray);
 }
-	
-

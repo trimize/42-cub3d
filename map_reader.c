@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   map_reader.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:41:47 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 11:50:50 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:41:36 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	char_checker(char *line)
 	char	*chars;
 
 	i = 0;
-	chars = "10NSEW D|OCGHAQVRrncpvswk";
+	chars = "10NSEW D|OCGHAQVRXrncpvswk";
 	while (line[i])
 	{
 		j = 0;
@@ -41,7 +41,7 @@ void	check_characters(t_cube *cub, int y, int x)
 {
 	if (cub->map.map[y][x] == '|' || cub->map.map[y][x] == 'O' || cub->map.map[y][x] == 'C' || cub->map.map[y][x] == 'G')
 		cub->weapon_counter++;
-	else if (cub->map.map[y][x] == 'A' || cub->map.map[y][x] == 'H' || cub->map.map[y][x] == 'Q' || cub->map.map[y][x] == 'V' || cub->map.map[y][x] == 'R')
+	else if (cub->map.map[y][x] == 'A' || cub->map.map[y][x] == 'H' || cub->map.map[y][x] == 'Q' || cub->map.map[y][x] == 'V' || cub->map.map[y][x] == 'R' || cub->map.map[y][x] == 'X')
 		cub->items_counter++;
 	else if (cub->map.map[y][x] == 'D')
 		cub->door_counter++;
@@ -375,6 +375,15 @@ void	map_parsing(t_cube *cub)
 				cub->items[j].x = x;
 				cub->items[j].y = y;
 				random_item(cub, &cub->items[j]);
+				j++;
+			}
+			else if (cub->map.map[y][x] == 'X')
+			{
+				cub->items[j].txt = &cub->crown[cub->crown->current_frame];
+				cub->items[j].x = x;
+				cub->items[j].y = y;
+				cub->items[j].type = 'X';
+				cub->items[j].display = 1;
 				j++;
 			}
 			else if (cub->map.map[y][x] == 'r')

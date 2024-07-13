@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 13:34:18 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:54:55 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,8 +190,6 @@ typedef struct s_key
 typedef struct s_cube
 {
 	t_map		map;
-	t_map		map2;
-	t_map		map3;
 	t_txt		*txt;
 	t_txt		*sword_ani;
 	t_txt		*crossbow;
@@ -213,25 +211,34 @@ typedef struct s_cube
 	t_txt		**s_warrior;
 	t_txt		**plague_doctor;
 	t_txt		**cute_wolf;
+	t_txt		**player_animations;
 	t_txt		*door;
 	t_player	player;
 	t_key		key;
 	t_rr		rr;
 	t_raycast	*rays;
-	// t_enemy		enemies[8];
 	t_enemy		*all_enemies;
 	t_item		*weapons;
 	t_item		*items;
-	t_item		*dropped_items;
 	t_door		*doors;
-	char		*path;
-	int			dropped_index;
-	int			level;
-	int			victory;
+	t_item		*dropped_items;
+	t_txt		*walls_lvl2;
+	t_txt		*crown;
 	void		*con;
 	void		*win;
 	char		*addr;
 	void		*img;
+	char		*path;
+	int			dropped_index;
+	int			player_run_value;
+	int			level;
+	int			next_lvl_start;
+	int			next_lvl_end;
+	int			idle_delay;
+	int			minimap_bool;
+	int			victory;
+	int			bits_per_pixel;
+	int			*crown_frame;
 	int			retry;
 	int			enemies_nb;
 	int			title_bool;
@@ -253,8 +260,8 @@ typedef struct s_cube
 	int			door_open_msg;
 	int			door_close_msg;
 	int			weapon_counter;
-	int			enemy_counter;
 	int			items_counter;
+	int			enemy_counter;
 	int			door_counter;
 	int			sensi;
 	int			speed;
@@ -291,7 +298,7 @@ void	player_rotation_init(t_cube *cub);
 void	rotate_player(t_cube *cub, double dir);
 void	player_rotation_keys(int key, t_cube *cub);
 void	cast_ray(t_cube *cub, int index);
-void	map_parsing(t_cube *cub);
+void	items_parsing(t_cube *cub);
 void	draw_p_to_image(char *addr, int line_length, int x, int y, int color);
 void	render_3d(t_cube *cub, t_raycast *ray);
 int		rgb_to_hex(int r, int g, int b);
@@ -357,7 +364,9 @@ void	draw_sprite(t_cube *cub, t_txt *txt, int x, int y, double scale, int z_inde
 void	explosion_sprite(t_cube *cub);
 t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame);
 void	start_keys(t_cube *cub);
-void	init_enemies(t_cube *cub);
+t_txt	*crown_handler(t_txt *txt);
+void	animation_handler(t_txt *txt, t_cube *cub, int x, int y);
 void	random_item(t_cube *cub, t_item *item);
+void	map_parsing(t_cube *cub);
 
 #endif

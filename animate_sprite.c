@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   animate_sprite.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 11:29:06 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/13 13:25:00 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:32:52 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void	animate_health_bar(t_cube *cub, int limite)
 			cub->hp_frame->current_frame++;
 	}
 }
+
 void	update_animation_title(t_cube *cub)
 {
 	if (cub->title_screen[cub->title_screen->current_frame].tmp_delay++ == cub->title_screen->delay)
@@ -282,6 +283,42 @@ t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_fra
 		cub->dropped_index++;
 	}
 	return (txt[txt->current_frame]);
+}
+
+void	update_animation_crown(t_txt *txt)
+{
+
+	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
+	{
+		txt[txt->current_frame].tmp_delay = 0;
+		txt->current_frame++;
+	}
+}
+
+t_txt	*crown_handler(t_txt *txt)
+{
+	update_animation_crown(txt);
+	if (txt->current_frame == txt->frame_max)
+		txt->current_frame = 0;
+	return (&txt[txt->current_frame]);
+}
+
+void	update_animation_general(t_txt *txt)
+{
+
+	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
+	{
+		txt[txt->current_frame].tmp_delay = 0;
+		txt->current_frame++;
+	}
+}
+
+void	animation_handler(t_txt *txt, t_cube *cub, int x, int y)
+{
+	update_animation_general(txt);
+	draw_xpm_animation(txt->current_frame, x, y, cub, txt);
+	if (txt->current_frame == txt->frame_max)
+		txt->current_frame = 0;
 }
 
 void fade_to_black(t_cube *cub, double fade_factor, int	bits_per_pixel)

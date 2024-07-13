@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   option_menu.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:13:00 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/03 19:52:41 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 11:46:13 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,26 @@ void fov_option(t_cube *cub)
 	}
 }
 
+void	minimap_option(t_cube *cub)
+{
+	draw_xpm_alpha(18, WIDTH / 2.35, HEIGHT / 1.6, cub);
+	draw_xpm_alpha(7, WIDTH / 2.25, HEIGHT / 1.6, cub);
+	draw_xpm_alpha(14, WIDTH / 2.16, HEIGHT / 1.6, cub);
+	draw_xpm_alpha(22, WIDTH / 2.08, HEIGHT / 1.6, cub);
+	draw_xpm_alpha(12, WIDTH / 1.94, HEIGHT / 1.6, cub);
+	draw_xpm_alpha(0, WIDTH / 1.87, HEIGHT / 1.6, cub);
+	draw_xpm_alpha(15, WIDTH / 1.81, HEIGHT / 1.6, cub);
+	if (cub->minimap_bool == -1)
+		draw_xpm_animation(23, WIDTH / 1.65, HEIGHT / 1.578, cub, cub->txt);
+	else
+		draw_xpm_animation(24, WIDTH / 1.65, HEIGHT / 1.578, cub, cub->txt);
+	if (cub->mouse_x > WIDTH / 1.65 && cub->mouse_x < ((WIDTH / 1.65) + cub->txt[23].width) && cub->mouse_y > HEIGHT / 1.6 && cub->mouse_y < ((HEIGHT / 1.6) + cub->txt[23].height) && cub->key.mouse_l)
+	{
+		cub->minimap_bool = -cub->minimap_bool;
+		cub->key.mouse_l = 0;
+	}
+}
+
 void draw_options(t_cube *cub)
 {
 	mlx_mouse_show(cub->con, cub->win);
@@ -135,5 +155,6 @@ void draw_options(t_cube *cub)
 	draw_xpm_alpha(18, WIDTH / 1.65, HEIGHT / 8, cub);
 	speed_option(cub);
 	sensi_option(cub);
+	minimap_option(cub);
 	fov_option(cub);
 }

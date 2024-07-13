@@ -3,43 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   door.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 16:51:29 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/11 23:19:44 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/13 14:33:22 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
-
-void	save_doors(t_cube *cub)
-{
-	int	i;
-	int	j;
-	int	index;
-
-	i = 0;
-	index = 0;
-	while (cub->map.map[i])
-	{
-		j = 0;
-		while (cub->map.map[i][j])
-		{
-			if (cub->map.map[i][j] == 'D')
-			{
-				cub->doors[index].is_open = 0;
-				cub->doors[index].y = i;
-				cub->doors[index].x = j;
-				cub->doors[index].is_closing = 0;
-				cub->doors[index].txt = cub->door;
-				cub->doors[index].frame = 0;
-				index++;
-			}
-			j++;
-		}
-		i++;
-	}
-}
 
 t_door	*search_door(t_cube *cub, int x, int y)
 {

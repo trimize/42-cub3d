@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 15:23:05 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 11:36:11 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/03 19:10:20 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	get_fd(char *file)
 	if (fd < 0)
 	{
 		printf("Error\nInvalid file.");
-		free(call_cub()->path);
 		exit(1);
 	}
 	return (fd);
