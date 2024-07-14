@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:33:53 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:34:11 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 21:42:31 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ void	died_handler(t_cube *cub)
 
 void	update_animation_txt(t_txt *txt, t_door *door)
 {
-
 	if (txt[door->frame].tmp_delay++ == txt->delay)
 	{
 		txt[door->frame].tmp_delay = 0;

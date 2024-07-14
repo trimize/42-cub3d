@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:33:24 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:33:39 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 21:42:28 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	update_animation_txt_r(t_txt *txt, t_door *door)
 {
-
 	if (txt[door->frame].tmp_delay++ == txt->delay)
 	{
 		txt[door->frame].tmp_delay = 0;
@@ -40,7 +39,6 @@ t_txt	*txt_handler_r(t_cube *cub, t_txt *txt, t_raycast ray)
 
 void	update_animation_idle(t_txt *txt)
 {
-
 	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
 	{
 		txt[txt->current_frame].tmp_delay = 0;
@@ -58,7 +56,6 @@ t_txt	enemy_animation_handler(t_txt *txt, int max_frame)
 
 void	update_animation_atk(t_txt *txt)
 {
-
 	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
 	{
 		txt[txt->current_frame].tmp_delay = 0;

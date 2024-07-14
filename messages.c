@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:48:11 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:15:06 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 19:50:12 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,4 +100,5 @@ void	display_messages(t_cube *cub)
 				HEIGHT - (HEIGHT / 4), 0xFFFFFF, "Press E to close door."));
 	display_weapons_msg(cub, &print);
 	display_items_msg(cub, &print);
+	display_dropped_msg(cub, &print);
 }

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 18:01:58 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 18:27:26 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 18:48:51 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ void	map_parsing5(t_cube *cub, t_mparse *mp)
 	else
 		map_parsing6(cub, mp);
 }
-
 
 void	map_parsing4(t_cube *cub, t_mparse *mp)
 {

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:13:43 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:14:55 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 20:45:03 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	display_dropped_msg2(t_cube *cub, int *print, int *i)
 		- cub->dropped_items[*i].last_text < 3000 && !*print)
 		(change_print(print), mlx_string_put(cub->con, cub->win, WIDTH / 2,
 				HEIGHT - (HEIGHT / 4), 0xFFFFFF,
-				"You picked up an speed bonus."));
+				"You picked up a speed bonus."));
 	else if (cub->dropped_items[*i].type == 'H'
 		&& !cub->dropped_items[*i].display && get_current_time()
 		- cub->dropped_items[*i].last_text < 3000 && !*print)
@@ -54,13 +54,13 @@ void	display_dropped_msg(t_cube *cub, int *print)
 	{
 		if (cub->dropped_items[i].type == 'Q'
 			&& !cub->dropped_items[i].display && get_current_time()
-			- cub->dropped_items[i].last_text < 3000 && !print)
+			- cub->dropped_items[i].last_text < 3000 && !*print)
 			(change_print(print), mlx_string_put(cub->con, cub->win, WIDTH / 2,
 					HEIGHT - (HEIGHT / 4), 0xFFFFFF,
 					"You picked up three arrows."));
 		else if (cub->dropped_items[i].type == 'A'
 			&& !cub->dropped_items[i].display && get_current_time()
-			- cub->dropped_items[i].last_text < 3000 && !print)
+			- cub->dropped_items[i].last_text < 3000 && !*print)
 			(change_print(print), mlx_string_put(cub->con, cub->win, WIDTH / 2,
 					HEIGHT - (HEIGHT / 4), 0xFFFFFF,
 					"You picked up an attack bonus."));

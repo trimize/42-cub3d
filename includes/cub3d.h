@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 18:28:04 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 21:40:59 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,52 @@
 # define YELLOW 0xFFFF00
 # define ORANGE 0xFFA500
 # define DARK_GREEN 0x013220
+
+typedef struct s_vert
+{
+	double	dist;
+	double	factor;
+	double	x_o;
+	double	y_o;
+	double	x;
+	double	y;
+	int		*txt_addr;
+	int		length;
+	int		ray_i;
+	int		color;
+	int		tex_y;
+	int		t_pix;
+	int		b_pix;
+}	t_vert;
+
+typedef struct s_sprite
+{
+	double	sprite_x;
+	double	sprite_y;
+	double	plane_length;
+	double	dir_x;
+	double	dir_y;
+	double	plane_x;
+	double	plane_y;
+	double	inv_det;
+	double	transform_x;
+	double	transform_y;
+	double	aspect_ratio;
+	int		sprite_screen_x;
+	int		scaled_z_position;
+	int		sprite_height;
+	int		draw_start_y;
+	int		draw_end_y;
+	int		sprite_width;
+	int		draw_start_x;
+	int		draw_end_x;
+	int		stripe;
+	int		tex_x;
+	int		y;
+	int		d;
+	int		tex_y;
+	int		color;
+}	t_sprite;
 
 typedef struct s_mparse
 {
@@ -401,5 +447,24 @@ void		update_animation_atk(t_txt *txt);
 void		update_animation_start(t_cube *cub);
 void		map_parsing6(t_cube *cub, t_mparse *mp);
 void		map_parsing11(t_cube *cub, t_mparse *mp);
+void		color_background(t_cube *cub, int length, int ray_i);
+void		draw_vertical_line(t_cube *cub, t_raycast *ray);
+void		check_vertical(t_cube *cub, t_raycast *ray);
+void		check_horizontal(t_cube *cub, t_raycast *ray);
+void		enemy_handler(t_cube *cub, t_enemy *enemy, t_txt **txt);
+int			close_x(t_cube *cub);
+void		mouse_rotate(t_cube *cub);
+int			mouse_events(int key);
+int			handle_key_press(int key, t_cube *cub);
+int			handle_key_release(int key, t_cube *cub);
+void		tutorial(t_cube *cub, int bits_per_pixel);
+int			is_corner(t_cube *cub, int x, int y);
+int			remove_corners(t_cube *cub, int x, int y);
+void		n_attack(t_cube *cub, int *i);
+void		n_run(t_cube *cub, int *i);
+void		save_txt(t_cube *cub, int i, int y, char *num);
+void		init_nightborne(t_cube *cub);
+void		init_cute_wolf(t_cube *cub);
+void		init_plague_doctor(t_cube *cub);
 
 #endif

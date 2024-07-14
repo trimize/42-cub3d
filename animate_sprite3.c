@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:32:55 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:33:11 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 21:42:21 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ t_txt	enemy_animation_atk(t_cube *cub, t_txt *txt, t_enemy *enemy, int dist)
 
 void	update_animation_hurt(t_txt *txt)
 {
-
 	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
 	{
 		txt[txt->current_frame].tmp_delay = 0;
@@ -41,7 +40,8 @@ void	update_animation_hurt(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame)
+t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt,
+	t_enemy *enemy, int max_frame)
 {
 	(void) cub;
 	update_animation_hurt(txt);
@@ -56,7 +56,6 @@ t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_fram
 
 void	update_animation_death(t_txt *txt)
 {
-
 	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
 	{
 		txt[txt->current_frame].tmp_delay = 0;
@@ -64,16 +63,17 @@ void	update_animation_death(t_txt *txt)
 	}
 }
 
-t_txt	enemy_animation_death(t_cube *cub, t_txt *txt, t_enemy *enemy, int max_frame)
+t_txt	enemy_animation_death(t_cube *cub, t_txt *txt,
+	t_enemy *enemy, int max_frame)
 {
-	(void) cub;
 	update_animation_death(txt);
 	if (txt->current_frame == max_frame)
 	{
-		enemy->dead = 1;	
+		enemy->dead = 1;
 		enemy->attacking_bool = 0;
 		random_item(cub, &cub->dropped_items[cub->dropped_index]);
 		cub->dropped_items[cub->dropped_index].x = enemy->x;
+		cub->dropped_items[cub->dropped_index].last_text = 0;
 		cub->dropped_items[cub->dropped_index].y = enemy->y;
 		cub->dropped_index++;
 	}

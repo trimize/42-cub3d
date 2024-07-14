@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:32:28 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:32:45 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/14 21:42:16 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	update_animation_crown(t_txt *txt)
 {
-
 	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
 	{
 		txt[txt->current_frame].tmp_delay = 0;
@@ -32,7 +31,6 @@ t_txt	*crown_handler(t_txt *txt)
 
 void	update_animation_general(t_txt *txt)
 {
-
 	if (txt[txt->current_frame].tmp_delay++ == txt->delay)
 	{
 		txt[txt->current_frame].tmp_delay = 0;
