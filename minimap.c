@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minimap.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 20:28:09 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 20:28:36 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 17:42:51 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,10 @@ void	draw_map_to_image(t_cube *cub)
 			if (cub->map.map[y][x] == '1')
 				color = 0x00004A;
 			else if (cub->map.map[y][x] == ' ')
+			{
+				x++;
 				continue ;
+			}
 			else
 				color = 0xffece0;
 			draw_square_to_image(cub, x * MINIMAP_SIZE,

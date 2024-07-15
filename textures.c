@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   textures.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 15:33:42 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 16:19:59 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 17:31:38 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,23 +39,85 @@ void	increment_alphabet(char *str, int index)
 	str[i] = 65 + index;
 }
 
-void	increment_numbers(char *str, int index)
+char	*str_add(char *str, char c)
 {
 	int	i;
+	char	*tmp;
 
 	i = 0;
-	while (str[i] && (str[i] < 48 || str[i] > 57))
+	while (str[i])
 		i++;
-	str[i] = 48 + index;
+	tmp = (char *)malloc((i + 2) * sizeof(char));
+	i = 0;
+	while (str[i])
+	{
+		tmp[i] = str[i];
+		i++;
+	}
+	tmp[i++] = c;
+	tmp[i] = 0;
+	free(str);
+	return (tmp);
 }
 
-void	increment_numbers_2(char *str, int index)
+char	*rm_last_c(char *str)
 {
 	int	i;
+	char	*tmp;
+
+	tmp = (char *)malloc(ft_strlen(str) * sizeof(char));
+	i = 0;
+	while (i < (int)(ft_strlen(str) - 1))
+	{
+		tmp[i] = str[i];
+		i++;
+	}
+	tmp[i] = 0;
+	free(str);
+	return (tmp);
+}
+
+char	*rm_xpm(char *str)
+{
+	int	i;
+	char	*tmp;
+
+	tmp = (char *)malloc((ft_strlen(str) - 3) * sizeof(char));
+	i = 0;
+	while (i < (int)(ft_strlen(str) - 4))
+	{
+		tmp[i] = str[i];
+		i++;
+	}
+	tmp[i] = 0;
+	return (tmp);
+}
+
+void	increment_numbers(char **str, int index)
+{
+	int		i;
+	char	c;
+	char	*tmp;
 
 	i = 0;
-	while (str[i] && str[i] != '1' && str[i] != '2')
+	while ((*str)[i] && ((*str)[i] < 48 || (*str)[i] > 57))	
 		i++;
-	if (str[i + 1])
-		str[i + 1] = 48 + index;
+	if (index >= 10)
+	{
+		(*str)[i] = (index / 10) + 48;
+		(c = (index % 10) + 48, i++);
+		tmp = rm_xpm((*str));
+		if (index > 10)
+			tmp = rm_last_c(tmp);
+		tmp = str_add(tmp, c);
+		if (index > 10)
+			tmp = ft_strjoin_gnl(tmp, &((*str)[i + 1]));
+		else
+			tmp = ft_strjoin_gnl(tmp, &((*str)[i]));
+		(free((*str)), (*str) = ft_strdup(tmp));
+		free(tmp);
+		return ;
+	}
+	else
+		(*str)[i] = 48 + index;
 }

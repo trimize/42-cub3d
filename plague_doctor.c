@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   plague_doctor.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 21:07:51 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 21:16:27 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	pd_idle(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/plague_doctor/idle/idle1.xpm");
 	while (y < 4)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->plague_doctor[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->plague_doctor[*i][y].width,
 				&cub->plague_doctor[*i][y].height);
@@ -52,7 +52,7 @@ void	pd_run(t_cube *cub, int *i)
 	while (y < 4)
 	{
 
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->plague_doctor[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->plague_doctor[*i][y].width,
 				&cub->plague_doctor[*i][y].height);
@@ -80,7 +80,7 @@ void	pd_attack(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/plague_doctor/attack/attack1.xpm");
 	while (y < 5)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->plague_doctor[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->plague_doctor[*i][y].width,
 				&cub->plague_doctor[*i][y].height);
@@ -108,7 +108,7 @@ void	pd_hurt(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/plague_doctor/hurt/hurt1.xpm");
 	while (y < 3)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->plague_doctor[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->plague_doctor[*i][y].width,
 				&cub->plague_doctor[*i][y].height);
@@ -139,7 +139,7 @@ void	init_plague_doctor(t_cube *cub)
 	y = 0;
 	while (y < 6)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->plague_doctor[i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->plague_doctor[i][y].width,
 				&cub->plague_doctor[i][y].height);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cute_wolf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 20:50:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 21:03:58 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	cw_idle(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/cute_wolf/idle/idle1.xpm");
 	while (y < 4)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->cute_wolf[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->cute_wolf[*i][y].width,
 				&cub->cute_wolf[*i][y].height);
@@ -51,7 +51,7 @@ void	cw_run(t_cube *cub, int *i)
 	while (y < 4)
 	{
 
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->cute_wolf[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->cute_wolf[*i][y].width,
 				&cub->cute_wolf[*i][y].height);
@@ -78,7 +78,7 @@ void	cw_attack(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/cute_wolf/attack/attack1.xpm");
 	while (y < 5)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->cute_wolf[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->cute_wolf[*i][y].width,
 				&cub->cute_wolf[*i][y].height);
@@ -105,7 +105,7 @@ void	cw_hurt(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/cute_wolf/hurt/hurt1.xpm");
 	while (y < 3)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->cute_wolf[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->cute_wolf[*i][y].width,
 				&cub->cute_wolf[*i][y].height);
@@ -135,7 +135,7 @@ void	init_cute_wolf(t_cube *cub)
 	y = 0;
 	while (y < 5)
 	{
-		increment_numbers(num, y + 1);
+		increment_numbers(&num, y + 1);
 		cub->cute_wolf[i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->cute_wolf[i][y].width,
 				&cub->cute_wolf[i][y].height);

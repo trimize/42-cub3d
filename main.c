@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:27 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 15:32:28 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 17:49:10 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	main(int argc, char **argv)
 	cub->retry = 0;
 	if (argc == 1)
 	{
-		cub->path = ft_strdup("./maps/map.cub");
+		cub->path = ft_strdup("./maps/map_1.cub");
 		cub->level = 1;
 	}
 	else if (argc == 2)
@@ -74,3 +74,14 @@ int	main(int argc, char **argv)
 	window_init(cub);
 	// exit_free(&cub);
 }
+
+//int	main(int argc, char **argv)
+//{
+//	char	*str;
+
+//	str = ft_strdup(argv[1]);
+//	increment_numbers(&str, ft_atoi(argv[2]));
+//	(void)argc;
+//	printf("The path :             %s\nThe path incremented : %s", argv[1], str);
+//	free(str);
+//}

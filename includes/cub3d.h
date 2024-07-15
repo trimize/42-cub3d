@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
+/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 21:40:59 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 20:31:24 by trimize          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,6 +290,7 @@ typedef struct s_cube
 	t_item			*dropped_items;
 	t_door			*doors;
 	char			*path;
+	int				endian;
 	int				player_run_value;
 	int				dropped_index;
 	int				level;
@@ -385,7 +386,7 @@ void		draw_xpm_alpha(int alpha, int x, int y, t_cube *cub);
 int			update_animation(t_cube *cub);
 void		animate_health_bar(t_cube *cub, int limite);
 char		*to_str(int n);
-void		increment_numbers(char *str, int index);
+void		increment_numbers(char **str, int index);
 void		increment_numbers_2(char *str, int index);
 void		increment_alphabet(char *str, int index);
 void		hp_handler(t_cube *cub);
@@ -466,5 +467,51 @@ void		save_txt(t_cube *cub, int i, int y, char *num);
 void		init_nightborne(t_cube *cub);
 void		init_cute_wolf(t_cube *cub);
 void		init_plague_doctor(t_cube *cub);
+void		init_s_warrior(t_cube *cub);
+void		init_skullwolf(t_cube *cub);
+void		init_warrior(t_cube *cub);
+void		init_skeleton(t_cube *cub);
+void		init_player_animations(t_cube *cub);
+void		init_keyboard(t_cube *cub);
+void		init_game_over(t_cube *cub);
+void		init_main_menu_start(t_cube *cub);
+void		init_main_menu_bg(t_cube *cub);
+void		init_title(t_cube *cub);
+void		init_explosion(t_cube *cub);
+void		init_dragon(t_cube *cub);
+void		init_crossbow(t_cube *cub);
+void		init_hp(t_cube *cub);
+void		init_sword(t_cube *cub);
+void		init_numbers(t_cube *cub);
+void		init_door(t_cube *cub);
+void		init_crown(t_cube *cub);
+void		init_main_menu_a(t_cube *cub);
+void		init_textures(t_cube *cub);
+void		init_alphabet(t_cube *cub);
+void		next_map(t_cube *cub);
+void		player_movement_w2(t_cube *cub);
+void		player_movement_w3(t_cube *cub);
+void		player_movement_w4(t_cube *cub);
+void		player_movement_w(t_cube *cub);
+void		player_movement_s2(t_cube *cub);
+void		player_movement_s3(t_cube *cub);
+void		player_movement_s4(t_cube *cub);
+void		player_movement_s5(t_cube *cub);
+void		player_movement_s(t_cube *cub);
+void		player_movement_a2(t_cube *cub);
+void		player_movement_a3(t_cube *cub);
+void		player_movement_a4(t_cube *cub);
+void		player_movement_a5(t_cube *cub);
+void		player_movement_a(t_cube *cub);
+void		player_movement_d2(t_cube *cub);
+void		player_movement_d3(t_cube *cub);
+void		player_movement_d4(t_cube *cub);
+void		player_movement_d5(t_cube *cub);
+void		player_movement_d(t_cube *cub);
+void		player_movement(t_cube *cub);
+void		dying_handler(t_cube *cub);
+void		hud_options_handler(t_cube *cub);
+void		bg_true(t_cube *cub);
+void		put_enemies(t_cube *cub);
 
 #endif
