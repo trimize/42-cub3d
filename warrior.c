@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   warrior.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 15:02:54 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:47:34 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ void	w_idle(t_cube *cub, int *i)
 		cub->warrior[*i][y++].tmp_delay = 0;
 	}
 	(free(num), cub->warrior[*i]->delay = 8);
-	(cub->warrior[*i]->current_frame = 0, (*i)++);
+	cub->warrior[*i]->frame_max = 9;
+	cub->warrior[*i]->current_frame = 0;
+	(*i)++;
 }
 
 void	w_run(t_cube *cub, int *i)
@@ -48,7 +50,6 @@ void	w_run(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/warrior/run/run1.xpm");
 	while (y < 8)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->warrior[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->warrior[*i][y].width,
@@ -63,8 +64,8 @@ void	w_run(t_cube *cub, int *i)
 	}
 	cub->warrior[*i]->delay = 10;
 	cub->warrior[*i]->current_frame = 0;
+	cub->warrior[(*i)++]->frame_max = 7;
 	free(num);
-	(*i)++;
 }
 
 void	w_attack(t_cube *cub, int *i)
@@ -91,6 +92,7 @@ void	w_attack(t_cube *cub, int *i)
 	}
 	cub->warrior[*i]->delay = 14;
 	cub->warrior[*i]->current_frame = 0;
+	cub->warrior[*i]->frame_max = 6;
 	free(num);
 	(*i)++;
 }
@@ -119,6 +121,7 @@ void	w_hurt(t_cube *cub, int *i)
 	}
 	cub->warrior[*i]->delay = 12;
 	cub->warrior[*i]->current_frame = 0;
+	cub->warrior[*i]->frame_max = 2;
 	free(num);
 	(*i)++;
 }
@@ -149,5 +152,5 @@ void	init_warrior(t_cube *cub)
 	}
 	cub->warrior[i]->delay = 8;
 	cub->warrior[i]->current_frame = 0;
-	free(num);
+	(free(num), cub->warrior[i]->frame_max = 6);
 }

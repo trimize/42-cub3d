@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 18:26:43 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 18:26:52 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:08:18 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ void	map_parsing9(t_cube *cub, t_mparse *mp)
 		cub->items[mp->j].x = mp->x;
 		cub->items[mp->j].y = mp->y;
 		cub->items[mp->j].type = 'X';
-		cub->items[mp->j++].display = 1;
+		cub->items[mp->j].display = 0;
+		cub->crown_index = mp->j++;
 	}
 	else if (cub->map.map[mp->y][mp->x] == 'V')
 	{
@@ -101,7 +102,7 @@ void	map_parsing7(t_cube *cub, t_mparse *mp)
 		cub->all_enemies[mp->w].x = mp->x;
 		cub->all_enemies[mp->w].y = mp->y;
 		cub->all_enemies[mp->w].scale = 0.6;
-		cub->all_enemies[mp->w].z_index = 80;
+		cub->all_enemies[mp->w].z_index = 100;
 		cub->all_enemies[mp->w].atk_max_frame = 4;
 		cub->all_enemies[mp->w].death_max_frame = 4;
 		cub->all_enemies[mp->w].hurt_max_frame = 2;

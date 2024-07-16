@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 14:25:40 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/15 20:31:24 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 18:32:14 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,14 @@ typedef struct s_player
 	double	speed;
 }	t_player;
 
+typedef struct sf
+{
+	int		i;
+	int		j;
+	int		x;
+	char	**tmp;
+}	t_sf;
+
 typedef struct s_enemy
 {
 	t_txt		txt;
@@ -280,6 +288,8 @@ typedef struct s_cube
 	t_txt			**cute_wolf;
 	t_txt			*crown;
 	t_txt			*door;
+	t_txt			*rat;
+	t_txt			*victory_ani;
 	t_player		player;
 	t_key			key;
 	t_rr			rr;
@@ -291,6 +301,7 @@ typedef struct s_cube
 	t_door			*doors;
 	char			*path;
 	int				endian;
+	int				crown_index;
 	int				player_run_value;
 	int				dropped_index;
 	int				level;
@@ -344,6 +355,7 @@ char		**ft_split(char const *s, char const c);
 char		**read_file(char *path);
 void		save_file(t_cube *cub, char **file);
 void		freetab(char **tab);
+void		free_stuff2(t_cube *cub);
 int			tablen(char **tab);
 int			get_fd(char *file);
 int			ft_equalstr(char const *str, char const *str2);
@@ -513,5 +525,19 @@ void		dying_handler(t_cube *cub);
 void		hud_options_handler(t_cube *cub);
 void		bg_true(t_cube *cub);
 void		put_enemies(t_cube *cub);
+void		free_txt(t_cube *cub);
+void		free_imgs(t_cube *cub, t_txt *txts, int max);
+void		free_animations(t_cube *cub, t_txt **txts, int max);
+void		init_victory_ani(t_cube *cub);
+void		init_rat(t_cube *cub);
+void		color_filler(t_cube *cub, char **tab, char **file);
+void		save_file(t_cube *cub, char **file);
+void		cv_helper(t_raycast *ray, double px, double py);
+void		cv_helper2(t_cube *cub, t_raycast *ray, double px, double py);
+char		*rm_xpm(char *str);
+char		*str_add_end(char *str, char c);
+char		*rm_last_c(char *str);
+int			loop_hook(t_cube *cub);
+void		loop_hook_helper(t_cube *cub);
 
 #endif

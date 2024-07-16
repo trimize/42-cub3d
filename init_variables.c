@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_variables.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 18:22:11 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 18:22:46 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 18:30:38 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ void	start_keys2(t_cube *cub)
 {
 	if (!cub->retry)
 	{
-		cub->title_bool = 0;
-		cub->bg_bool = 0;	
+		cub->title_bool = 1;
+		cub->bg_bool = 0;
 	}
 	cub->fade_factor = 1.0;
 	cub->tuto = 0;
@@ -52,8 +52,8 @@ void	start_keys(t_cube *cub)
 	cub->player.weapon = 1;
 	init_w_slots(cub);
 	cub->player.arrows = 5;
-	cub->player.speed = 0.006;
-	cub->player.atk = 25;
+	cub->player.speed = 0.007;
+	cub->player.atk = 20;
 	cub->player.atk_item_amount = 0;
 	cub->player.speed_item_amount = 0;
 	start_keys2(cub);

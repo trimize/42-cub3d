@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:32:55 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 21:42:21 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 16:52:53 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ t_txt	enemy_animation_hurt(t_cube *cub, t_txt *txt,
 	if (txt->current_frame == max_frame)
 	{
 		txt->current_frame = 0;
-		enemy->hurt = 0;	
+		enemy->hurt = 0;
 		enemy->attacking_bool = 0;
 	}
 	return (txt[txt->current_frame]);
@@ -75,6 +75,9 @@ t_txt	enemy_animation_death(t_cube *cub, t_txt *txt,
 		cub->dropped_items[cub->dropped_index].x = enemy->x;
 		cub->dropped_items[cub->dropped_index].last_text = 0;
 		cub->dropped_items[cub->dropped_index].y = enemy->y;
+		cub->dropped_items[cub->dropped_index].dist = 999999;
+		if (enemy->type == 'n' || enemy->type == 'p' || enemy->type == 'w')
+			cub->items[cub->crown_index].display = 1;
 		cub->dropped_index++;
 	}
 	return (txt[txt->current_frame]);

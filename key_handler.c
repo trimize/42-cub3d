@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 20:46:37 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 20:48:57 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 13:28:54 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ int	handle_key_press(int key, t_cube *cub)
 	{
 		printf("You pressed ESC and closed the game\n");
 		close_x(cub);
-		exit(1);
 	}
 	else if (key == XK_w && cub->option_bool == -1)
 		cub->key.w = 1;

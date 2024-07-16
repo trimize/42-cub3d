@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 16:17:55 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 16:18:33 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 22:43:47 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void	fov_helper(t_cube *cub)
 	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 3.8, cub);
 	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 3.8, cub);
 	mlx_mouse_get_pos(cub->con, cub->win, &cub->mouse_x, &cub->mouse_y);
+	free(fov_str);
 }
 
 void	fov_option(t_cube *cub)

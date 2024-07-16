@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 01:01:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 20:00:25 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:08:56 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,12 +83,12 @@ void	equip_item(t_cube *cub, char type)
 	}
 	if (type == 'V')
 	{
-		cub->player.speed += 0.02;
+		cub->player.speed += 0.004;
 		cub->player.speed_item_amount++;
 	}
 	if (type == 'A')
 	{
-		cub->player.atk += 20;
+		cub->player.atk += 10;
 		cub->player.atk_item_amount++;
 	}
 	if (type == 'H')

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   player_cutscene.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 14:57:17 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 17:56:14 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:51:38 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ void	pla_idle(t_cube *cub, int *i)
 				&cub->player_animations[*i][y].bits_per_pixel,
 				&cub->player_animations[*i][y].line_length,
 				&cub->player_animations[*i][y].endian);
-		cub->player_animations[*i][y].tmp_delay = 0;
-		y++;
+		cub->player_animations[*i][y++].tmp_delay = 0;
 	}
 	free(num);
 	cub->player_animations[*i]->delay = 10;
@@ -52,7 +51,6 @@ void	pla_run(t_cube *cub, int *i)
 	num = ft_strdup("./textures/player/run/run1.xpm");
 	while (y < 10)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->player_animations[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->player_animations[*i][y].width,

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:34:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:34:34 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 18:19:10 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@ void	update_animation_title(t_cube *cub)
 {
 	if (cub->title_screen[cub->title_screen->current_frame].tmp_delay++
 		== cub->title_screen->delay)
+	{
+		cub->title_screen[cub->title_screen->current_frame].tmp_delay = 0;
 		cub->title_screen->current_frame++;
+	}
 }
 
 void	title_handler(t_cube *cub)
@@ -36,7 +39,6 @@ void	title_handler(t_cube *cub)
 
 void	update_animation_bg(t_cube *cub)
 {
-
 	if (cub->main_menu_bg[cub->main_menu_bg->current_frame].tmp_delay++
 		== cub->main_menu_bg->delay)
 	{
@@ -56,7 +58,6 @@ void	bg_handler(t_cube *cub)
 
 void	update_animation_start(t_cube *cub)
 {
-
 	if (cub->main_menu_start[cub->main_menu_start->current_frame].tmp_delay++
 		== cub->main_menu_start->delay)
 	{

@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:13:00 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 16:18:22 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 18:18:33 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void	speed_helper(t_cube *cub)
 	}
 	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 2.5, cub);
 	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 2.5, cub);
+	free(p_speed_str);
 }
 
 void	speed_option(t_cube *cub)
@@ -79,6 +80,7 @@ void	sensi_helper(t_cube *cub)
 	}
 	draw_xpm_texture(5, WIDTH / 1.65, HEIGHT / 1.94, cub);
 	draw_xpm_texture(6, WIDTH / 1.9, HEIGHT / 1.94, cub);
+	free(sensi_str);
 }
 
 void	sensi_option(t_cube *cub)

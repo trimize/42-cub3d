@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_animations2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 18:10:28 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 18:12:01 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 17:42:32 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ void	init_explosion(t_cube *cub)
 	char	*num;
 
 	i = 0;
-	cub->explosion = (t_txt *)malloc(14 * sizeof(t_txt));
+	cub->explosion = (t_txt *)malloc(13 * sizeof(t_txt));
 	num = ft_strdup("./textures/explosion_animation/explosion1.xpm");
-	while (i < 9)
+	while (i < 13)
 	{
 		increment_numbers(&num, i + 1);
 		cub->explosion[i].img = mlx_xpm_file_to_image

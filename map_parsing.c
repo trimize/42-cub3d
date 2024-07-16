@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 18:01:58 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 18:48:51 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:07:27 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void	map_parsing2(t_cube *cub, t_mparse *mp)
 		cub->all_enemies[mp->w].x = mp->x;
 		cub->all_enemies[mp->w].y = mp->y;
 		cub->all_enemies[mp->w].scale = 0.6;
-		cub->all_enemies[mp->w].z_index = 80;
+		cub->all_enemies[mp->w].z_index = 40;
 		cub->all_enemies[mp->w].atk_max_frame = 4;
 		cub->all_enemies[mp->w].death_max_frame = 6;
 		cub->all_enemies[mp->w].hurt_max_frame = 3;

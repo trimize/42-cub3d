@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   plague_doctor.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 21:07:51 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:40:40 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ void	pd_idle(t_cube *cub, int *i)
 		cub->plague_doctor[*i][y].tmp_delay = 0;
 		y++;
 	}
-	free(num);
 	cub->plague_doctor[*i]->delay = 20;
 	cub->plague_doctor[*i]->current_frame = 0;
+	(free(num), cub->plague_doctor[*i]->frame_max = 3);
 	(*i)++;
 }
 
@@ -51,7 +51,6 @@ void	pd_run(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/plague_doctor/run/run1.xpm");
 	while (y < 4)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->plague_doctor[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->plague_doctor[*i][y].width,
@@ -66,7 +65,7 @@ void	pd_run(t_cube *cub, int *i)
 	}
 	cub->plague_doctor[*i]->delay = 10;
 	cub->plague_doctor[*i]->current_frame = 0;
-	free(num);
+	(free(num), cub->plague_doctor[*i]->frame_max = 3);
 	(*i)++;
 }
 
@@ -94,6 +93,7 @@ void	pd_attack(t_cube *cub, int *i)
 	}
 	cub->plague_doctor[*i]->delay = 20;
 	cub->plague_doctor[*i]->current_frame = 0;
+	cub->plague_doctor[*i]->frame_max = 4;
 	free(num);
 	(*i)++;
 }
@@ -122,6 +122,7 @@ void	pd_hurt(t_cube *cub, int *i)
 	}
 	cub->plague_doctor[*i]->delay = 12;
 	cub->plague_doctor[*i]->current_frame = 0;
+	cub->plague_doctor[*i]->frame_max = 2;
 	free(num);
 	(*i)++;
 }
@@ -152,5 +153,5 @@ void	init_plague_doctor(t_cube *cub)
 	}
 	cub->plague_doctor[i]->delay = 8;
 	cub->plague_doctor[i]->current_frame = 0;
-	free(num);
+	(free(num), cub->plague_doctor[i]->frame_max = 5);
 }

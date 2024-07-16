@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 17:33:53 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 21:42:31 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 16:52:59 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	start_handler(t_cube *cub)
 
 void	update_animation_died(t_cube *cub)
 {
-
 	if (cub->game_over[cub->game_over->current_frame].tmp_delay++
 		== cub->game_over->delay)
 	{

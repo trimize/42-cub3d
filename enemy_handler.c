@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 20:32:51 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 20:41:48 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/15 23:28:27 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void	enemy_handler_helper4(t_cube *cub, t_enemy *enemy, t_txt **txt)
 		enemy->txt = enemy_animation_atk(cub,
 				txt[2], enemy, enemy->dist);
 	if (enemy->last_attack == 1 && enemy->dist
-		< enemy->attack_range && cub->option_bool == -1)
+		< enemy->attack_range && cub->option_bool == -1
+		&& cub->weapons_in_slot[cub->player.weapon - 1] != 3)
 	{
 		cub->player.hp -= 25;
 		enemy->last_attack = -1;
@@ -54,7 +55,7 @@ void	enemy_handler_helper2(t_cube *cub, t_enemy *enemy, t_txt **txt)
 		> enemy->dist)
 	{
 		cub->player.hit = 0;
-		enemy->hp -= 25;
+		enemy->hp -= cub->player.atk;
 		enemy->hurt = 1;
 	}
 	if (cub->player.x > enemy->x && cub->map.map[(int) enemy->y]
@@ -70,8 +71,6 @@ void	enemy_handler_helper2(t_cube *cub, t_enemy *enemy, t_txt **txt)
 
 void	enemy_handler_helper(t_cube *cub, t_enemy *enemy, t_txt **txt)
 {
-	enemy->dist = dist((enemy->x * TILE_SIZE), (enemy->y * TILE_SIZE),
-			cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
 	if (enemy->dist > 500 && cub->option_bool == -1)
 	{
 		enemy->txt = enemy_animation_handler(txt[0], enemy->idle_max_frame);
@@ -82,7 +81,7 @@ void	enemy_handler_helper(t_cube *cub, t_enemy *enemy, t_txt **txt)
 			> enemy->dist)
 		{
 			cub->player.hit = 0;
-			enemy->hp -= 25;
+			enemy->hp -= cub->player.atk;
 			enemy->hurt = 1;
 		}
 	}
@@ -95,6 +94,8 @@ void	enemy_handler_helper(t_cube *cub, t_enemy *enemy, t_txt **txt)
 
 void	enemy_handler(t_cube *cub, t_enemy *enemy, t_txt **txt)
 {
+	enemy->dist = dist((enemy->x * TILE_SIZE), (enemy->y * TILE_SIZE),
+			cub->player.x * TILE_SIZE, cub->player.y * TILE_SIZE);
 	if (enemy->hp > 0)
 	{
 		enemy_handler_helper(cub, enemy, txt);

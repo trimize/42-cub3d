@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_textures.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 18:20:00 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 18:20:37 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 14:30:23 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	init_textures(t_cube *cub)
 	cub->txt[8].path = ft_strdup("./textures/weapon_slot_white.xpm");
 	cub->txt[9].type = NULL;
 	cub->txt[9].path = ft_strdup("./textures/sword_weapon_slot.xpm");
-	cub->txt[10].type = ft_strdup("D");
+	cub->txt[10].type = NULL;
 	cub->txt[10].path = ft_strdup("./textures/sword_weapon_slot.xpm");
 	cub->txt[11].type = NULL;
 	cub->txt[11].path = ft_strdup("textures/crossbow_weapon_slot.xpm");

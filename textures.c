@@ -3,21 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   textures.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/09 15:33:42 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/15 17:31:38 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 17:32:18 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
 
-void	load_texture(t_cube *cub, t_txt *txt)
+int	load_texture(t_cube *cub, t_txt *txt)
 {
 	txt->img = mlx_xpm_file_to_image(cub->con, txt->path,
 			&txt->width, &txt->height);
+	if (!txt->img)
+		return (1);
 	txt->addr = mlx_get_data_addr(txt->img, &txt->bits_per_pixel,
 			&txt->line_length, &txt->endian);
+	if (!txt->addr)
+	{
+		mlx_destroy_image(cub->con, txt->img);
+		return (1);
+	}
+	return (0);
 }
 
 void	load_textures(t_cube *cub, t_txt *txt, int num)
@@ -26,7 +34,27 @@ void	load_textures(t_cube *cub, t_txt *txt, int num)
 
 	i = 0;
 	while (i < num)
-		load_texture(cub, &txt[i++]);
+	{
+		if (load_texture(cub, &txt[i]))
+		{
+			while (--i > 0)
+				mlx_destroy_image(cub->con, txt[i].img);
+			free_stuff(cub);
+			freetab(cub->map.map);
+			free(cub->path);
+			if (cub->weapon_counter)
+				free(cub->weapons);
+			if (cub->enemy_counter)
+				(free(cub->all_enemies), free(cub->dropped_items));
+			if (cub->items_counter)
+				free(cub->items);
+			if (cub->door_counter)
+				free(cub->doors);
+			(free(cub->rays), mlx_destroy_window(cub->con, cub->win));
+			(mlx_destroy_display(cub->con), free(cub->con), exit(1));
+		}
+		i++;
+	}
 }
 
 void	increment_alphabet(char *str, int index)
@@ -39,9 +67,9 @@ void	increment_alphabet(char *str, int index)
 	str[i] = 65 + index;
 }
 
-char	*str_add(char *str, char c)
+char	*str_add_end(char *str, char c)
 {
-	int	i;
+	int		i;
 	char	*tmp;
 
 	i = 0;
@@ -62,7 +90,7 @@ char	*str_add(char *str, char c)
 
 char	*rm_last_c(char *str)
 {
-	int	i;
+	int		i;
 	char	*tmp;
 
 	tmp = (char *)malloc(ft_strlen(str) * sizeof(char));
@@ -75,49 +103,4 @@ char	*rm_last_c(char *str)
 	tmp[i] = 0;
 	free(str);
 	return (tmp);
-}
-
-char	*rm_xpm(char *str)
-{
-	int	i;
-	char	*tmp;
-
-	tmp = (char *)malloc((ft_strlen(str) - 3) * sizeof(char));
-	i = 0;
-	while (i < (int)(ft_strlen(str) - 4))
-	{
-		tmp[i] = str[i];
-		i++;
-	}
-	tmp[i] = 0;
-	return (tmp);
-}
-
-void	increment_numbers(char **str, int index)
-{
-	int		i;
-	char	c;
-	char	*tmp;
-
-	i = 0;
-	while ((*str)[i] && ((*str)[i] < 48 || (*str)[i] > 57))	
-		i++;
-	if (index >= 10)
-	{
-		(*str)[i] = (index / 10) + 48;
-		(c = (index % 10) + 48, i++);
-		tmp = rm_xpm((*str));
-		if (index > 10)
-			tmp = rm_last_c(tmp);
-		tmp = str_add(tmp, c);
-		if (index > 10)
-			tmp = ft_strjoin_gnl(tmp, &((*str)[i + 1]));
-		else
-			tmp = ft_strjoin_gnl(tmp, &((*str)[i]));
-		(free((*str)), (*str) = ft_strdup(tmp));
-		free(tmp);
-		return ;
-	}
-	else
-		(*str)[i] = 48 + index;
 }

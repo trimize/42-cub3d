@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 20:45:41 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/14 20:45:57 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 16:47:08 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,3 @@ void	tutorial(t_cube *cub, int bits_per_pixel)
 	mlx_string_put(cub->con, cub->win, WIDTH / 2.2, HEIGHT / 1.175,
 		0xFFFFFF, " -   Close the tutorial!");
 }
-

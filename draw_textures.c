@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 18:09:33 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:53:58 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 13:09:17 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	draw_xpm_texture2(t_draw *draw)
 				/ 4 + draw->x + draw->j] = ((int *)(cub->txt[draw->alpha].addr))
 			[(draw->i) * cub->txt[draw->alpha].line_length / 4 + draw->j];
 	}
-	else
+	else if (draw->x + draw->j < WIDTH && draw->y + draw->i < HEIGHT)
 		((int *)(cub->addr))[(draw->y + draw->i) * cub->line_length / 4
 			+ draw->x + draw->j] = ((int *)(cub->txt[draw->alpha].addr))
 		[(draw->i) * cub->txt[draw->alpha].line_length / 4 + draw->j];

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cute_wolf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 20:50:15 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 15:42:09 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	cw_idle(t_cube *cub, int *i)
 	}
 	cub->cute_wolf[*i]->delay = 20;
 	cub->cute_wolf[*i]->current_frame = 0;
+	cub->cute_wolf[*i]->frame_max = 3;
 	free(num);
 	(*i)++;
 }
@@ -50,7 +51,6 @@ void	cw_run(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/cute_wolf/run/run1.xpm");
 	while (y < 4)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->cute_wolf[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->cute_wolf[*i][y].width,
@@ -64,6 +64,7 @@ void	cw_run(t_cube *cub, int *i)
 	}
 	cub->cute_wolf[*i]->delay = 10;
 	cub->cute_wolf[*i]->current_frame = 0;
+	cub->cute_wolf[*i]->frame_max = 3;
 	free(num);
 	(*i)++;
 }
@@ -91,6 +92,7 @@ void	cw_attack(t_cube *cub, int *i)
 	}
 	cub->cute_wolf[*i]->delay = 20;
 	cub->cute_wolf[*i]->current_frame = 0;
+	cub->cute_wolf[*i]->frame_max = 4;
 	free(num);
 	(*i)++;
 }
@@ -118,6 +120,7 @@ void	cw_hurt(t_cube *cub, int *i)
 	}
 	cub->cute_wolf[*i]->delay = 12;
 	cub->cute_wolf[*i]->current_frame = 0;
+	cub->cute_wolf[*i]->frame_max = 2;
 	free(num);
 	(*i)++;
 }
@@ -148,5 +151,5 @@ void	init_cute_wolf(t_cube *cub)
 	}
 	cub->cute_wolf[i]->delay = 8;
 	cub->cute_wolf[i]->current_frame = 0;
-	free(num);
+	(free(num), cub->cute_wolf[i]->frame_max = 4);
 }

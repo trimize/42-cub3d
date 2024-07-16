@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nightborne.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/14 21:17:20 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:51:22 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,22 +23,21 @@ void	n_idle(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/Nightborne/idle/idle1.xpm");
 	while (y < 9)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->nightborne[*i][y].img = mlx_xpm_file_to_image
-		(cub->con, num, &cub->nightborne[*i][y].width,
-			&cub->nightborne[*i][y].height);
+			(cub->con, num, &cub->nightborne[*i][y].width,
+				&cub->nightborne[*i][y].height);
 		cub->nightborne[*i][y].addr = mlx_get_data_addr
-		(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
-			&cub->nightborne[*i][y].line_length,
-			&cub->nightborne[*i][y].endian);
+			(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
+				&cub->nightborne[*i][y].line_length,
+				&cub->nightborne[*i][y].endian);
 		cub->nightborne[*i][y].tmp_delay = 0;
 		y++;
 	}
 	free(num);
 	cub->nightborne[*i]->delay = 8;
 	cub->nightborne[*i]->current_frame = 0;
-	(*i)++;
+	cub->nightborne[(*i)++]->frame_max = 8;
 }
 
 void	n_run(t_cube *cub, int *i)
@@ -51,20 +50,20 @@ void	n_run(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/Nightborne/run/run1.xpm");
 	while (y < 6)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->nightborne[*i][y].img = mlx_xpm_file_to_image
-		(cub->con, num, &cub->nightborne[*i][y].width,
-			&cub->nightborne[*i][y].height);
+			(cub->con, num, &cub->nightborne[*i][y].width,
+				&cub->nightborne[*i][y].height);
 		cub->nightborne[*i][y].addr = mlx_get_data_addr
-		(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
-			&cub->nightborne[*i][y].line_length,
-			&cub->nightborne[*i][y].endian);
+			(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
+				&cub->nightborne[*i][y].line_length,
+				&cub->nightborne[*i][y].endian);
 		cub->nightborne[*i][y].tmp_delay = 0;
 		y++;
 	}
 	cub->nightborne[*i]->delay = 8;
 	cub->nightborne[*i]->current_frame = 0;
+	cub->nightborne[*i]->frame_max = 5;
 	free(num);
 	(*i)++;
 }
@@ -81,17 +80,18 @@ void	n_attack(t_cube *cub, int *i)
 	{
 		increment_numbers(&num, y + 1);
 		cub->nightborne[*i][y].img = mlx_xpm_file_to_image
-		(cub->con, num, &cub->nightborne[*i][y].width,
-			&cub->nightborne[*i][y].height);
+			(cub->con, num, &cub->nightborne[*i][y].width,
+				&cub->nightborne[*i][y].height);
 		cub->nightborne[*i][y].addr = mlx_get_data_addr
-		(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
-			&cub->nightborne[*i][y].line_length,
-			&cub->nightborne[*i][y].endian);
+			(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
+				&cub->nightborne[*i][y].line_length,
+				&cub->nightborne[*i][y].endian);
 		cub->nightborne[*i][y].tmp_delay = 0;
 		y++;
 	}
 	cub->nightborne[*i]->delay = 8;
 	cub->nightborne[*i]->current_frame = 0;
+	cub->nightborne[*i]->frame_max = 11;
 	free(num);
 	(*i)++;
 }
@@ -108,17 +108,18 @@ void	n_hurt(t_cube *cub, int *i)
 	{
 		increment_numbers(&num, y + 1);
 		cub->nightborne[*i][y].img = mlx_xpm_file_to_image
-		(cub->con, num, &cub->nightborne[*i][y].width,
-			&cub->nightborne[*i][y].height);
+			(cub->con, num, &cub->nightborne[*i][y].width,
+				&cub->nightborne[*i][y].height);
 		cub->nightborne[*i][y].addr = mlx_get_data_addr
-		(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
-			&cub->nightborne[*i][y].line_length,
-			&cub->nightborne[*i][y].endian);
+			(cub->nightborne[*i][y].img, &cub->nightborne[*i][y].bits_per_pixel,
+				&cub->nightborne[*i][y].line_length,
+				&cub->nightborne[*i][y].endian);
 		cub->nightborne[*i][y].tmp_delay = 0;
 		y++;
 	}
 	cub->nightborne[*i]->delay = 8;
 	cub->nightborne[*i]->current_frame = 0;
+	cub->nightborne[*i]->frame_max = 4;
 	free(num);
 	(*i)++;
 }
@@ -138,16 +139,16 @@ void	init_nightborne(t_cube *cub)
 	{
 		increment_numbers(&num, y + 1);
 		cub->nightborne[i][y].img = mlx_xpm_file_to_image
-		(cub->con, num, &cub->nightborne[i][y].width,
-			&cub->nightborne[i][y].height);
+			(cub->con, num, &cub->nightborne[i][y].width,
+				&cub->nightborne[i][y].height);
 		cub->nightborne[i][y].addr = mlx_get_data_addr
-		(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
-			&cub->nightborne[i][y].line_length,
-			&cub->nightborne[i][y].endian);
+			(cub->nightborne[i][y].img, &cub->nightborne[i][y].bits_per_pixel,
+				&cub->nightborne[i][y].line_length,
+				&cub->nightborne[i][y].endian);
 		cub->nightborne[i][y].tmp_delay = 0;
 		y++;
 	}
 	cub->nightborne[i]->delay = 8;
 	cub->nightborne[i]->current_frame = 0;
-	free(num);
+	(free(num), cub->nightborne[i]->frame_max = 21);
 }

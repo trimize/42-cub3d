@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   skeleton.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 15:02:54 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 16:55:31 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:42:54 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@ void	sk_idle(t_cube *cub, int *i)
 		cub->skeleton[*i][y++].tmp_delay = 0;
 	}
 	(free(num), cub->skeleton[*i]->delay = 8);
-	(cub->skeleton[*i]->current_frame = 0, (*i)++);
+	cub->skeleton[*i]->current_frame = 0;
+	cub->skeleton[*i]->frame_max = 10;
+	(*i)++;
 }
 
 void	sk_run(t_cube *cub, int *i)
@@ -48,7 +50,6 @@ void	sk_run(t_cube *cub, int *i)
 	num = ft_strdup("./textures/Enemies/skeleton/run/run1.xpm");
 	while (y < 13)
 	{
-
 		increment_numbers(&num, y + 1);
 		cub->skeleton[*i][y].img = mlx_xpm_file_to_image
 			(cub->con, num, &cub->skeleton[*i][y].width,
@@ -63,8 +64,8 @@ void	sk_run(t_cube *cub, int *i)
 	}
 	cub->skeleton[*i]->delay = 2;
 	cub->skeleton[*i]->current_frame = 0;
+	cub->skeleton[(*i)++]->frame_max = 12;
 	free(num);
-	(*i)++;
 }
 
 void	sk_attack(t_cube *cub, int *i)
@@ -91,6 +92,7 @@ void	sk_attack(t_cube *cub, int *i)
 	}
 	cub->skeleton[*i]->delay = 8;
 	cub->skeleton[*i]->current_frame = 0;
+	cub->skeleton[*i]->frame_max = 17;
 	free(num);
 	(*i)++;
 }
@@ -119,6 +121,7 @@ void	sk_hurt(t_cube *cub, int *i)
 	}
 	cub->skeleton[*i]->delay = 8;
 	cub->skeleton[*i]->current_frame = 0;
+	cub->skeleton[*i]->frame_max = 7;
 	free(num);
 	(*i)++;
 }
@@ -149,5 +152,5 @@ void	init_skeleton(t_cube *cub)
 	}
 	cub->skeleton[i]->delay = 8;
 	cub->skeleton[i]->current_frame = 0;
-	free(num);
+	(free(num), cub->skeleton[i]->frame_max = 12);
 }

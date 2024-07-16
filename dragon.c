@@ -6,7 +6,7 @@
 /*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/13 16:38:18 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/13 17:06:40 by mbrandao         ###   ########.fr       */
+/*   Updated: 2024/07/16 15:42:43 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ t_enemy	*explosion_sprite2(t_cube *cub)
 {
 	int		i;
 	t_enemy	*enemy;
-
 
 	i = 0;
 	enemy = NULL;

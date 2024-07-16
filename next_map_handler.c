@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   next_map_handler.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 18:42:21 by trimize           #+#    #+#             */
-/*   Updated: 2024/07/15 18:49:08 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:40:24 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,16 @@ void	start_next_map(t_cube *cub)
 
 	i = 0;
 	file = read_file(cub->path);
-	(save_file(cub, file), player_checker(cub), map_filler(&cub->map));
-	variables_checker(cub);
+	(save_file(cub, file), map_filler(&cub->map), variables_checker(cub));
 	if (first_and_last_checker(cub->map.map)
 		|| space_checker_horizontal(cub->map.map)
 		|| space_checker_vertical(cub->map.map))
 		(printf("Error\nMap must be surrounded by walls.\n"),
-			exit_free(cub));
+			close_x(cub));
 	while (cub->map.map[i])
 		if (char_checker(cub->map.map[i++]))
-			(printf("Error\nInvalid character on the map.\n"), exit_free(cub));
+			(printf("Error\nInvalid character on the map.\n"), close_x(cub));
+	player_checker(cub);
 	if (cub->weapon_counter > 0)
 		cub->weapons = (t_item *)malloc(cub->weapon_counter * sizeof(t_item));
 	if (cub->items_counter > 0)
@@ -46,7 +46,7 @@ void	start_next_map(t_cube *cub)
 	if (cub->enemy_counter > 0)
 		init_enemies_items(cub);
 	cub->start = 1;
-	(fill_player(cub), map_parsing(cub));
+	(load_textures(cub, cub->txt, 4), fill_player(cub), map_parsing(cub));
 }
 
 void	free_next_map(t_cube *cub)
@@ -55,15 +55,23 @@ void	free_next_map(t_cube *cub)
 	cub->victory = 0;
 	(freetab(cub->map.map), free(cub->all_enemies), free(cub->dropped_items));
 	(free(cub->weapons), free(cub->items), free(cub->doors));
-	(free(cub->txt[0].path), free(cub->txt[0].type), free(cub->txt[1].path));
-	(free(cub->txt[1].type), free(cub->txt[2].path), free(cub->txt[2].type));
-	(free(cub->txt[3].path), free(cub->txt[3].type), cub->weapon_counter = 0);
+	cub->map.map = NULL;
+	free_stuff2(cub);
+	cub->txt[0].path = NULL;
+	cub->txt[0].type = NULL;
+	cub->txt[1].path = NULL;
+	cub->txt[1].type = NULL;
+	cub->txt[2].path = NULL;
+	cub->txt[2].type = NULL;
+	cub->txt[3].path = NULL;
+	cub->txt[3].type = NULL;
+	cub->weapon_counter = 0;
 	cub->items_counter = 0;
 	cub->door_counter = 0;
 	cub->enemy_counter = 0;
 	(increment_numbers(&cub->path, cub->level), cub->dropped_index = 0);
 	if (check_cub(cub->path))
-		(printf("Error\nMap file must end in .cub\n"), exit(1));
+		(printf("Error\nMap file must end in .cub\n"), close_x(cub));
 }
 
 void	next_map2(t_cube *cub)
@@ -73,7 +81,7 @@ void	next_map2(t_cube *cub)
 		animation_handler(cub->player_animations[0], cub,
 			cub->next_lvl_start + cub->player_run_value, HEIGHT / 8);
 		if (cub->idle_delay == 70)
-			(free_next_map(cub), start_next_map(cub));
+			(free_next_map(cub), cub->idle_delay = 0, start_next_map(cub));
 		else
 			cub->idle_delay++;
 	}
@@ -97,17 +105,22 @@ void	next_map(t_cube *cub)
 	fade_to_black(cub, cub->fade_factor, cub->bits_per_pixel);
 	if (cub->fade_factor == 0.0)
 	{
-		draw_xpm_animation(25, WIDTH / 4.8, HEIGHT / 3.8, cub->txt);
 		if (cub->level == 2)
 		{
+			draw_xpm_animation(25, WIDTH / 4.8, HEIGHT / 3.8, cub->txt);
 			cub->next_lvl_start = WIDTH / 5.2;
 			cub->next_lvl_end = WIDTH / 2.23;
+			next_map2(cub);
 		}
 		else if (cub->level == 3)
 		{
+			draw_xpm_animation(25, WIDTH / 4.8, HEIGHT / 3.8, cub->txt);
 			cub->next_lvl_start = WIDTH / 2.23;
 			cub->next_lvl_end = WIDTH / 1.413;
+			next_map2(cub);
 		}
-		next_map2(cub);
+		else
+			(animation_handler(cub->victory_ani, cub, -60, HEIGHT / 8),
+				animation_handler(cub->rat, cub, WIDTH / 4, HEIGHT / 2.5));
 	}
 }

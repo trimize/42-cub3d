@@ -3,26 +3,69 @@
 /*                                                        :::      ::::::::   */
 /*   window.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: trimize <trimize@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mbrandao <mbrandao@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 20:50:02 by mbrandao          #+#    #+#             */
-/*   Updated: 2024/07/15 20:31:34 by trimize          ###   ########.fr       */
+/*   Updated: 2024/07/16 18:18:17 by mbrandao         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/cub3d.h"
 
-int	close_x(t_cube *cub)
+void	close_x_helper(t_cube *cub)
 {
 	printf("You closed the game.");
-	int	i = 0;
-	while (i < 4)
-		mlx_destroy_image(cub->con, cub->txt[i++].img);
+	free_txt(cub);
+	if (cub->map.map)
+		freetab(cub->map.map);
+	free(cub->path);
+	free_imgs(cub, cub->abc, 26);
+	free_imgs(cub, cub->nums, 10);
+	free_imgs(cub, cub->sword_ani, 5);
+	free_imgs(cub, cub->hp_frame, 8);
+	free_imgs(cub, cub->crossbow, 6);
+	free_imgs(cub, cub->dragon, 5);
+	free_imgs(cub, cub->explosion, 13);
+	free_imgs(cub, cub->title_screen, 29);
+	free_imgs(cub, cub->main_menu_bg, 24);
+	free_imgs(cub, cub->main_menu_start, 19);
+	free_imgs(cub, cub->game_over, 11);
+	free_imgs(cub, cub->keyboard, 12);
+	free_imgs(cub, cub->door, 7);
+	free_imgs(cub, cub->crown, 8);
+	free_imgs(cub, cub->rat, 66);
+	free_imgs(cub, cub->victory_ani, 3);
+	mlx_destroy_image(cub->con, cub->main_menu_assets->img);
+	(free(cub->main_menu_assets->path), free(cub->main_menu_assets));
+	free_animations(cub, cub->nightborne, 5);
+	free_animations(cub, cub->skeleton, 5);
+}
+
+int	close_x(t_cube *cub)
+{
+	close_x_helper(cub);
+	free_animations(cub, cub->warrior, 5);
+	free_animations(cub, cub->skullwolf, 5);
+	free_animations(cub, cub->s_warrior, 5);
+	free_animations(cub, cub->plague_doctor, 5);
+	free_animations(cub, cub->cute_wolf, 5);
+	free_animations(cub, cub->player_animations, 2);
+	if (cub->weapon_counter)
+		free(cub->weapons);
+	if (cub->enemy_counter)
+	{
+		free(cub->all_enemies);
+		free(cub->dropped_items);
+	}
+	if (cub->items_counter)
+		free(cub->items);
+	if (cub->door_counter)
+		free(cub->doors);
+	free(cub->rays);
 	mlx_destroy_window(cub->con, cub->win);
 	mlx_destroy_display(cub->con);
 	free(cub->con);
-	// free_map(data->map);
-	exit_free(cub);
+	exit(0);
 	return (0);
 }
 
@@ -71,35 +114,6 @@ void	loop_hook_helper(t_cube *cub)
 		rotate_player(cub, -(cub->p_rotation));
 }
 
-int	loop_hook(t_cube *cub)
-{
-	void	*img;
-
-	img = mlx_new_image(cub->con, WIDTH, HEIGHT);
-	cub->img = img;
-	cub->addr = mlx_get_data_addr
-		(img, &cub->bits_per_pixel, &cub->line_length, &cub->endian);
-	if (cub->title_bool == 0 && cub->bg_bool == 0)
-		loop_hook_helper(cub);
-	if (cub->title_bool == 1 && !cub->victory)
-		title_handler(cub);
-	if (cub->bg_bool && !cub->victory)
-		bg_true(cub);
-	(mlx_put_image_to_window(cub->con, cub->win, cub->img, 0, 0), display_messages(cub));
-	if (!cub->title_bool && !cub->bg_bool
-		&& !cub->victory && cub->minimap_bool == 1)
-		(draw_map_to_image(cub), draw_player_to_image(cub));
-	if (cub->title_bool == 0 && cub->bg_bool == 0 && !cub->victory)
-		hud_options_handler(cub);
-	if (cub->player.hp <= 0 && !cub->bg_bool && !cub->victory)
-		dying_handler(cub);
-	else if (cub->player.hp > 0 && !cub->bg_bool && cub->victory)
-		next_map(cub);
-	if (cub->tuto && !cub->title_bool && !cub->bg_bool && !cub->victory)
-		tutorial(cub, cub->bits_per_pixel);
-	return (mlx_destroy_image(cub->con, img), 0);
-}
-
 void	window_init(t_cube *cub)
 {
 	cub->con = mlx_init();
@@ -109,7 +123,7 @@ void	window_init(t_cube *cub)
 	if (cub->win == NULL)
 		(mlx_destroy_display(cub->con), free(cub->con),
 			printf("Error\nCouldn't open the window.\n"), exit_free(cub));
-	(init_alphabet(cub), init_numbers(cub), init_sword(cub));
+	(init_textures(cub), load_textures(cub, cub->txt, 26), init_alphabet(cub));
 	(init_hp(cub), init_crossbow(cub), init_dragon(cub));
 	(init_explosion(cub), init_title(cub), init_main_menu_bg(cub));
 	(init_main_menu_start(cub), init_game_over(cub), init_keyboard(cub));
@@ -117,14 +131,14 @@ void	window_init(t_cube *cub)
 	(init_skullwolf(cub), init_s_warrior(cub), init_plague_doctor(cub));
 	(init_cute_wolf(cub), init_door(cub), init_crown(cub));
 	(init_player_animations(cub), map_parsing(cub));
-	init_main_menu_a(cub);
-	(load_textures(cub, cub->main_menu_assets, 1), init_textures(cub));
-	(mlx_mouse_hide(cub->con, cub->win), load_textures(cub, cub->txt, 26));
+	(init_main_menu_a(cub), init_rat(cub), init_victory_ani(cub));
+	(load_textures(cub, cub->main_menu_assets, 1), init_numbers(cub));
+	(mlx_mouse_hide(cub->con, cub->win), init_sword(cub));
 	(start_keys(cub), mlx_key_hook(cub->win, handle_key_release, cub));
 	mlx_hook(cub->win, KeyPress, KeyPressMask, handle_key_press, cub);
 	mlx_hook(cub->win, KeyRelease, KeyReleaseMask, handle_key_release, cub);
+	mlx_hook(cub->win, ButtonPress, ButtonPressMask, mouse_events, 0);
 	mlx_hook(cub->win, DestroyNotify, StructureNotifyMask,
 		close_x, cub);
-	mlx_hook(cub->win, ButtonPress, ButtonPressMask, mouse_events, 0);
 	(mlx_loop_hook(cub->con, loop_hook, cub), mlx_loop(cub->con));
 }
