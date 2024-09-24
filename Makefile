@@ -5,7 +5,7 @@ MINILIBX=$(MINILIBX_PATH)/libmlx_Linux.a
 MINILIBX_PATH=minilibx-linux
 INCDIR = ./includes/
 GNLDIR = ./get_next_line/
-SRCSDIR = ./
+SRCSDIR = ./srcs/
 OBJDIR = ./objs/
 
 SOURCES = $(wildcard $(SRCSDIR)*.c)
