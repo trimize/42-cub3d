@@ -16,7 +16,7 @@ Then you just cast more rays, one next to the other, you now have a field of vie
 And then the pixel you hit with your ray you extend it to a line, the further the smaller and reciprocally.
 You add difficult math about angles and there you have it!
 
-[raycasting](https://cdn.discordapp.com/attachments/1155844071810662501/1288220572374798502/minimap.gif?ex=66f46466&is=66f312e6&hm=bfcc508d1992b6f2e4a91c614b88e8518ee500542d8ab1ef4ffb24761d5ccac3&)
+![raycasting](https://i.imgur.com/n7XHYzq.gif)
 
 ## Gameplay 🎮
 
